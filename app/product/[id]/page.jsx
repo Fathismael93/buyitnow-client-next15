@@ -12,7 +12,7 @@ const ProductDetails = dynamic(
 );
 
 const ProductDetailsPage = async ({ params }) => {
-  const data = await getProductDetails(params?.id);
+  const data = await getProductDetails((await params)?.id);
 
   return (
     <ProductDetails

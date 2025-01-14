@@ -7,7 +7,7 @@ import Loading from '@/app/loading';
 import Link from 'next/link';
 import React, { useContext } from 'react';
 
-const UserAddresses = dynamic(() => import('@/components/users/UserAddresses'), {
+const UserAddresses = dynamic(() => import('@/components/user/UserAddresses'), {
   loading: () => <Loading />,
 });
 

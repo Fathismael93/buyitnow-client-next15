@@ -1,27 +1,27 @@
-import "server-only";
+import 'server-only';
 
-import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
-import axios from "axios";
-import mongoose from "mongoose";
-import queryString from "query-string";
-import * as Sentry from "@sentry/nextjs";
-import { getCookieName } from "@/helpers/helpers";
+import { cookies } from 'next/headers';
+import { notFound } from 'next/navigation';
+import axios from 'axios';
+import mongoose from 'mongoose';
+import queryString from 'query-string';
+import * as Sentry from '@sentry/nextjs';
+import { getCookieName } from '@/helpers/helpers';
 
 export const getAllProducts = async (searchParams) => {
   const urlParams = {
     keyword: (await searchParams).keyword,
     page: (await searchParams).page,
     category: (await searchParams).category,
-    "price[gte]": (await searchParams).min,
-    "price[lte]": (await searchParams).max,
-    "ratings[gte]": (await searchParams).ratings,
+    'price[gte]': (await searchParams).min,
+    'price[lte]': (await searchParams).max,
+    'ratings[gte]': (await searchParams).ratings,
   };
 
   const searchQuery = queryString.stringify(urlParams);
 
   const { data } = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/products?${searchQuery}`
+    `${process.env.NEXT_PUBLIC_API_URL}/api/products?${searchQuery}`,
   );
 
   return data;
@@ -35,7 +35,7 @@ export const getProductDetails = async (id) => {
   }
 
   const { data } = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`
+    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`,
   );
 
   if (data === undefined) {
@@ -48,7 +48,9 @@ export const getProductDetails = async (id) => {
 export const getAllAddresses = async (page) => {
   try {
     const nextCookies = await cookies();
-    const nextAuthSessionToken = nextCookies.get("next-auth.session-token");
+    const nextAuthSessionToken = nextCookies.get(
+      '__Secure-next-auth.session-token',
+    );
 
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/api/address`,
@@ -56,12 +58,12 @@ export const getAllAddresses = async (page) => {
         headers: {
           Cookie: `${nextAuthSessionToken?.name}=${nextAuthSessionToken?.value}`,
         },
-      }
+      },
     );
 
     Sentry.captureConsoleIntegration();
 
-    if (page === "profile") {
+    if (page === 'profile') {
       delete data?.paymentTypes;
     }
 
@@ -87,7 +89,7 @@ export const getSingleAddress = async (id) => {
       headers: {
         Cookie: `${nextAuthSessionToken?.name}=${nextAuthSessionToken?.value}`,
       },
-    }
+    },
   );
 
   if (data === undefined) {
@@ -100,10 +102,12 @@ export const getSingleAddress = async (id) => {
 export const getAllOrders = async (searchParams) => {
   const nextCookies = await cookies();
 
-  const nextAuthSessionToken = nextCookies.get("next-auth.session-token");
+  const nextAuthSessionToken = nextCookies.get(
+    '__Secure-next-auth.session-token',
+  );
 
   const urlParams = {
-    page: searchParams?.page || 1,
+    page: (await searchParams)?.page || 1,
   };
 
   const searchQuery = queryString.stringify(urlParams);
@@ -114,7 +118,7 @@ export const getAllOrders = async (searchParams) => {
       headers: {
         Cookie: `${nextAuthSessionToken?.name}=${nextAuthSessionToken?.value}`,
       },
-    }
+    },
   );
 
   return data;

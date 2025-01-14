@@ -13,7 +13,7 @@ export const metadata = {
 };
 
 const UpdateAddressPage = async ({ params }) => {
-  const address = await getSingleAddress(params?.id);
+  const address = await getSingleAddress((await params)?.id);
 
   return <UpdateAddress id={params?.id} address={address} />;
 };

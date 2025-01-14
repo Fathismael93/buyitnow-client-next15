@@ -1,0 +1,124 @@
+'use client';
+
+import React, { useContext, useEffect } from 'react';
+import Link from 'next/link';
+
+import { Virtuoso } from 'react-virtuoso';
+
+import CartContext from '@/context/CartContext';
+import { DECREASE, INCREASE } from '@/helpers/constants';
+import { useRouter } from 'next/navigation';
+import ItemCart from './components/ItemCart';
+
+const Cart = () => {
+  const {
+    updateCart,
+    deleteItemFromCart,
+    cart,
+    cartCount,
+    saveOnCheckout,
+    setCartToState,
+  } = useContext(CartContext);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    setCartToState();
+    router.prefetch('/shipping');
+  }, []);
+
+  const increaseQty = (cartItem) => {
+    updateCart(cartItem, INCREASE);
+  };
+
+  const decreaseQty = (cartItem) => {
+    updateCart(cartItem, DECREASE);
+  };
+
+  const amount = cart
+    ?.reduce((acc, item) => acc + item?.quantity * item?.product?.price, 0)
+    .toFixed(2);
+
+  const checkoutHandler = () => {
+    const data = {
+      amount,
+    };
+
+    saveOnCheckout(data);
+  };
+
+  return (
+    <>
+      <section className="py-5 sm:py-7 bg-blue-100">
+        <div className="container max-w-screen-xl mx-auto px-4">
+          <h2 className="text-3xl font-semibold mb-2">
+            {cartCount || 0} Item(s) in Cart
+          </h2>
+        </div>
+      </section>
+
+      {cartCount > 0 ? (
+        <section className="py-10">
+          <div className="container max-w-screen-xl mx-auto px-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <main className="md:w-3/4">
+                <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
+                  <Virtuoso
+                    className="!h-[1000px] md:!h-[500px] lg:!h-[570px] "
+                    data={cart}
+                    itemContent={(_, cartItem) => (
+                      <ItemCart
+                        key={cartItem._id}
+                        cartItem={cartItem}
+                        deleteItemFromCart={deleteItemFromCart}
+                        decreaseQty={decreaseQty}
+                        increaseQty={increaseQty}
+                      />
+                    )}
+                  />
+                </article>
+              </main>
+              <aside className="md:w-1/4">
+                <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
+                  <ul className="mb-5">
+                    <li className="flex justify-between text-gray-600  mb-1">
+                      <span>Total Units:</span>
+                      <span className="text-green-500">
+                        {cart?.reduce((acc, item) => acc + item?.quantity, 0)}{' '}
+                        (Units)
+                      </span>
+                    </li>
+                    <li className="text-lg font-bold border-t flex justify-between mt-3 pt-3">
+                      <span>Total price:</span>
+                      <span>$ {amount}</span>
+                    </li>
+                  </ul>
+
+                  <a
+                    className="px-4 py-3 mb-2 inline-block text-lg w-full text-center font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 cursor-pointer"
+                    onClick={checkoutHandler}
+                  >
+                    Continue
+                  </a>
+
+                  <Link
+                    href="/"
+                    className="px-4 py-3 inline-block text-lg w-full text-center font-medium text-green-600 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100"
+                  >
+                    Back to shop
+                  </Link>
+                </article>
+              </aside>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <div className="w-full">
+          <p className="font-bold text-xl text-center">Cart Empty!</p>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default Cart;

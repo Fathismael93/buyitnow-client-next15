@@ -1,0 +1,21 @@
+import React from 'react';
+import dynamic from 'next/dynamic';
+
+import { getAllOrders } from '@/backend/utils/server-only-methods';
+import Loading from '@/app/loading';
+
+const ListOrders = dynamic(() => import('@/components/orders/ListOrders'), {
+  loading: () => <Loading />,
+});
+
+export const metadata = {
+  title: 'Buy It Now - Orders',
+};
+
+const MyOrdersPage = async ({ searchParams }) => {
+  const orders = await getAllOrders(searchParams);
+
+  return <ListOrders orders={orders} />;
+};
+
+export default MyOrdersPage;

@@ -10,27 +10,25 @@ import { useSession } from 'next-auth/react';
 import AuthContext from '@/context/AuthContext';
 
 const Header = () => {
-
   /* ***********  TESTING CODE  *********** */
 
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const cartCount = 0
-  
+  // const [user, setUser] = useState(null)
+  // const [loading, setLoading] = useState(false)
+  // const cartCount = 0
 
   /* ***********  REAL CODE   *********** */
 
-  // const { user, setLoading, setUser } = useContext(AuthContext);
+  const { user, setLoading, setUser } = useContext(AuthContext);
 
-  // const { data } = useSession();
+  const { data } = useSession();
 
-  // useEffect(() => {
-  //   if (data) {
-  //     setUser(data?.user);
-  //   }
-  // }, [data]);
+  useEffect(() => {
+    if (data) {
+      setUser(data?.user);
+    }
+  }, [data]);
 
-  // const { cartCount } = useContext(CartContext);
+  const { cartCount } = useContext(CartContext);
 
   return (
     <header className="bg-white py-2 border-b">

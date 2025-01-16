@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 const Search = dynamic(() => import('./Search'));
@@ -10,17 +10,27 @@ import { useSession } from 'next-auth/react';
 import AuthContext from '@/context/AuthContext';
 
 const Header = () => {
-  const { user, setLoading, setUser } = useContext(AuthContext);
 
-  const { data } = useSession();
+  /* ***********  TESTING CODE  *********** */
 
-  useEffect(() => {
-    if (data) {
-      setUser(data?.user);
-    }
-  }, [data]);
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const cartCount = 0
+  
 
-  const { cartCount } = useContext(CartContext);
+  /* ***********  REAL CODE   *********** */
+
+  // const { user, setLoading, setUser } = useContext(AuthContext);
+
+  // const { data } = useSession();
+
+  // useEffect(() => {
+  //   if (data) {
+  //     setUser(data?.user);
+  //   }
+  // }, [data]);
+
+  // const { cartCount } = useContext(CartContext);
 
   return (
     <header className="bg-white py-2 border-b">

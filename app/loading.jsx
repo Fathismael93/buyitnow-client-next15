@@ -1,18 +1,16 @@
 'use client';
 
-import React from 'react'
-import { Blocks } from 'react-loader-spinner';
+import React from 'react';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 const Loading = () => {
   return (
     <div className="flex h-screen items-center justify-center">
-      <Blocks
-        visible={true}
-        height="80"
-        width="80"
-        ariaLabel="blocks-loading"
-        wrapperStyle={{}}
-        wrapperClass="blocks-wrapper"
+      <ClipLoader
+        color="blue"
+        size={150}
+        aria-label="Loading Spinner"
+        data-testid="loader"
       />
     </div>
   );

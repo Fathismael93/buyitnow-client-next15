@@ -1,18 +1,16 @@
-import * as Sentry from "@sentry/nextjs";
-
-import Address from "../models/address";
-import ErrorHandler from "../utils/errorHandler";
-import User from "../models/user";
-import PaymentType from "../models/paymentType";
-import next from "next";
-import DeliveryPrice from "../models/deliveryPrice";
+import Address from '../models/address';
+import ErrorHandler from '../utils/errorHandler';
+import User from '../models/user';
+import PaymentType from '../models/paymentType';
+import next from 'next';
+import DeliveryPrice from '../models/deliveryPrice';
 
 export const newAddress = async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.user.email }).select("_id");
+    const user = await User.findOne({ email: req.user.email }).select('_id');
 
     if (!user) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
 
     req.body.user = user._id;
@@ -29,10 +27,10 @@ export const newAddress = async (req, res) => {
 
 export const getAddresses = async (req, res) => {
   try {
-    const user = await User.findOne({ email: req?.user?.email }).select("_id");
+    const user = await User.findOne({ email: req?.user?.email }).select('_id');
 
     if (!user) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
 
     const addresses = await Address.find({ user: user?._id });
@@ -48,7 +46,6 @@ export const getAddresses = async (req, res) => {
       });
     }
   } catch (error) {
-    Sentry.captureException(error);
     return res.json(error);
   }
 };
@@ -58,7 +55,7 @@ export const getAddress = async (req, res) => {
     const address = await Address.findById(req?.query?.id);
 
     if (!address) {
-      return next(new ErrorHandler("Address not found", 404));
+      return next(new ErrorHandler('Address not found', 404));
     }
 
     return res.status(200).json({
@@ -77,7 +74,7 @@ export const updateAddress = async (req, res) => {
     const oldAddress = await Address.findById(addressId);
 
     if (!oldAddress) {
-      return next(new ErrorHandler("Address not found", 404));
+      return next(new ErrorHandler('Address not found', 404));
     }
 
     const address = await Address.findByIdAndUpdate(addressId, newAddress, {
@@ -97,7 +94,7 @@ export const deleteAddress = async (req, res) => {
     const addressDeleted = await Address.findByIdAndDelete(req.query.id);
 
     if (!addressDeleted) {
-      return next(new ErrorHandler("Address not found", 404));
+      return next(new ErrorHandler('Address not found', 404));
     }
 
     return res.status(200).json({

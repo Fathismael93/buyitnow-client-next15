@@ -5,7 +5,6 @@ import { notFound } from 'next/navigation';
 import axios from 'axios';
 import mongoose from 'mongoose';
 import queryString from 'query-string';
-import * as Sentry from '@sentry/nextjs';
 import { getCookieName } from '@/helpers/helpers';
 
 export const getAllProducts = async (searchParams) => {
@@ -61,16 +60,12 @@ export const getAllAddresses = async (page) => {
       },
     );
 
-    Sentry.captureConsoleIntegration();
-
     if (page === 'profile') {
       delete data?.paymentTypes;
     }
 
     return data;
-  } catch (error) {
-    Sentry.captureException(error);
-  }
+  } catch (error) {}
 };
 
 export const getSingleAddress = async (id) => {

@@ -8,7 +8,7 @@ const Loading = () => {
     <div className="flex h-screen items-center justify-center">
       <ClipLoader
         color="blue"
-        size={150}
+        size={50}
         aria-label="Loading Spinner"
         data-testid="loader"
       />

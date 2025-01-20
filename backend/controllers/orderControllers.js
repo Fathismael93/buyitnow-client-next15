@@ -1,39 +1,41 @@
-import Order from "../models/order";
-import APIFilters from "../utils/APIFilters";
-import User from "../models/user";
-import Product from "../models/product";
-import Cart from "../models/cart";
-import Category from "../models/category";
-import next from "next";
-import ErrorHandler from "../utils/errorHandler";
-import DeliveryPrice from "../models/deliveryPrice";
+import Order from '../models/order';
+import APIFilters from '../utils/APIFilters';
+import User from '../models/user';
+import Product from '../models/product';
+import Cart from '../models/cart';
+import Category from '../models/category';
+import next from 'next';
+import ErrorHandler from '../utils/errorHandler';
+import DeliveryPrice from '../models/deliveryPrice';
 
 export const myOrders = async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.user.email }).select("_id");
+    const user = await User.findOne({ email: req.user.email }).select('_id');
+
+    if (!user) {
+      return next(new ErrorHandler('User not found', 404));
+    }
 
     const resPerPage = 2;
     const ordersCount = await Order.countDocuments({ user: user._id });
 
     const apiFilters = new APIFilters(Order.find(), req.query).pagination(
-      resPerPage
+      resPerPage,
     );
-
-    if (!user) {
-      return next(new ErrorHandler("User not found", 404));
-    }
 
     const orders = await apiFilters.query
       .find({ user: user._id })
-      .populate("shippingInfo user")
+      .populate('shippingInfo user')
       .sort({ createdAt: -1 });
+
+    const result = ordersCount / resPerPage;
+    const totalPages = Number.isInteger(result) ? result : Math.ceil(result);
 
     const deliveryPrice = await DeliveryPrice.find();
 
     return res.status(200).json({
       deliveryPrice,
-      ordersCount,
-      resPerPage,
+      totalPages,
       orders,
     });
   } catch (error) {
@@ -45,10 +47,10 @@ export const myOrders = async (req, res) => {
 
 export const webhook = async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.user.email }).select("_id");
+    const user = await User.findOne({ email: req.user.email }).select('_id');
 
     if (!user) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
 
     // GETTING ORDER DATA FROM THE REQUEST BODY
@@ -82,7 +84,7 @@ export const webhook = async (req, res) => {
       // GETTING THE PRODUCT ORDERED BY USER
       const element = productsIdsQuantities[index];
       const itemInOrder = orderData?.orderItems[index];
-      const product = await Product.findById(element.id).populate("category");
+      const product = await Product.findById(element.id).populate('category');
 
       itemInOrder.category = product?.category.categoryName;
 

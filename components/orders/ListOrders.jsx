@@ -48,10 +48,7 @@ const ListOrders = ({ orders }) => {
             <OrderItem key={order._id} order={order} />
           ))}
 
-          <CustomPagination
-            resPerPage={orders?.resPerPage}
-            productsCount={orders?.ordersCount}
-          />
+          <CustomPagination totalPages={orders?.totalPages} />
         </>
       )}
     </>

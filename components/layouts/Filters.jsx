@@ -6,13 +6,9 @@ import { arrayHasData, getPriceQueryParams } from '@/helpers/helpers';
 import { toast } from 'react-toastify';
 
 const Filters = ({ categories, setLoading }) => {
-  /* ***********  TESTING CODE  *********** */
-
-  // const [min, setMin] = useState('');
-  // const [max, setMax] = useState('');
-  // const [open, setOpen] = useState(false);
-
-  /* ***********  REAL CODE   *********** */
+  const [min, setMin] = useState('');
+  const [max, setMax] = useState('');
+  const [open, setOpen] = useState(false);
 
   const router = useRouter();
 

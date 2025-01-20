@@ -2,7 +2,6 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { memo } from 'react';
-import Pagination from 'react-js-pagination';
 import ResponsivePaginationComponent from 'react-responsive-pagination';
 import 'react-responsive-pagination/themes/classic.css';
 
@@ -12,14 +11,6 @@ const CustomPagination = memo(({ resPerPage, productsCount }) => {
 
   const result = productsCount / resPerPage;
   let totalPages = Number.isInteger(result) ? result : Math.ceil(result);
-
-  // if (Number.isInteger(result)) totalPages = result;
-  // else totalPages = Math.ceil(result);
-
-  console.log(resPerPage);
-  console.log(productsCount);
-  console.log(result);
-  console.log(totalPages);
 
   let page = searchParams.get('page') || 1;
   page = Number(page);

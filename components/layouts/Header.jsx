@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 const Search = dynamic(() => import('./Search'));
@@ -85,8 +85,9 @@ const Header = () => {
             ) : (
               <Link href="/me">
                 <div className="flex items-center mb-4 space-x-3 mt-4 cursor-pointer hover:bg-blue-100 hover:text-xs hover:rounded-md">
-                  <img
+                  <Image
                     data-testid="profile image"
+                    alt="profile image"
                     className="w-10 h-10 rounded-full"
                     src={
                       user?.avatar ? user?.avatar?.url : '/images/default.png'

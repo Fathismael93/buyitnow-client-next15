@@ -6,6 +6,7 @@ import Loading from '@/app/loading';
 
 import Link from 'next/link';
 import React, { useContext } from 'react';
+import Image from 'next/image';
 
 const UserAddresses = dynamic(() => import('@/components/user/UserAddresses'), {
   loading: () => <Loading />,
@@ -18,7 +19,7 @@ const Profile = ({ addresses }) => {
     <>
       <figure className="flex items-start sm:items-center">
         <div className="relative mr-3">
-          <img
+          <Image
             className="w-10 h-10 rounded-full mr-4"
             src={user?.avatar ? user?.avatar?.url : '/images/default.png'}
             alt={user?.name}

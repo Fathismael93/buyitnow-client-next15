@@ -14,13 +14,8 @@ import { toast } from 'react-toastify';
 
 const ShippingChoice = ({ addresses, payments, deliveryPrice }) => {
   const { cart, checkoutInfo, setOrderInfo } = useContext(CartContext);
-  const {
-    setAddresses,
-    setPaymentTypes,
-    setShippingStatus,
-    setDeliveryPrice,
-    setShippinInfo,
-  } = useContext(OrderContext);
+  const { setAddresses, setPaymentTypes, setShippingStatus, setDeliveryPrice } =
+    useContext(OrderContext);
   const router = useRouter();
 
   useEffect(() => {

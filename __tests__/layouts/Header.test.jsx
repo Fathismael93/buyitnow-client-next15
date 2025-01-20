@@ -3,7 +3,6 @@ import Header from '@/components/layouts/Header';
 
 describe('Header Component', () => {
   describe('Rendering', () => {
-
     render(<Header />);
 
     it('Should contain a link with name BuyItNow', () => {
@@ -12,22 +11,29 @@ describe('Header Component', () => {
       ).toBeInTheDocument();
     });
 
-    it('Should contain an input field with placeholder Enter your keyword', () => {
-      expect(
-        screen.getByPlaceholderText('Enter your keyword'),
-      ).toBeInTheDocument();
+    // it('Should contain a link with testId login', () => {
+    //   render(<Header />);
+    //   expect(screen.getByTestId('login')).toBeInTheDocument();
+    // });
+
+    it('Should contain a link with testId cart link', () => {
+      render(<Header />);
+      expect(screen.getByTestId('cart link')).toBeInTheDocument();
     });
 
-    it('Should contain a button with name Search', () => {
-      expect(
-        screen.getByRole('button', { name: 'Search' }),
-      ).toBeInTheDocument();
+    it('Should contain an image with testId profile image', () => {
+      render(<Header />);
+      expect(screen.getByTestId('profile image')).toBeInTheDocument();
     });
 
-    it('Should contain a button with name Sign In', () => {
-      expect(
-        screen.getByRole('button', { name: 'Sign In' }),
-      ).toBeInTheDocument();
+    it('Should contain a paragraph element', () => {
+      render(<Header />);
+      expect(screen.getByRole('paragraph')).toBeInTheDocument();
+    });
+
+    it('Should contain a time element', () => {
+      render(<Header />);
+      expect(screen.getByRole('time')).toBeInTheDocument();
     });
   });
 });

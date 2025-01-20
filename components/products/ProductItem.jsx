@@ -46,7 +46,7 @@ const ProductItem = ({ product }) => {
             <Image
               priority
               src={
-                product?.images[0]
+                product?.images !== undefined && product?.images[0]
                   ? product?.images[0]?.url
                   : '/images/default_product.png'
               }
@@ -62,17 +62,19 @@ const ProductItem = ({ product }) => {
         </div>
         <div className="md:w-2/4">
           <div className="p-4">
-            <p className="font-semibold text-xl">{product?.name}</p>
+            <p className="font-semibold text-xl" title={product?.name}>
+              {product?.name}
+            </p>
             <div className="mt-4 md:text-xs lg:text-sm text-gray-500">
-              <p className="mb-1">
+              <p className="mb-1" title={product?.category?.categoryName}>
                 <span className="font-semibold mr-3">Category: </span>
                 <span>{product?.category?.categoryName}</span>
               </p>
-              <p className="mb-1">
+              <p className="mb-1" title="Description">
                 <span className="font-semibold mr-3">Description: </span>
                 <span>{product?.description?.substring(0, 45)}...</span>
               </p>
-              <p className="mb-1">
+              <p className="mb-1" title="Stock">
                 <span className="font-semibold mr-3">Stock: </span>
                 {inStock ? (
                   <span className="text-green-500">In Stock</span>
@@ -85,11 +87,17 @@ const ProductItem = ({ product }) => {
         </div>
         <div className="md:w-1/4 border-t lg:border-t-0 lg:border-l border-gray-200">
           <div className="p-5">
-            <span className="text-xl font-semibold text-black">
-              ${product?.price}
+            <span
+              className="text-xl font-semibold text-black"
+              data-testid="Price"
+            >
+              $ {product?.price}
             </span>
 
-            <p className="text-green-500 md:text-xs lg:text-md">
+            <p
+              className="text-green-500 md:text-xs lg:text-md"
+              title="Shipping text"
+            >
               Free Shipping
             </p>
             <div className="my-3">

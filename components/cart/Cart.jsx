@@ -11,6 +11,31 @@ import { useRouter } from 'next/navigation';
 import ItemCart from './components/ItemCart';
 
 const Cart = () => {
+  /* ***********  TESTING CODE  *********** */
+
+  // const cartCount = 1;
+
+  // const cart = [
+  //   {
+  //     _id: 1,
+  //     product: {
+  //       _id: 1,
+  //       name: 'Product Test',
+  //       category: {
+  //         categoryName: 'Electronics',
+  //       },
+  //       description: 'Product to test For testing purpose',
+  //       stock: 2,
+  //       price: 60,
+  //     },
+  //     quantity: 2,
+  //   },
+  // ];
+
+  // const amount = 120;
+
+  /* ***********  REAL CODE   *********** */
+
   const {
     updateCart,
     deleteItemFromCart,
@@ -51,7 +76,10 @@ const Cart = () => {
     <>
       <section className="py-5 sm:py-7 bg-blue-100">
         <div className="container max-w-screen-xl mx-auto px-4">
-          <h2 className="text-3xl font-semibold mb-2">
+          <h2
+            className="text-3xl font-semibold mb-2"
+            title="count items in cart"
+          >
             {cartCount || 0} Item(s) in Cart
           </h2>
         </div>
@@ -63,7 +91,9 @@ const Cart = () => {
             <div className="flex flex-col md:flex-row gap-4">
               <main className="md:w-3/4">
                 <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
-                  <Virtuoso
+                  {/* WITH VIRTUALIZED COMPONENT */}
+
+                  {/* <Virtuoso
                     className="!h-[1000px] md:!h-[500px] lg:!h-[570px] "
                     data={cart}
                     itemContent={(_, cartItem) => (
@@ -75,33 +105,54 @@ const Cart = () => {
                         increaseQty={increaseQty}
                       />
                     )}
-                  />
+                  /> */}
+
+                  {/* WITHOUT VIRTUALIZED COMPONENT */}
+
+                  {cart?.cartItems?.map((cartItem) => (
+                    <ItemCart
+                      key={cartItem._id}
+                      cartItem={cartItem}
+                      deleteItemFromCart={deleteItemFromCart}
+                      decreaseQty={decreaseQty}
+                      increaseQty={increaseQty}
+                    />
+                  ))}
                 </article>
               </main>
               <aside className="md:w-1/4">
                 <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
                   <ul className="mb-5">
-                    <li className="flex justify-between text-gray-600  mb-1">
+                    <li
+                      className="flex justify-between text-gray-600  mb-1"
+                      title="total units"
+                    >
                       <span>Total Units:</span>
                       <span className="text-green-500">
                         {cart?.reduce((acc, item) => acc + item?.quantity, 0)}{' '}
                         (Units)
                       </span>
                     </li>
-                    <li className="text-lg font-bold border-t flex justify-between mt-3 pt-3">
+                    <li
+                      className="text-lg font-bold border-t flex justify-between mt-3 pt-3"
+                      title="total price"
+                    >
                       <span>Total price:</span>
                       <span>$ {amount}</span>
                     </li>
                   </ul>
 
-                  <a
+                  <Link
                     className="px-4 py-3 mb-2 inline-block text-lg w-full text-center font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 cursor-pointer"
                     onClick={checkoutHandler}
+                    title="Continue"
+                    href="/shipping-choice"
                   >
                     Continue
-                  </a>
+                  </Link>
 
                   <Link
+                    title="Back to shop"
                     href="/"
                     className="px-4 py-3 inline-block text-lg w-full text-center font-medium text-green-600 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100"
                   >

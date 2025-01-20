@@ -6,9 +6,13 @@ import { arrayHasData, getPriceQueryParams } from '@/helpers/helpers';
 import { toast } from 'react-toastify';
 
 const Filters = ({ categories, setLoading }) => {
-  const [min, setMin] = useState('');
-  const [max, setMax] = useState('');
-  const [open, setOpen] = useState(false);
+  /* ***********  TESTING CODE  *********** */
+
+  // const [min, setMin] = useState('');
+  // const [max, setMax] = useState('');
+  // const [open, setOpen] = useState(false);
+
+  /* ***********  REAL CODE   *********** */
 
   const router = useRouter();
 
@@ -72,12 +76,12 @@ const Filters = ({ categories, setLoading }) => {
 
   return (
     <aside className="md:w-1/3 lg:w-1/4 px-4">
-      <a
+      <button
         className="md:hidden mb-5 cursor-pointer w-full text-center px-4 py-2 inline-block text-lg text-gray-700 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100 hover:text-blue-600"
         onClick={() => setOpen((prev) => !prev)}
       >
         Filter by
-      </a>
+      </button>
       <div
         className={`${
           open ? 'block' : 'hidden'
@@ -126,15 +130,15 @@ const Filters = ({ categories, setLoading }) => {
       >
         <h3 className="font-semibold mb-2">Category</h3>
 
-        <ul className="space-y-1">
-          {arrayHasData(categories) ? (
-            <div className="w-full">
-              <p className="font-bold text-xl text-center">
-                No categories found!
-              </p>
-            </div>
-          ) : (
-            categories?.map((category) => {
+        {arrayHasData(categories) ? (
+          <div className="w-full">
+            <p className="font-bold text-xl text-center">
+              No categories found!
+            </p>
+          </div>
+        ) : (
+          <ul className="space-y-1">
+            {categories?.map((category) => {
               return (
                 <li key={category?._id}>
                   <label className="flex items-center">
@@ -153,9 +157,9 @@ const Filters = ({ categories, setLoading }) => {
                   </label>
                 </li>
               );
-            })
-          )}
-        </ul>
+            })}
+          </ul>
+        )}
       </div>
     </aside>
   );

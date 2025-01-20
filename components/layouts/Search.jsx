@@ -8,6 +8,8 @@ import { searchSchema } from '@/helpers/schemas';
 const Search = ({ setLoading }) => {
   const [keyword, setKeyword] = useState('');
 
+  /* ***********  REAL CODE   *********** */
+
   const router = useRouter();
 
   const submitHandler = async (e) => {

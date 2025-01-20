@@ -47,11 +47,19 @@ const ListProducts = ({ data }) => {
             </div>
           ) : (
             <main className="md:w-2/3 lg:w-3/4 px-3">
-              <Virtuoso
+              {/* WITH VIRTUALIZED COMPONENT */}
+
+              {/* <Virtuoso
                 className="!h-[1440px] md:!h-[420px] lg:!h-[415px] xl:!h-[510px]"
                 data={data?.products}
                 itemContent={(_, product) => <ProductItem product={product} />}
-              />
+              /> */}
+
+              {/* WITHOUT VIRTUALIZED COMPONENT */}
+
+              {data?.products?.map((product) => (
+                <ProductItem key={product?._id} product={product} />
+              ))}
 
               <CustomPagination
                 resPerPage={data?.resPerPage}

@@ -146,13 +146,21 @@ const Shipping = () => {
                 <hr className="my-4" />
 
                 <h2 className="text-lg font-semibold mb-3">Items in cart</h2>
-                <Virtuoso
+                {/* WITH VIRTUALIZED COMPONENT */}
+
+                {/* <Virtuoso
                   className="!h-[600px] md:!h-[600px] lg:!h-[450px] "
                   data={cart}
                   itemContent={(_, item) => (
                     <ItemShipping key={item._id} item={item} />
                   )}
-                />
+                /> */}
+
+                {/* WITHOUT VIRTUALIZED COMPONENT */}
+
+                {cart?.cartItems?.map((item) => (
+                  <ItemShipping key={item._id} item={item} />
+                ))}
               </article>
             </aside>
           </div>

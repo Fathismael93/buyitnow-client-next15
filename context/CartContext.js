@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { DECREASE } from "@/helpers/constants";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import React, { createContext, useState, useEffect } from "react";
-import { toast } from "react-toastify";
+import { DECREASE } from '@/helpers/constants';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import React, { createContext, useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 const CartContext = createContext();
 
@@ -23,7 +23,7 @@ export const CartProvider = ({ children }) => {
   const setCartToState = async () => {
     try {
       const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/cart`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/cart`,
       );
 
       if (data) {
@@ -41,15 +41,15 @@ export const CartProvider = ({ children }) => {
         `${process.env.NEXT_PUBLIC_API_URL}/api/cart`,
         {
           productId: product,
-        }
+        },
       );
 
       if (data.cartAdded) {
         setCartToState();
-        toast.success("Product added to cart");
+        toast.success('Product added to cart');
       } else {
         toast.error(
-          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard"
+          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard",
         );
       }
     } catch (error) {
@@ -67,7 +67,7 @@ export const CartProvider = ({ children }) => {
           {
             product,
             value,
-          }
+          },
         );
 
         if (data) {
@@ -75,7 +75,7 @@ export const CartProvider = ({ children }) => {
           toast.success(data);
         } else {
           toast.error(
-            "Il semblerait qu'une erreur soit survenue! Réessayer plus tard"
+            "Il semblerait qu'une erreur soit survenue! Réessayer plus tard",
           );
         }
       } catch (error) {
@@ -87,7 +87,7 @@ export const CartProvider = ({ children }) => {
   const deleteItemFromCart = async (id) => {
     try {
       const { data } = await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/cart/${id}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/cart/${id}`,
       );
 
       if (data) {
@@ -95,7 +95,7 @@ export const CartProvider = ({ children }) => {
         toast.success(data);
       } else {
         toast.error(
-          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard"
+          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard",
         );
       }
     } catch (error) {
@@ -109,8 +109,6 @@ export const CartProvider = ({ children }) => {
       tax,
       totalAmount,
     });
-
-    router.push("/shipping-choice");
   };
 
   return (

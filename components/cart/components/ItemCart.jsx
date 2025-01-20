@@ -18,6 +18,7 @@ const ItemCart = ({
               <div className="block w-16 h-16 rounded border border-gray-200 overflow-hidden">
                 <LazyLoadImage
                   src={
+                    cartItem?.product?.images !== undefined &&
                     cartItem?.product?.images[0]?.url
                       ? cartItem?.product?.images[0]?.url
                       : '/images/default_product.png'
@@ -42,7 +43,7 @@ const ItemCart = ({
                   {cartItem?.product?.name}
                 </Link>
               </p>
-              <p className="mt-1 text-gray-400">
+              <p className="mt-1 text-gray-400" title="stock left">
                 {' '}
                 Stock: {cartItem?.product?.stock} items
               </p>
@@ -52,7 +53,9 @@ const ItemCart = ({
         <div className="w-24">
           <div className="flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
             <button
+              title="decrement"
               data-action="decrement"
+              data-testid="decrement"
               className=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-none"
               onClick={() => decreaseQty(cartItem)}
             >
@@ -64,8 +67,10 @@ const ItemCart = ({
               name="custom-input-number"
               value={cartItem?.quantity}
               readOnly
+              title="item quantity"
             ></input>
             <button
+              title="increment"
               data-action="increment"
               className="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer"
               onClick={() => increaseQty(cartItem)}
@@ -76,10 +81,13 @@ const ItemCart = ({
         </div>
         <div>
           <div className="leading-5">
-            <p className="font-semibold not-italic">
+            <p
+              className="font-semibold not-italic"
+              title="total price per item"
+            >
               ${(cartItem?.product?.price * cartItem?.quantity).toFixed(2)}
             </p>
-            <small className="text-gray-400">
+            <small className="text-gray-400" data-testid="unit price per item">
               {' '}
               ${cartItem?.product?.price} / per item{' '}
             </small>
@@ -87,12 +95,12 @@ const ItemCart = ({
         </div>
         <div className="flex-auto">
           <div className="float-right">
-            <a
+            <button
               className="px-4 py-2 inline-block text-red-600 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100 cursor-pointer"
               onClick={() => deleteItemFromCart(cartItem._id)}
             >
               Remove
-            </a>
+            </button>
           </div>
         </div>
       </div>

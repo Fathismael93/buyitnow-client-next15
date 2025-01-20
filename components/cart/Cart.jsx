@@ -109,7 +109,7 @@ const Cart = () => {
 
                   {/* WITHOUT VIRTUALIZED COMPONENT */}
 
-                  {cart?.cartItems?.map((cartItem) => (
+                  {cart?.map((cartItem) => (
                     <ItemCart
                       key={cartItem._id}
                       cartItem={cartItem}

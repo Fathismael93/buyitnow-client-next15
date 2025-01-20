@@ -158,7 +158,7 @@ const Shipping = () => {
 
                 {/* WITHOUT VIRTUALIZED COMPONENT */}
 
-                {cart?.cartItems?.map((item) => (
+                {cart?.map((item) => (
                   <ItemShipping key={item._id} item={item} />
                 ))}
               </article>

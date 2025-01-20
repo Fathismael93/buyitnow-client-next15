@@ -32,13 +32,21 @@ const ListOrders = ({ orders }) => {
         </p>
       ) : (
         <>
-          <Virtuoso
+          {/* WITH VIRTUALIZED COMPONENT */}
+
+          {/* <Virtuoso
             className="!h-[1200px] sm:!h-[1000px] md:!h-[650px] lg:!h-[500px] "
             data={orders?.orders}
             itemContent={(_, order) => (
               <OrderItem key={order._id} order={order} />
             )}
-          />
+          /> */}
+
+          {/* WITHOUT VIRTUALIZED COMPONENT */}
+
+          {orders?.orders?.map((order) => (
+            <OrderItem key={order._id} order={order} />
+          ))}
 
           <CustomPagination
             resPerPage={orders?.resPerPage}

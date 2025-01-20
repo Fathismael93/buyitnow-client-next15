@@ -39,6 +39,9 @@ const Filters = ({ categories, setLoading }) => {
       }
     }
     const path = window.location.pathname + '?' + queryParams.toString();
+
+    setOpen(false);
+
     router.push(path);
   }
 
@@ -53,6 +56,9 @@ const Filters = ({ categories, setLoading }) => {
         queryParams = getPriceQueryParams(queryParams, 'max', max);
 
         const path = window.location.pathname + '?' + queryParams.toString();
+
+        setOpen(false);
+
         router.push(path);
       }
     } catch (error) {

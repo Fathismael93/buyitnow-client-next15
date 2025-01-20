@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
+  const [loading, setLoading] = useState(false);
   const [cart, setCart] = useState([]);
   const [cartCount, setCartCount] = useState(0);
   const [checkoutInfo, setCheckoutInfo] = useState(null);
@@ -73,19 +74,23 @@ export const CartProvider = ({ children }) => {
         if (data) {
           setCartToState();
           toast.success(data);
+          setLoading(false);
         } else {
           toast.error(
             "Il semblerait qu'une erreur soit survenue! Réessayer plus tard",
           );
+          setLoading(false);
         }
       } catch (error) {
         setError(error?.response?.data?.message);
+        setLoading(false);
       }
     }
   };
 
   const deleteItemFromCart = async (id) => {
     try {
+      setLoading(true);
       const { data } = await axios.delete(
         `${process.env.NEXT_PUBLIC_API_URL}/api/cart/${id}`,
       );
@@ -93,13 +98,16 @@ export const CartProvider = ({ children }) => {
       if (data) {
         setCartToState();
         toast.success(data);
+        setLoading(false);
       } else {
         toast.error(
           "Il semblerait qu'une erreur soit survenue! Réessayer plus tard",
         );
+        setLoading(false);
       }
     } catch (error) {
       setError(error?.response?.data?.message);
+      setLoading(false);
     }
   };
 
@@ -114,10 +122,12 @@ export const CartProvider = ({ children }) => {
   return (
     <CartContext.Provider
       value={{
+        loading,
         cart,
         cartCount,
         checkoutInfo,
         orderInfo,
+        setLoading,
         setCartToState,
         setOrderInfo,
         addItemToCart,

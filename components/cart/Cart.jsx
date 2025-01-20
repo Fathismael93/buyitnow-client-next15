@@ -9,6 +9,7 @@ import CartContext from '@/context/CartContext';
 import { DECREASE, INCREASE } from '@/helpers/constants';
 import { useRouter } from 'next/navigation';
 import ItemCart from './components/ItemCart';
+import Loading from '@/app/loading';
 
 const Cart = () => {
   /* ***********  TESTING CODE  *********** */
@@ -37,10 +38,12 @@ const Cart = () => {
   /* ***********  REAL CODE   *********** */
 
   const {
+    loading,
     updateCart,
     deleteItemFromCart,
     cart,
     cartCount,
+    setLoading,
     saveOnCheckout,
     setCartToState,
   } = useContext(CartContext);
@@ -53,10 +56,12 @@ const Cart = () => {
   }, []);
 
   const increaseQty = (cartItem) => {
+    setLoading(true);
     updateCart(cartItem, INCREASE);
   };
 
   const decreaseQty = (cartItem) => {
+    setLoading(true);
     updateCart(cartItem, DECREASE);
   };
 
@@ -72,7 +77,9 @@ const Cart = () => {
     saveOnCheckout(data);
   };
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <>
       <section className="py-5 sm:py-7 bg-blue-100">
         <div className="container max-w-screen-xl mx-auto px-4">

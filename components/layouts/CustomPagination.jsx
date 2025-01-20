@@ -5,12 +5,9 @@ import React, { memo } from 'react';
 import ResponsivePaginationComponent from 'react-responsive-pagination';
 import 'react-responsive-pagination/themes/classic.css';
 
-const CustomPagination = memo(({ resPerPage, productsCount }) => {
+const CustomPagination = memo(({ totalPages }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  const result = productsCount / resPerPage;
-  let totalPages = Number.isInteger(result) ? result : Math.ceil(result);
 
   let page = searchParams.get('page') || 1;
   page = Number(page);

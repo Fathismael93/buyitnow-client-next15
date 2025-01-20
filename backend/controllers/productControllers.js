@@ -7,7 +7,6 @@ import ErrorHandler from '../utils/errorHandler';
 export const getProducts = async (req, res) => {
   try {
     const resPerPage = 2;
-    const productsCount = await Product.countDocuments();
 
     const apiFilters = new APIFilters(Product.find(), req.query)
       .search()
@@ -20,12 +19,14 @@ export const getProducts = async (req, res) => {
 
     products = await apiFilters.query.populate('category').clone();
 
+    const result = filteredProductsCount / resPerPage;
+    const totalPages = Number.isInteger(result) ? result : Math.ceil(result);
+
     const categories = await Category.find();
 
     return res.status(200).json({
       categories,
-      resPerPage,
-      filteredProductsCount,
+      totalPages,
       products,
     });
   } catch (error) {

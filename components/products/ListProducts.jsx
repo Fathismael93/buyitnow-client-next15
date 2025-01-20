@@ -61,10 +61,7 @@ const ListProducts = ({ data }) => {
                 <ProductItem key={product?._id} product={product} />
               ))}
 
-              <CustomPagination
-                resPerPage={data?.resPerPage}
-                productsCount={data?.filteredProductsCount}
-              />
+              <CustomPagination totalPages={data?.totalPages} />
             </main>
           )}
         </div>

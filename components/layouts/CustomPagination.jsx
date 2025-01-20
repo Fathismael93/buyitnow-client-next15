@@ -10,10 +10,15 @@ const CustomPagination = memo(({ resPerPage, productsCount }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const totalPages = productsCount / resPerPage;
+  const result = productsCount / resPerPage;
+  let totalPages;
+
+  if (Number.isInteger(result)) totalPages = result;
+  else totalPages = Math.ceil(result);
 
   console.log(resPerPage);
   console.log(productsCount);
+  console.log(result);
   console.log(totalPages);
 
   let page = searchParams.get('page') || 1;

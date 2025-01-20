@@ -12,6 +12,10 @@ const CustomPagination = memo(({ resPerPage, productsCount }) => {
 
   const totalPages = productsCount / resPerPage;
 
+  console.log(resPerPage);
+  console.log(productsCount);
+  console.log(totalPages);
+
   let page = searchParams.get('page') || 1;
   page = Number(page);
 

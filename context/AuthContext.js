@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import React, { createContext, useState } from "react";
-import { toast } from "react-toastify";
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import React, { createContext, useState } from 'react';
+import { toast } from 'react-toastify';
 
 const AuthContext = createContext();
 
@@ -24,14 +24,14 @@ export const AuthProvider = ({ children }) => {
           phone,
           email,
           password,
-        }
+        },
       );
 
       if (data?.user) {
-        router.push("/login");
+        router.push('/login');
       } else {
         toast.error(
-          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard"
+          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard",
         );
       }
     } catch (error) {
@@ -43,11 +43,11 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
 
-      const { data } = await axios.get("/api/auth/session?update");
+      const { data } = await axios.get('/api/auth/session?update=');
 
       if (data?.user) {
         setUser(data.user);
-        router.push("/me");
+        router.push('/me');
       }
     } catch (error) {
       setError(error?.response?.data?.message);
@@ -63,9 +63,9 @@ export const AuthProvider = ({ children }) => {
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
-        }
+        },
       );
 
       if (data?.updatedUser) {
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       } else {
         toast.error(
-          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard"
+          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard",
         );
       }
     } catch (error) {
@@ -90,12 +90,12 @@ export const AuthProvider = ({ children }) => {
           currentPassword,
           newPassword,
           user,
-        }
+        },
       );
 
       if (data?.sucess) {
-        toast.success("Password updated with success");
-        router.replace("/me");
+        toast.success('Password updated with success');
+        router.replace('/me');
       }
     } catch (error) {
       setError(error?.response?.data?.message);
@@ -109,16 +109,16 @@ export const AuthProvider = ({ children }) => {
         address,
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
-        }
+        },
       );
 
       if (data) {
-        router.push("/me");
+        router.push('/me');
       } else {
         toast.error(
-          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard"
+          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard",
         );
       }
     } catch (error) {
@@ -130,7 +130,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/api/address/${id}`,
-        address
+        address,
       );
 
       if (data?.address) {
@@ -138,7 +138,7 @@ export const AuthProvider = ({ children }) => {
         router.replace(`/address/${id}`);
       } else {
         toast.error(
-          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard"
+          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard",
         );
       }
     } catch (error) {
@@ -149,14 +149,14 @@ export const AuthProvider = ({ children }) => {
   const deleteAddress = async (id) => {
     try {
       const { data } = await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/address/${id}`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/address/${id}`,
       );
 
       if (data?.success) {
-        router.push("/me");
+        router.push('/me');
       } else {
         toast.error(
-          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard"
+          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard",
         );
       }
     } catch (error) {
@@ -171,16 +171,16 @@ export const AuthProvider = ({ children }) => {
         newEmail,
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
-        }
+        },
       );
 
       if (data) {
-        router.push("/me");
+        router.push('/me');
       } else {
         toast.error(
-          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard"
+          "Il semblerait qu'une erreur soit survenue! Réessayer plus tard",
         );
       }
     } catch (error) {

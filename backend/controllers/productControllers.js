@@ -1,8 +1,8 @@
-import Product from "../models/product";
-import Category from "../models/category";
-import APIFilters from "../utils/APIFilters";
-import next from "next";
-import ErrorHandler from "../utils/errorHandler";
+import Product from '../models/product';
+import Category from '../models/category';
+import APIFilters from '../utils/APIFilters';
+import next from 'next';
+import ErrorHandler from '../utils/errorHandler';
 
 export const getProducts = async (req, res) => {
   try {
@@ -13,18 +13,17 @@ export const getProducts = async (req, res) => {
       .search()
       .filter();
 
-    let products = await apiFilters.query.populate("category");
+    let products = await apiFilters.query.populate('category');
     const filteredProductsCount = products.length;
 
     apiFilters.pagination(resPerPage);
 
-    products = await apiFilters.query.populate("category").clone();
+    products = await apiFilters.query.populate('category').clone();
 
     const categories = await Category.find();
 
     return res.status(200).json({
       categories,
-      productsCount,
       resPerPage,
       filteredProductsCount,
       products,
@@ -36,10 +35,10 @@ export const getProducts = async (req, res) => {
 
 export const getProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.query.id).populate("category");
+    const product = await Product.findById(req.query.id).populate('category');
 
     if (!product) {
-      return next(new ErrorHandler("Product not found", 404));
+      return next(new ErrorHandler('Product not found', 404));
     }
 
     const sameCategoryProducts = await Product.find({

@@ -8,15 +8,15 @@ import next from 'next';
 import ErrorHandler from '../utils/errorHandler';
 import { Resend } from 'resend';
 
-// const transporter = nodemailer.createTransport({
-//   host: "smtp.gmail.com",
-//   port: 465,
-//   secure: true, // true for port 465, false for other ports
-//   auth: {
-//     user: process.env.NODEMAILER_EMAIL_ACCOUNT,
-//     pass: process.env.NODEMAILER_PASSWORD_ACCOUNT,
-//   },
-// });
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // true for port 465, false for other ports
+  auth: {
+    user: process.env.NODEMAILER_EMAIL_ACCOUNT,
+    pass: process.env.NODEMAILER_PASSWORD_ACCOUNT,
+  },
+});
 
 export const registerUser = async (req, res) => {
   try {
@@ -121,41 +121,41 @@ export const sendEmail = async (req, res) => {
       message: req?.body?.message,
     };
 
-    console.log('API KEY');
-    console.log(process.env.RESEND_API_KEY);
+    // console.log('API KEY');
+    // console.log(process.env.RESEND_API_KEY);
 
-    console.log('We are Sending email');
+    // console.log('We are Sending email');
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    // const resend = new Resend(process.env.RESEND_API_KEY);
 
-    const { data, error } = await resend.emails.send({
-      from: user?.email,
-      to: process.env.RESEND_EMAIL_ACCOUNT,
-      subject: req.body.subject,
-      react: req.body.message,
-    });
-
-    console.log('data: ');
-    console.log(data);
-
-    console.log('error: ');
-    console.log(error);
-
-    await Contact.create(messageSent);
-
-    if (error) {
-      return res.status(400).json(error);
-    }
-
-    // transporter.sendMail({
-    //   to: process.env.NODEMAILER_EMAIL_ACCOUNT,
+    // const { data, error } = await resend.emails.send({
+    //   from: user?.email,
+    //   to: process.env.RESEND_EMAIL_ACCOUNT,
     //   subject: req.body.subject,
     //   html: req.body.message,
     // });
 
+    // console.log('data: ');
+    // console.log(data);
+
+    // console.log('error: ');
+    // console.log(error);
+
+    await Contact.create(messageSent);
+
+    // if (error) {
+    //   return res.status(400).json(error);
+    // }
+
+    transporter.sendMail({
+      from: user?.email,
+      to: process.env.NODEMAILER_EMAIL_ACCOUNT,
+      subject: req.body.subject,
+      html: req.body.message,
+    });
+
     return res.status(201).json({
       success: true,
-      data,
     });
   } catch (error) {
     console.log(error);

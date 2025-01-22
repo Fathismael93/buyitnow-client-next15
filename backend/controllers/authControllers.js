@@ -1,21 +1,24 @@
-import User from "../models/user";
-import { uploads } from "../utils/cloudinary";
-import fs from "fs";
-import nodemailer from "nodemailer";
-import bcrypt from "bcryptjs";
-import Contact from "../models/contact";
-import next from "next";
-import ErrorHandler from "../utils/errorHandler";
+import User from '../models/user';
+import { uploads } from '../utils/cloudinary';
+import fs from 'fs';
+import nodemailer from 'nodemailer';
+import bcrypt from 'bcryptjs';
+import Contact from '../models/contact';
+import next from 'next';
+import ErrorHandler from '../utils/errorHandler';
+import { Resend } from 'resend';
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // true for port 465, false for other ports
-  auth: {
-    user: process.env.NODEMAILER_EMAIL_ACCOUNT,
-    pass: process.env.NODEMAILER_PASSWORD_ACCOUNT,
-  },
-});
+// const transporter = nodemailer.createTransport({
+//   host: "smtp.gmail.com",
+//   port: 465,
+//   secure: true, // true for port 465, false for other ports
+//   auth: {
+//     user: process.env.NODEMAILER_EMAIL_ACCOUNT,
+//     pass: process.env.NODEMAILER_PASSWORD_ACCOUNT,
+//   },
+// });
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const registerUser = async (req, res) => {
   try {
@@ -42,7 +45,7 @@ export const updateProfile = async (req, res) => {
     const user = await User.findOne({ email: req.user.email });
 
     if (!user) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
     const newUserData = {
       name: req.body.name,
@@ -52,7 +55,7 @@ export const updateProfile = async (req, res) => {
 
     // IF USER IS UPDATING PROFILE PICTURE...
     if (req.files.length > 0) {
-      const uploader = async (path) => await uploads(path, "buyitnow/avatars");
+      const uploader = async (path) => await uploads(path, 'buyitnow/avatars');
 
       const file = req.files[0];
       const { path } = file;
@@ -67,7 +70,7 @@ export const updateProfile = async (req, res) => {
 
     const updatedUser = await User.findOneAndUpdate(
       { email: req.user.email },
-      newUserData
+      newUserData,
     );
 
     return res.status(200).json({
@@ -81,16 +84,16 @@ export const updateProfile = async (req, res) => {
 export const updatePassword = async (req, res, next) => {
   try {
     const user = await User.findOne({ email: req.user.email }).select(
-      "+password"
+      '+password',
     );
 
     const isPasswordMatched = await bcrypt.compare(
       req.body.currentPassword,
-      user.password
+      user.password,
     );
 
     if (!isPasswordMatched) {
-      return next(new ErrorHandler("Old password is incorrect", 400));
+      return next(new ErrorHandler('Old password is incorrect', 400));
     }
 
     user.password = req.body.newPassword;
@@ -111,7 +114,7 @@ export const sendEmail = async (req, res) => {
     const user = await User.findOne({ email: req.user.email });
 
     if (!user) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
 
     const messageSent = {
@@ -120,16 +123,28 @@ export const sendEmail = async (req, res) => {
       message: req?.body?.message,
     };
 
+    const { data, error } = await resend.emails.send({
+      from: user?.email,
+      to: process.env.RESEND_EMAIL_ACCOUNT,
+      subject: req.body.subject,
+      react: req.body.message,
+    });
+
     await Contact.create(messageSent);
 
-    transporter.sendMail({
-      to: process.env.NODEMAILER_EMAIL_ACCOUNT,
-      subject: req.body.subject,
-      html: req.body.message,
-    });
+    if (error) {
+      return res.status(400).json(error);
+    }
+
+    // transporter.sendMail({
+    //   to: process.env.NODEMAILER_EMAIL_ACCOUNT,
+    //   subject: req.body.subject,
+    //   html: req.body.message,
+    // });
 
     return res.status(201).json({
       success: true,
+      data,
     });
   } catch (error) {
     return res.json(error);

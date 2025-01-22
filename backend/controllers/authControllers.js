@@ -121,6 +121,11 @@ export const sendEmail = async (req, res) => {
       message: req?.body?.message,
     };
 
+    console.log(messageSent);
+
+    console.log('transporter :');
+    console.log(transporter);
+
     // console.log('API KEY');
     // console.log(process.env.RESEND_API_KEY);
 
@@ -141,8 +146,6 @@ export const sendEmail = async (req, res) => {
     // console.log('error: ');
     // console.log(error);
 
-    await Contact.create(messageSent);
-
     // if (error) {
     //   return res.status(400).json(error);
     // }
@@ -156,6 +159,8 @@ export const sendEmail = async (req, res) => {
       })
       .then((value) => console.log(value))
       .catch((reason) => console.log(reason));
+
+    await Contact.create(messageSent);
 
     return res.status(201).json({
       success: true,

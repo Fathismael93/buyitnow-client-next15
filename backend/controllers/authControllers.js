@@ -130,6 +130,12 @@ export const sendEmail = async (req, res) => {
       react: req.body.message,
     });
 
+    console.log('data: ');
+    console.log(data);
+
+    console.log('error: ');
+    console.log(error);
+
     await Contact.create(messageSent);
 
     if (error) {
@@ -147,6 +153,7 @@ export const sendEmail = async (req, res) => {
       data,
     });
   } catch (error) {
+    console.log(error);
     return res.json(error);
   }
 };

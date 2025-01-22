@@ -145,14 +145,14 @@ export const sendEmail = async (req, res) => {
     //   return res.status(400).json(error);
     // }
 
-    await transporter.sendMail({
-      from: user?.email,
-      to: process.env.NODEMAILER_EMAIL_ACCOUNT,
-      subject: req.body.subject,
-      html: req.body.message,
-    });
-
-    await Contact.create(messageSent);
+    await transporter
+      .sendMail({
+        from: user?.email,
+        to: process.env.NODEMAILER_EMAIL_ACCOUNT,
+        subject: req.body.subject,
+        html: req.body.message,
+      })
+      .then(async () => await Contact.create(messageSent));
 
     return res.status(201).json({
       success: true,

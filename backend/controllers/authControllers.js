@@ -121,11 +121,6 @@ export const sendEmail = async (req, res) => {
       message: req?.body?.message,
     };
 
-    console.log(messageSent);
-
-    console.log('transporter :');
-    console.log(transporter);
-
     // console.log('API KEY');
     // console.log(process.env.RESEND_API_KEY);
 
@@ -150,15 +145,12 @@ export const sendEmail = async (req, res) => {
     //   return res.status(400).json(error);
     // }
 
-    await transporter
-      .sendMail({
-        from: user?.email,
-        to: process.env.NODEMAILER_EMAIL_ACCOUNT,
-        subject: req.body.subject,
-        html: req.body.message,
-      })
-      .then((value) => console.log(value))
-      .catch((reason) => console.log(reason));
+    await transporter.sendMail({
+      from: user?.email,
+      to: process.env.NODEMAILER_EMAIL_ACCOUNT,
+      subject: req.body.subject,
+      html: req.body.message,
+    });
 
     await Contact.create(messageSent);
 

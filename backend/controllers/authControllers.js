@@ -18,8 +18,6 @@ import { Resend } from 'resend';
 //   },
 // });
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export const registerUser = async (req, res) => {
   try {
     const { name, phone, email, password } = req.body;
@@ -127,6 +125,8 @@ export const sendEmail = async (req, res) => {
     console.log(process.env.RESEND_API_KEY);
 
     console.log('We are Sending email');
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     const { data, error } = await resend.emails.send({
       from: user?.email,

@@ -123,6 +123,11 @@ export const sendEmail = async (req, res) => {
       message: req?.body?.message,
     };
 
+    console.log('API KEY');
+    console.log(process.env.RESEND_API_KEY);
+
+    console.log('We are Sending email');
+
     const { data, error } = await resend.emails.send({
       from: user?.email,
       to: process.env.RESEND_EMAIL_ACCOUNT,

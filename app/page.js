@@ -1,13 +1,14 @@
-import dynamic from "next/dynamic";
+import React from 'react';
+import dynamic from 'next/dynamic';
 
-import { getAllProducts } from "@/backend/utils/server-only-methods";
+import { getAllProducts } from '@/backend/utils/server-only-methods';
 
-const ListProducts = dynamic(() =>
-  import("@/components/products/ListProducts")
+const ListProducts = dynamic(
+  () => import('@/components/products/ListProducts'),
 );
 
 export const metadata = {
-  title: "Buy It Now",
+  title: 'Buy It Now',
 };
 
 const HomePage = async ({ searchParams }) => {

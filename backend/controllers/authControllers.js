@@ -6,7 +6,6 @@ import bcrypt from 'bcryptjs';
 import Contact from '../models/contact';
 import next from 'next';
 import ErrorHandler from '../utils/errorHandler';
-import { Resend } from 'resend';
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
@@ -121,30 +120,6 @@ export const sendEmail = async (req, res) => {
       message: req?.body?.message,
     };
 
-    // console.log('API KEY');
-    // console.log(process.env.RESEND_API_KEY);
-
-    // console.log('We are Sending email');
-
-    // const resend = new Resend(process.env.RESEND_API_KEY);
-
-    // const { data, error } = await resend.emails.send({
-    //   from: user?.email,
-    //   to: process.env.RESEND_EMAIL_ACCOUNT,
-    //   subject: req.body.subject,
-    //   html: req.body.message,
-    // });
-
-    // console.log('data: ');
-    // console.log(data);
-
-    // console.log('error: ');
-    // console.log(error);
-
-    // if (error) {
-    //   return res.status(400).json(error);
-    // }
-
     await transporter
       .sendMail({
         from: user?.email,
@@ -158,7 +133,6 @@ export const sendEmail = async (req, res) => {
       success: true,
     });
   } catch (error) {
-    console.log(error);
     return res.json(error);
   }
 };

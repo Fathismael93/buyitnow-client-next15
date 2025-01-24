@@ -36,8 +36,7 @@ export const getProducts = async (req, res) => {
 
 export const getProduct = async (req, res) => {
   try {
-    const id = null
-    const product = await Product.findById(id).populate('category');
+    const product = await Product.findById().populate('category');
 
     if (!product) {
       return next(new ErrorHandler('Product not found', 404));

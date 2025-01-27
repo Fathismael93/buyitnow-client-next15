@@ -19,9 +19,15 @@ export const getAllProducts = async (searchParams) => {
 
   const searchQuery = queryString.stringify(urlParams);
 
-  const { data } = await axios.get(
+  // const { data } = await axios.get(
+  //   `${process.env.NEXT_PUBLIC_API_URL}/api/products?${searchQuery}`,
+  // );
+
+  const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/products?${searchQuery}`,
   );
+
+  const data = await res.json();
 
   return data;
 };
@@ -33,9 +39,15 @@ export const getProductDetails = async (id) => {
     return notFound();
   }
 
-  const { data } = await axios.get(
+  // const { data } = await axios.get(
+  //   `${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`,
+  // );
+
+  const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`,
   );
+
+  const data = await res.json();
 
   if (data === undefined) {
     return notFound();

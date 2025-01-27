@@ -139,6 +139,8 @@ export const AuthProvider = ({ children }) => {
 
       const data = await res.json();
 
+      console.log(data);
+
       if (data?.address) {
         setUpdated(true);
         router.replace(`/address/${id}`);

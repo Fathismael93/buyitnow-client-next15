@@ -68,8 +68,11 @@ export const getAddress = async (req, res) => {
 
 export const updateAddress = async (req, res) => {
   try {
+    console.log('Updating address');
     const addressId = req.query.id;
     const newAddress = req.body;
+
+    console.log(newAddress);
 
     const oldAddress = await Address.findById(addressId);
 
@@ -80,6 +83,8 @@ export const updateAddress = async (req, res) => {
     const address = await Address.findByIdAndUpdate(addressId, newAddress, {
       new: true,
     });
+
+    console.log(address);
 
     return res.status(200).json({
       address,

@@ -164,9 +164,14 @@ export const AuthProvider = ({ children }) => {
 
   const deleteAddress = async (id) => {
     try {
-      const { data } = await axios.delete(
+      const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/address/${id}`,
+        {
+          method: 'DELETE',
+        },
       );
+
+      const data = await res.json();
 
       if (data?.success) {
         router.push('/me');

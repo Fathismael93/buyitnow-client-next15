@@ -86,10 +86,14 @@ export const updateAddress = async (req, res) => {
 
     newAddress.user = oldAddress.user;
 
+    console.log('newAddress after user added: ');
+    console.log(newAddress);
+
     const address = await Address.findByIdAndUpdate(addressId, newAddress, {
       new: true,
     });
 
+    console.log('address updated: ');
     console.log(address);
 
     return res.status(200).json({

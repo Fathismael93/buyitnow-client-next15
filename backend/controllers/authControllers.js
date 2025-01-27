@@ -84,8 +84,10 @@ export const updatePassword = async (req, res, next) => {
       '+password',
     );
 
+    const currentPassword = JSON.parse(req.body.currentPassword);
+
     const isPasswordMatched = await bcrypt.compare(
-      req.body.currentPassword,
+      currentPassword,
       user.password,
     );
 
@@ -93,11 +95,11 @@ export const updatePassword = async (req, res, next) => {
       return next(new ErrorHandler('Old password is incorrect', 400));
     }
 
-    user.password = req.body.newPassword;
+    user.password = JSON.parse(req.body.newPassword);
     await user.save();
 
     return res.status(200).json({
-      sucess: true,
+      success: true,
     });
   } catch (error) {
     return res.json(error);
@@ -114,18 +116,21 @@ export const sendEmail = async (req, res) => {
       return next(new ErrorHandler('User not found', 404));
     }
 
+    const subject = JSON.parse(req?.body?.subject);
+    const message = JSON.parse(req?.body?.message);
+
     const messageSent = {
       from: user?._id,
-      subject: req?.body?.subject,
-      message: req?.body?.message,
+      subject,
+      message,
     };
 
     await transporter
       .sendMail({
         from: user?.email,
         to: process.env.NODEMAILER_EMAIL_ACCOUNT,
-        subject: req.body.subject,
-        html: req.body.message,
+        subject: subject,
+        html: message,
       })
       .then(async () => await Contact.create(messageSent));
 

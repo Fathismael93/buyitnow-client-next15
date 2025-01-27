@@ -90,16 +90,21 @@ export const AuthProvider = ({ children }) => {
 
   const updatePassword = async ({ currentPassword, newPassword }) => {
     try {
-      const { data } = await axios.put(
+      const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/me/update_password`,
         {
-          currentPassword,
-          newPassword,
-          user,
+          method: 'PUT',
+          body: JSON.stringify({
+            currentPassword,
+            newPassword,
+            user,
+          }),
         },
       );
 
-      if (data?.sucess) {
+      const data = await res.json();
+
+      if (data?.success) {
         toast.success('Password updated with success');
         router.replace('/me');
       }
@@ -110,15 +115,15 @@ export const AuthProvider = ({ children }) => {
 
   const addNewAddress = async (address) => {
     try {
-      const { data } = await axios.post(
+      const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/address`,
-        address,
         {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          method: 'POST',
+          body: JSON.stringify(address),
         },
       );
+
+      const data = await res.json();
 
       if (data) {
         router.push('/me');
@@ -177,15 +182,12 @@ export const AuthProvider = ({ children }) => {
 
   const sendEmail = async (newEmail) => {
     try {
-      const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/emails`,
-        newEmail,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/emails`, {
+        method: 'POST',
+        body: JSON.stringify(newEmail),
+      });
+
+      const data = await res.json();
 
       if (data) {
         router.push('/me');

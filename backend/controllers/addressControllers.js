@@ -13,9 +13,11 @@ export const newAddress = async (req, res) => {
       return next(new ErrorHandler('User not found', 404));
     }
 
-    req.body.user = user._id;
+    const newAddress = JSON.parse(req.body);
 
-    const address = await Address.create(req.body);
+    newAddress.user = user._id;
+
+    const address = await Address.create(newAddress);
 
     return res.status(201).json({
       address,

@@ -70,7 +70,7 @@ export const updateAddress = async (req, res) => {
   try {
     console.log('Updating address');
     const addressId = req.query.id;
-    const newAddress = req.body;
+    const newAddress = JSON.parse(req.body);
 
     console.log('newAddress: ');
     console.log(newAddress);
@@ -84,8 +84,6 @@ export const updateAddress = async (req, res) => {
       return next(new ErrorHandler('Address not found', 404));
     }
 
-    newAddress.user = oldAddress.user;
-
     console.log('newAddress after user added: ');
     console.log(newAddress);
 
@@ -93,7 +91,7 @@ export const updateAddress = async (req, res) => {
       new: true,
     });
 
-    console.log('address updated: ');
+    console.log('address: ');
     console.log(address);
 
     return res.status(200).json({

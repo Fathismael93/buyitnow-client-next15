@@ -17,15 +17,20 @@ export const AuthProvider = ({ children }) => {
 
   const registerUser = async ({ name, phone, email, password }) => {
     try {
-      const { data } = await axios.post(
+      const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`,
         {
-          name,
-          phone,
-          email,
-          password,
+          method: 'POST',
+          body: JSON.stringify({
+            name,
+            phone,
+            email,
+            password,
+          }),
         },
       );
+
+      const data = await res.json();
 
       if (data?.user) {
         router.push('/login');
@@ -138,8 +143,6 @@ export const AuthProvider = ({ children }) => {
       );
 
       const data = await res.json();
-
-      console.log(data);
 
       if (data?.address) {
         setUpdated(true);

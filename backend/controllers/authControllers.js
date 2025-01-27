@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
 
 export const registerUser = async (req, res) => {
   try {
-    const { name, phone, email, password } = req.body;
+    const { name, phone, email, password } = JSON.parse(req.body);
     const user = await User.create({
       name,
       phone,

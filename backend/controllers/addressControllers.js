@@ -68,31 +68,18 @@ export const getAddress = async (req, res) => {
 
 export const updateAddress = async (req, res) => {
   try {
-    console.log('Updating address');
     const addressId = req.query.id;
     const newAddress = JSON.parse(req.body);
 
-    console.log('newAddress: ');
-    console.log(newAddress);
-
     const oldAddress = await Address.findById(addressId);
-
-    console.log('oldAddress: ');
-    console.log(oldAddress);
 
     if (!oldAddress) {
       return next(new ErrorHandler('Address not found', 404));
     }
 
-    console.log('newAddress after user added: ');
-    console.log(newAddress);
-
     const address = await Address.findByIdAndUpdate(addressId, newAddress, {
       new: true,
     });
-
-    console.log('address: ');
-    console.log(address);
 
     return res.status(200).json({
       address,

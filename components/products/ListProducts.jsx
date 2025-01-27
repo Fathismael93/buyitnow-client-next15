@@ -9,12 +9,15 @@ const CustomPagination = dynamic(
   () => import('@/components/layouts/CustomPagination'),
 );
 
-const Filters = dynamic(() => import('../layouts/Filters'), {
-  loading: () => <Loading />,
-});
-const ProductItem = dynamic(() => import('./ProductItem'), {
-  loading: () => <Loading />,
-});
+import Filters from '../layouts/Filters';
+import ProductItem from './ProductItem';
+
+// const Filters = dynamic(() => import('../layouts/Filters'), {
+//   loading: () => <Loading />,
+// });
+// const ProductItem = dynamic(() => import('./ProductItem'), {
+//   loading: () => <Loading />,
+// });
 
 import { arrayHasData } from '@/helpers/helpers';
 import { useContext, useEffect } from 'react';

@@ -80,32 +80,18 @@ export const updateProfile = async (req, res) => {
 
 export const updatePassword = async (req, res, next) => {
   try {
-    console.log('We are updating password');
-
     const user = await User.findOne({ email: req.user.email }).select(
       '+password',
     );
 
     const body = JSON.parse(req.body);
 
-    console.log('User connected');
-    console.log(user);
-
-    console.log('Body of the request');
-    console.log(req.body);
-
     const currentPassword = body.currentPassword;
-
-    console.log('currentPassword: ');
-    console.log(currentPassword);
 
     const isPasswordMatched = await bcrypt.compare(
       currentPassword,
       user.password,
     );
-
-    console.log('isPasswordMatched: ');
-    console.log(isPasswordMatched);
 
     if (!isPasswordMatched) {
       return next(new ErrorHandler('Old password is incorrect', 400));
@@ -133,6 +119,11 @@ export const sendEmail = async (req, res) => {
     if (!user) {
       return next(new ErrorHandler('User not found', 404));
     }
+
+    const body = JSON.parse(req.body);
+
+    console.log('body: ');
+    console.log(body);
 
     const subject = JSON.parse(req?.body?.subject);
     const message = JSON.parse(req?.body?.message);

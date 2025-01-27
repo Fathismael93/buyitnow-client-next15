@@ -84,6 +84,8 @@ export const updateAddress = async (req, res) => {
       return next(new ErrorHandler('Address not found', 404));
     }
 
+    newAddress.user = oldAddress.user;
+
     const address = await Address.findByIdAndUpdate(addressId, newAddress, {
       new: true,
     });

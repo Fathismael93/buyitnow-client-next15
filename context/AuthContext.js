@@ -43,7 +43,8 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
 
-      const { data } = await axios.get('/api/auth/session?update=');
+      const res = await fetch('/api/auth/session?update=');
+      const data = await res.json();
 
       if (data?.user) {
         setUser(data.user);
@@ -128,10 +129,15 @@ export const AuthProvider = ({ children }) => {
 
   const updateAddress = async (id, address) => {
     try {
-      const { data } = await axios.put(
+      const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/address/${id}`,
-        address,
+        {
+          method: 'PUT',
+          body: JSON.stringify(address),
+        },
       );
+
+      const data = await res.json();
 
       if (data?.address) {
         setUpdated(true);

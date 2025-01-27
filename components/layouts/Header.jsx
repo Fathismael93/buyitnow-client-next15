@@ -10,17 +10,6 @@ import { useSession } from 'next-auth/react';
 import AuthContext from '@/context/AuthContext';
 
 const Header = () => {
-  /* ***********  TESTING CODE  *********** */
-
-  // const [user, setUser] = useState({
-  //   name: 'Fathi Ahmed',
-  //   email: 'fathismael@gmail.com',
-  // });
-  // const [loading, setLoading] = useState(false);
-  // const cartCount = 5;
-
-  /* ***********  REAL CODE   *********** */
-
   const { user, setLoading, setUser } = useContext(AuthContext);
 
   const { data } = useSession();

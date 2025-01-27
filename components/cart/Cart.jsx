@@ -3,8 +3,6 @@
 import React, { useContext, useEffect } from 'react';
 import Link from 'next/link';
 
-import { Virtuoso } from 'react-virtuoso';
-
 import CartContext from '@/context/CartContext';
 import { DECREASE, INCREASE } from '@/helpers/constants';
 import { useRouter } from 'next/navigation';
@@ -12,31 +10,6 @@ import ItemCart from './components/ItemCart';
 import Loading from '@/app/loading';
 
 const Cart = () => {
-  /* ***********  TESTING CODE  *********** */
-
-  // const cartCount = 1;
-
-  // const cart = [
-  //   {
-  //     _id: 1,
-  //     product: {
-  //       _id: 1,
-  //       name: 'Product Test',
-  //       category: {
-  //         categoryName: 'Electronics',
-  //       },
-  //       description: 'Product to test For testing purpose',
-  //       stock: 2,
-  //       price: 60,
-  //     },
-  //     quantity: 2,
-  //   },
-  // ];
-
-  // const amount = 120;
-
-  /* ***********  REAL CODE   *********** */
-
   const {
     loading,
     updateCart,
@@ -98,24 +71,6 @@ const Cart = () => {
             <div className="flex flex-col md:flex-row gap-4">
               <main className="md:w-3/4">
                 <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
-                  {/* WITH VIRTUALIZED COMPONENT */}
-
-                  {/* <Virtuoso
-                    className="!h-[1000px] md:!h-[500px] lg:!h-[570px] "
-                    data={cart}
-                    itemContent={(_, cartItem) => (
-                      <ItemCart
-                        key={cartItem._id}
-                        cartItem={cartItem}
-                        deleteItemFromCart={deleteItemFromCart}
-                        decreaseQty={decreaseQty}
-                        increaseQty={increaseQty}
-                      />
-                    )}
-                  /> */}
-
-                  {/* WITHOUT VIRTUALIZED COMPONENT */}
-
                   {cart?.map((cartItem) => (
                     <ItemCart
                       key={cartItem._id}

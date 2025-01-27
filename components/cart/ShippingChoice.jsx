@@ -5,7 +5,6 @@ import CartContext from '@/context/CartContext';
 import Link from 'next/link';
 import React, { useContext, useEffect } from 'react';
 const BreadCrumbs = dynamic(() => import('@/components/layouts/BreadCrumbs'));
-import { Virtuoso } from 'react-virtuoso';
 import ItemShipping from './components/ItemShipping';
 import OrderContext from '@/context/OrderContext';
 import { useRouter } from 'next/navigation';
@@ -115,17 +114,6 @@ const ShippingChoice = ({ addresses, payments, deliveryPrice }) => {
                 <hr className="my-4" />
 
                 <h2 className="text-lg font-semibold mb-3">Items in cart</h2>
-                {/* WITH VIRTUALIZED COMPONENT */}
-
-                {/* <Virtuoso
-                  className="!h-[600px] md:!h-[600px] lg:!h-[450px] "
-                  data={cart}
-                  itemContent={(_, item) => (
-                    <ItemShipping key={item._id} item={item} />
-                  )}
-                /> */}
-
-                {/* WITHOUT VIRTUALIZED COMPONENT */}
 
                 {cart?.map((item) => (
                   <ItemShipping key={item._id} item={item} />

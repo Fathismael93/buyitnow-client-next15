@@ -2,22 +2,18 @@
 
 import React from 'react';
 import dynamic from 'next/dynamic';
-import { Virtuoso } from 'react-virtuoso';
 import Loading from '@/app/loading';
 
 const CustomPagination = dynamic(
   () => import('@/components/layouts/CustomPagination'),
 );
 
-import Filters from '../layouts/Filters';
-import ProductItem from './ProductItem';
-
-// const Filters = dynamic(() => import('../layouts/Filters'), {
-//   loading: () => <Loading />,
-// });
-// const ProductItem = dynamic(() => import('./ProductItem'), {
-//   loading: () => <Loading />,
-// });
+const Filters = dynamic(() => import('../layouts/Filters'), {
+  loading: () => <Loading />,
+});
+const ProductItem = dynamic(() => import('./ProductItem'), {
+  loading: () => <Loading />,
+});
 
 import { arrayHasData } from '@/helpers/helpers';
 import { useContext, useEffect } from 'react';
@@ -50,16 +46,6 @@ const ListProducts = ({ data }) => {
             </div>
           ) : (
             <main className="md:w-2/3 lg:w-3/4 px-3">
-              {/* WITH VIRTUALIZED COMPONENT */}
-
-              {/* <Virtuoso
-                className="!h-[1440px] md:!h-[420px] lg:!h-[415px] xl:!h-[510px]"
-                data={data?.products}
-                itemContent={(_, product) => <ProductItem product={product} />}
-              /> */}
-
-              {/* WITHOUT VIRTUALIZED COMPONENT */}
-
               {data?.products?.map((product) => (
                 <ProductItem key={product?._id} product={product} />
               ))}

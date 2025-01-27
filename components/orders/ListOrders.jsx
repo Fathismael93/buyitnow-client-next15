@@ -4,7 +4,6 @@ import { arrayHasData } from '@/helpers/helpers';
 import dynamic from 'next/dynamic';
 import Loading from '@/app/loading';
 
-import { Virtuoso } from 'react-virtuoso';
 import React, { useContext, useEffect } from 'react';
 import OrderContext from '@/context/OrderContext';
 
@@ -32,18 +31,6 @@ const ListOrders = ({ orders }) => {
         </p>
       ) : (
         <>
-          {/* WITH VIRTUALIZED COMPONENT */}
-
-          {/* <Virtuoso
-            className="!h-[1200px] sm:!h-[1000px] md:!h-[650px] lg:!h-[500px] "
-            data={orders?.orders}
-            itemContent={(_, order) => (
-              <OrderItem key={order._id} order={order} />
-            )}
-          /> */}
-
-          {/* WITHOUT VIRTUALIZED COMPONENT */}
-
           {orders?.orders?.map((order) => (
             <OrderItem key={order._id} order={order} />
           ))}

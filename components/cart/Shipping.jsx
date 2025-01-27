@@ -7,7 +7,6 @@ import React, { useCallback, useContext, useEffect } from 'react';
 import { toast } from 'react-toastify';
 const BreadCrumbs = dynamic(() => import('@/components/layouts/BreadCrumbs'));
 import { useRouter } from 'next/navigation';
-import { Virtuoso } from 'react-virtuoso';
 import OrderContext from '@/context/OrderContext';
 import { arrayHasData } from '@/helpers/helpers';
 import ItemShipping from './components/ItemShipping';
@@ -146,17 +145,6 @@ const Shipping = () => {
                 <hr className="my-4" />
 
                 <h2 className="text-lg font-semibold mb-3">Items in cart</h2>
-                {/* WITH VIRTUALIZED COMPONENT */}
-
-                {/* <Virtuoso
-                  className="!h-[600px] md:!h-[600px] lg:!h-[450px] "
-                  data={cart}
-                  itemContent={(_, item) => (
-                    <ItemShipping key={item._id} item={item} />
-                  )}
-                /> */}
-
-                {/* WITHOUT VIRTUALIZED COMPONENT */}
 
                 {cart?.map((item) => (
                   <ItemShipping key={item._id} item={item} />

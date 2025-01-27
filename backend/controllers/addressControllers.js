@@ -72,9 +72,13 @@ export const updateAddress = async (req, res) => {
     const addressId = req.query.id;
     const newAddress = req.body;
 
+    console.log('newAddress: ');
     console.log(newAddress);
 
     const oldAddress = await Address.findById(addressId);
+
+    console.log('oldAddress: ');
+    console.log(oldAddress);
 
     if (!oldAddress) {
       return next(new ErrorHandler('Address not found', 404));

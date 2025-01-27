@@ -86,16 +86,24 @@ export const updatePassword = async (req, res, next) => {
 
     const currentPassword = JSON.parse(req.body.currentPassword);
 
+    console.log('currentPassword: ');
+    console.log(currentPassword);
+
     const isPasswordMatched = await bcrypt.compare(
       currentPassword,
       user.password,
     );
 
+    console.log('isPasswordMatched: ');
+    console.log(isPasswordMatched);
+
     if (!isPasswordMatched) {
       return next(new ErrorHandler('Old password is incorrect', 400));
     }
 
-    user.password = JSON.parse(req.body.newPassword);
+    const newPassword = JSON.parse(req.body.newPassword);
+
+    user.password = newPassword;
     await user.save();
 
     return res.status(200).json({

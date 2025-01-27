@@ -89,6 +89,9 @@ export const updatePassword = async (req, res, next) => {
     console.log('User connected');
     console.log(user);
 
+    console.log('Body of the request');
+    console.log(req.body);
+
     const currentPassword = JSON.parse(req.body.currentPassword);
 
     console.log('currentPassword: ');

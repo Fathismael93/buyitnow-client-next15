@@ -109,6 +109,7 @@ export const AuthProvider = ({ children }) => {
         router.replace('/me');
       }
     } catch (error) {
+      toast.error(error?.response?.data?.message);
       setError(error?.response?.data?.message);
     }
   };

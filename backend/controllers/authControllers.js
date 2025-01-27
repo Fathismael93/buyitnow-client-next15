@@ -80,9 +80,14 @@ export const updateProfile = async (req, res) => {
 
 export const updatePassword = async (req, res, next) => {
   try {
+    console.log('We are updating password');
+
     const user = await User.findOne({ email: req.user.email }).select(
       '+password',
     );
+
+    console.log('User connected');
+    console.log(user);
 
     const currentPassword = JSON.parse(req.body.currentPassword);
 

@@ -86,13 +86,15 @@ export const updatePassword = async (req, res, next) => {
       '+password',
     );
 
+    const body = JSON.parse(req.body);
+
     console.log('User connected');
     console.log(user);
 
     console.log('Body of the request');
     console.log(req.body);
 
-    const currentPassword = JSON.parse(req.body.currentPassword);
+    const currentPassword = body.currentPassword;
 
     console.log('currentPassword: ');
     console.log(currentPassword);
@@ -109,7 +111,7 @@ export const updatePassword = async (req, res, next) => {
       return next(new ErrorHandler('Old password is incorrect', 400));
     }
 
-    const newPassword = JSON.parse(req.body.newPassword);
+    const newPassword = body.newPassword;
 
     user.password = newPassword;
     await user.save();

@@ -19,10 +19,6 @@ export const getAllProducts = async (searchParams) => {
 
   const searchQuery = queryString.stringify(urlParams);
 
-  // const { data } = await axios.get(
-  //   `${process.env.NEXT_PUBLIC_API_URL}/api/products?${searchQuery}`,
-  // );
-
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/products?${searchQuery}`,
   );
@@ -38,10 +34,6 @@ export const getProductDetails = async (id) => {
   if (id === undefined || id === null || !isValidId) {
     return notFound();
   }
-
-  // const { data } = await axios.get(
-  //   `${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`,
-  // );
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`,
@@ -63,14 +55,13 @@ export const getAllAddresses = async (page) => {
       '__Secure-next-auth.session-token',
     );
 
-    const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/address`,
-      {
-        headers: {
-          Cookie: `${nextAuthSessionToken?.name}=${nextAuthSessionToken?.value}`,
-        },
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/address`, {
+      headers: {
+        Cookie: `${nextAuthSessionToken?.name}=${nextAuthSessionToken?.value}`,
       },
-    );
+    });
+
+    const data = await res.json();
 
     if (page === 'profile') {
       delete data?.paymentTypes;
@@ -90,7 +81,7 @@ export const getSingleAddress = async (id) => {
   const cookieName = getCookieName();
   const nextAuthSessionToken = nextCookies.get(cookieName);
 
-  const { data } = await axios.get(
+  const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/address/${id}`,
     {
       headers: {
@@ -98,6 +89,8 @@ export const getSingleAddress = async (id) => {
       },
     },
   );
+
+  const data = await res.json();
 
   if (data === undefined) {
     return notFound();
@@ -119,7 +112,7 @@ export const getAllOrders = async (searchParams) => {
 
   const searchQuery = queryString.stringify(urlParams);
 
-  const { data } = await axios.get(
+  const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/orders/me?${searchQuery}`,
     {
       headers: {
@@ -127,6 +120,8 @@ export const getAllOrders = async (searchParams) => {
       },
     },
   );
+
+  const data = await res.json();
 
   return data;
 };

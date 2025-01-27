@@ -122,11 +122,8 @@ export const sendEmail = async (req, res) => {
 
     const body = JSON.parse(req.body);
 
-    console.log('body: ');
-    console.log(body);
-
-    const subject = JSON.parse(req?.body?.subject);
-    const message = JSON.parse(req?.body?.message);
+    const subject = body?.subject;
+    const message = body?.message;
 
     const messageSent = {
       from: user?._id,

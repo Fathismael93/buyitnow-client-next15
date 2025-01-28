@@ -90,7 +90,7 @@ const Cart = () => {
                       title="total units"
                     >
                       <span>Total Units:</span>
-                      <span className="text-green-500">
+                      <span className="text-green-800">
                         {cart?.reduce((acc, item) => acc + item?.quantity, 0)}{' '}
                         (Units)
                       </span>

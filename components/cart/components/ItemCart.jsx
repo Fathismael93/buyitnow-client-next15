@@ -43,7 +43,7 @@ const ItemCart = ({
                   {cartItem?.product?.name}
                 </Link>
               </p>
-              <p className="mt-1 text-gray-400" title="stock left">
+              <p className="mt-1 text-gray-800" title="stock left">
                 {' '}
                 Stock: {cartItem?.product?.stock} items
               </p>
@@ -87,7 +87,7 @@ const ItemCart = ({
             >
               ${(cartItem?.product?.price * cartItem?.quantity).toFixed(2)}
             </p>
-            <small className="text-gray-400" data-testid="unit price per item">
+            <small className="text-gray-800" data-testid="unit price per item">
               {' '}
               ${cartItem?.product?.price} / per item{' '}
             </small>

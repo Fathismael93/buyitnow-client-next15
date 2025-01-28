@@ -77,7 +77,7 @@ const Header = () => {
                   <Image
                     data-testid="profile image"
                     alt="profile image"
-                    className="w-10 h-10 rounded-full"
+                    className="w-15 h-10 rounded-full"
                     src={
                       user?.avatar ? user?.avatar?.url : '/images/default.png'
                     }

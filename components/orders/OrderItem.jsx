@@ -12,6 +12,8 @@ const OrderedProduct = dynamic(() => import('./OrderedProduct'), {
 const OrderItem = ({ order }) => {
   const { deliveryPrice } = useContext(OrderContext);
 
+  console.log(order);
+
   return (
     <article className="p-3 lg:p-5 mb-5 bg-white border border-blue-600 rounded-md">
       <header className="lg:flex justify-between mb-4">
@@ -46,8 +48,8 @@ const OrderItem = ({ order }) => {
           <p className="text-gray-400 mb-1">Person</p>
           <ul className="text-gray-600">
             <li>{order?.user?.name}</li>
-            <li>Phone: {order?.shippingInfo?.phoneNo}</li>
-            <li>Email: {order?.user?.email}</li>
+            <li>{order?.shippingInfo?.phoneNo}</li>
+            <li>{order?.user?.email}</li>
           </ul>
         </div>
         {order?.shippingInfo !== undefined && (

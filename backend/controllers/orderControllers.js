@@ -53,14 +53,8 @@ export const webhook = async (req, res) => {
       return next(new ErrorHandler('User not found', 404));
     }
 
-    console.log('Request in Body');
-    console.log(req);
-
     // GETTING ORDER DATA FROM THE REQUEST BODY
     const orderData = JSON.parse(req?.body);
-
-    console.log('orderData: ');
-    console.log(orderData);
 
     orderData.user = user?._id;
 

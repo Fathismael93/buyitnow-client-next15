@@ -83,7 +83,7 @@ const OrderItem = ({ order }) => {
           </ul>
         </div>
         <div>
-          <p className="text-blue-400 mb-1">Payment</p>
+          <p className="text-blue-700 mb-1">Payment</p>
           <ul className="text-gray-600">
             <li>
               <span className="font-bold">Mode:</span>{' '}

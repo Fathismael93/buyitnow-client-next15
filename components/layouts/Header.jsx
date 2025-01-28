@@ -43,11 +43,15 @@ const Header = () => {
           <div className="flex items-center space-x-2 ml-auto">
             {user && (
               <Link
+                alt="cart link"
                 data-testid="cart link"
                 href="/cart"
                 className="px-3 py-2 inline-block text-center text-gray-700 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-blue-100 hover:border-gray-300"
               >
-                <i className="text-gray-400 w-5 fa fa-shopping-cart"></i>
+                <i
+                  className="text-gray-400 w-5 fa fa-shopping-cart"
+                  alt="cart icon"
+                ></i>
                 <span className="hidden lg:inline ml-1">
                   Cart (
                   <b>

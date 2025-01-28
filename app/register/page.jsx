@@ -6,6 +6,10 @@ const Register = dynamic(() => import('@/components/auth/Register'), {
   loading: () => <Loading />,
 });
 
+export const metadata = {
+  title: 'Buy It Now - Registration',
+};
+
 const RegisterPage = () => {
   return <Register />;
 };

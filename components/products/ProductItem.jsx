@@ -77,9 +77,9 @@ const ProductItem = ({ product }) => {
               <p className="mb-1" title="Stock">
                 <span className="font-semibold mr-3">Stock: </span>
                 {inStock ? (
-                  <span className="text-green-500">In Stock</span>
+                  <span className="text-green-700">In Stock</span>
                 ) : (
-                  <span className="text-red-500">Out of Stock</span>
+                  <span className="text-red-700">Out of Stock</span>
                 )}
               </p>
             </div>

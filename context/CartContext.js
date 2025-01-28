@@ -1,7 +1,6 @@
 'use client';
 
 import { DECREASE } from '@/helpers/constants';
-import { useRouter } from 'next/navigation';
 import React, { createContext, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
@@ -9,13 +8,10 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [cart, setCart] = useState([]);
   const [cartCount, setCartCount] = useState(0);
   const [checkoutInfo, setCheckoutInfo] = useState(null);
   const [orderInfo, setOrderInfo] = useState(null);
-
-  const router = useRouter();
 
   useEffect(() => {
     setCartToState();
@@ -31,7 +27,7 @@ export const CartProvider = ({ children }) => {
         setCartCount(data?.cartCount);
       }
     } catch (error) {
-      setError(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message);
     }
   };
 
@@ -55,7 +51,7 @@ export const CartProvider = ({ children }) => {
         );
       }
     } catch (error) {
-      setError(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message);
     }
   };
 
@@ -85,7 +81,7 @@ export const CartProvider = ({ children }) => {
           setLoading(false);
         }
       } catch (error) {
-        setError(error?.response?.data?.message);
+        toast.error(error?.response?.data?.message);
         setLoading(false);
       }
     }
@@ -115,7 +111,7 @@ export const CartProvider = ({ children }) => {
         setLoading(false);
       }
     } catch (error) {
-      setError(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message);
       setLoading(false);
     }
   };

@@ -48,7 +48,7 @@ const OrderItem = ({ order }) => {
           <p className="text-gray-400 mb-1">Person</p>
           <ul className="text-gray-600">
             <li>{order?.user?.name}</li>
-            <li>{order?.shippingInfo?.phoneNo}</li>
+            <li>{order?.user?.phone}</li>
             <li>{order?.user?.email}</li>
           </ul>
         </div>

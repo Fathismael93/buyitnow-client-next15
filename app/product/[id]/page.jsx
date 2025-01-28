@@ -11,6 +11,10 @@ const ProductDetails = dynamic(
   },
 );
 
+export const metadata = {
+  title: 'Single Product',
+};
+
 const ProductDetailsPage = async ({ params }) => {
   const data = await getProductDetails((await params)?.id);
 

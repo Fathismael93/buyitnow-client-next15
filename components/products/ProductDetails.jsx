@@ -115,7 +115,7 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
                   </h2>
 
                   <div className="flex flex-wrap items-center space-x-2 mb-2">
-                    <span className="text-green-500">Verified</span>
+                    <span className="text-green-700">Verified</span>
                   </div>
 
                   <p className="mb-4 font-semibold text-xl">
@@ -140,9 +140,9 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
                       {' '}
                       <b className="font-medium w-36 inline-block">Stock</b>
                       {inStock ? (
-                        <span className="text-green-500">In Stock</span>
+                        <span className="text-green-700">In Stock</span>
                       ) : (
-                        <span className="text-red-500">Out of Stock</span>
+                        <span className="text-red-700">Out of Stock</span>
                       )}
                     </li>
                     <li className="mb-1">
@@ -183,9 +183,9 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
                     style={{ objectFit: 'fill' }}
                   />
                   <div className="mt-3 align-bottom">
-                    <h3 className="font-semibold">
+                    <h2 className="font-semibold">
                       {product?.name?.substring(0, 15)}...
-                    </h3>
+                    </h2>
                     <h3>${product?.price}</h3>
                   </div>
                 </Link>

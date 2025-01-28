@@ -14,7 +14,7 @@ export default function UserLayout({ children }) {
     <>
       <section className="flex flex-row py-3 sm:py-7 bg-blue-100">
         <div className="container max-w-screen-xl mx-auto px-4">
-          <h2 className="font-medium text-2xl">{user?.name?.toUpperCase()}</h1>
+          <h2 className="font-medium text-2xl">{user?.name?.toUpperCase()}</h2>
         </div>
         <div className="md:hidden mx-4">
           <button

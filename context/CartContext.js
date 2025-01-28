@@ -1,7 +1,7 @@
 'use client';
 
 import { DECREASE } from '@/helpers/constants';
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
 import { toast } from 'react-toastify';
 
 const CartContext = createContext();
@@ -12,10 +12,6 @@ export const CartProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0);
   const [checkoutInfo, setCheckoutInfo] = useState(null);
   const [orderInfo, setOrderInfo] = useState(null);
-
-  useEffect(() => {
-    setCartToState();
-  }, []);
 
   const setCartToState = async () => {
     try {

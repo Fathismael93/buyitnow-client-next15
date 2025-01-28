@@ -11,16 +11,16 @@ import AuthContext from '@/context/AuthContext';
 
 const Header = () => {
   const { user, setLoading, setUser } = useContext(AuthContext);
+  const { setCartToState, cartCount } = useContext(CartContext);
 
   const { data } = useSession();
 
   useEffect(() => {
     if (data) {
       setUser(data?.user);
+      setCartToState();
     }
   }, [data]);
-
-  const { cartCount } = useContext(CartContext);
 
   return (
     <header className="bg-white py-2 border-b">

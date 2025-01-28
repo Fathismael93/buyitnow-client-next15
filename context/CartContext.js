@@ -10,6 +10,7 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [cart, setCart] = useState([]);
   const [cartCount, setCartCount] = useState(0);
   const [checkoutInfo, setCheckoutInfo] = useState(null);
@@ -23,9 +24,8 @@ export const CartProvider = ({ children }) => {
 
   const setCartToState = async () => {
     try {
-      const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/cart`,
-      );
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`);
+      const data = await res.json();
 
       if (data) {
         setCart(data?.cart);
@@ -38,12 +38,14 @@ export const CartProvider = ({ children }) => {
 
   const addItemToCart = async ({ product }) => {
     try {
-      const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/cart`,
-        {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`, {
+        method: 'POST',
+        body: JSON.stringify({
           productId: product,
-        },
-      );
+        }),
+      });
+
+      const data = await res.json();
 
       if (data.cartAdded) {
         setCartToState();
@@ -63,13 +65,15 @@ export const CartProvider = ({ children }) => {
       toast.error("It's only 1 unit ! Remove this item if you don't want it !");
     } else {
       try {
-        const { data } = await axios.put(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/cart`,
-          {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`, {
+          method: 'PUT',
+          body: JSON.stringify({
             product,
             value,
-          },
-        );
+          }),
+        });
+
+        const data = await res.json();
 
         if (data) {
           setCartToState();
@@ -91,9 +95,15 @@ export const CartProvider = ({ children }) => {
   const deleteItemFromCart = async (id) => {
     try {
       setLoading(true);
-      const { data } = await axios.delete(
+
+      const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/cart/${id}`,
+        {
+          method: 'DELETE',
+        },
       );
+
+      const data = await res.json();
 
       if (data) {
         setCartToState();

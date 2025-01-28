@@ -25,7 +25,7 @@ export const OrderProvider = ({ children }) => {
         `${process.env.NEXT_PUBLIC_API_URL}/api/orders/webhook`,
         {
           method: 'POST',
-          body: orderInfo,
+          body: JSON.stringify(orderInfo),
         },
       );
 

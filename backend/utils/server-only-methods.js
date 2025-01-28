@@ -2,7 +2,6 @@ import 'server-only';
 
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
-import axios from 'axios';
 import mongoose from 'mongoose';
 import queryString from 'query-string';
 import { getCookieName } from '@/helpers/helpers';

@@ -1,7 +1,6 @@
 'use client';
 
 import { DECREASE } from '@/helpers/constants';
-import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { createContext, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';

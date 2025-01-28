@@ -20,7 +20,7 @@ const Profile = ({ addresses }) => {
       <figure className="flex items-start sm:items-center">
         <div className="relative mr-3">
           <Image
-            className="w-10 h-10 rounded-full mr-4"
+            className="w-20 h-10 rounded-full mr-4"
             src={user?.avatar ? user?.avatar?.url : '/images/default.png'}
             alt={user?.name}
           />
@@ -39,17 +39,17 @@ const Profile = ({ addresses }) => {
       <hr className="my-4" />
       <div className="flex items-start gap-x-2">
         <Link href="/address/new">
-          <button className="p-4 inline-block text-sm text-green-600 font-semibold rounded-md hover:bg-gray-100">
+          <button className="p-4 inline-block text-sm text-green-800 font-semibold rounded-md hover:bg-gray-100">
             <i className="mr-1 fa fa-plus"></i> Address
           </button>
         </Link>
         <Link href="/me/update">
-          <button className="p-4 inline-block text-sm text-orange-600 font-semibold rounded-md hover:bg-gray-100">
+          <button className="p-4 inline-block text-sm text-orange-800 font-semibold rounded-md hover:bg-gray-100">
             <i className="mr-1 fa fa-pencil"></i> Profile
           </button>
         </Link>
         <Link href="/me/update_password">
-          <button className="p-4 inline-block text-sm text-blue-600 font-semibold rounded-md hover:bg-gray-100">
+          <button className="p-4 inline-block text-sm text-blue-800 font-semibold rounded-md hover:bg-gray-100">
             <i className="mr-1 fa fa-pencil"></i> Mot de passe
           </button>
         </Link>

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import React, { createContext, useState } from "react";
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import React, { createContext, useState } from 'react';
 
 const OrderContext = createContext();
 
@@ -21,17 +21,22 @@ export const OrderProvider = ({ children }) => {
 
   const addOrder = async (orderInfo) => {
     try {
-      const { data } = await axios.post(
+      const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/orders/webhook`,
-        orderInfo
+        {
+          method: 'POST',
+          body: orderInfo,
+        },
       );
+
+      const data = await res.json();
 
       if (data?.success) {
         setSecret(data?.id);
-        router.push("/confirmation");
+        router.push('/confirmation');
       } else {
         setLowStockProducts(data?.inavailableStockProducts);
-        router.push("/error");
+        router.push('/error');
       }
     } catch (error) {
       setError(error?.response?.data?.message);

@@ -54,7 +54,7 @@ export const webhook = async (req, res) => {
     }
 
     // GETTING ORDER DATA FROM THE REQUEST BODY
-    const orderData = req?.body;
+    const orderData = JSON.parse(req?.body);
     orderData.user = user?._id;
 
     // GETTING THE IDs AND THE QUANTITES OF THE PRODUCTS ORDERED BY USER

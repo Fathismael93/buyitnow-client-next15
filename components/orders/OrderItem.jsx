@@ -52,7 +52,7 @@ const OrderItem = ({ order }) => {
         </div>
         {order?.shippingInfo !== undefined && (
           <div>
-            <p className="text-gray-700 mb-1">Delivery address</p>
+            <p className="text-blue-700 mb-1">Delivery address</p>
             <ul className="text-gray-600">
               <li>{order?.shippingInfo?.street}</li>
               <li>
@@ -64,7 +64,7 @@ const OrderItem = ({ order }) => {
           </div>
         )}
         <div>
-          <p className="text-gray-700 mb-1">Amount Paid</p>
+          <p className="text-blue-700 mb-1">Amount Paid</p>
           <ul className="text-gray-600">
             <li>
               <span className="font-bold">Total Price:</span> $
@@ -83,7 +83,7 @@ const OrderItem = ({ order }) => {
           </ul>
         </div>
         <div>
-          <p className="text-gray-400 mb-1">Payment</p>
+          <p className="text-blue-400 mb-1">Payment</p>
           <ul className="text-gray-600">
             <li>
               <span className="font-bold">Mode:</span>{' '}

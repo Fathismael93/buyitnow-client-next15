@@ -30,6 +30,8 @@ const ProductItem = ({ product }) => {
     }
   };
 
+  console.log(product);
+
   return (
     <article className="border border-gray-200 overflow-hidden bg-white shadow-sm rounded mb-5">
       <Link

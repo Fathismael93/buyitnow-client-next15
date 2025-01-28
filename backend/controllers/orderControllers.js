@@ -54,7 +54,7 @@ export const webhook = async (req, res) => {
     }
 
     console.log('Request in Body');
-    console.log(req.body);
+    console.log(req);
 
     // GETTING ORDER DATA FROM THE REQUEST BODY
     const orderData = JSON.parse(req?.body);

@@ -12,8 +12,6 @@ const OrderedProduct = dynamic(() => import('./OrderedProduct'), {
 const OrderItem = ({ order }) => {
   const { deliveryPrice } = useContext(OrderContext);
 
-  console.log(order);
-
   return (
     <article className="p-3 lg:p-5 mb-5 bg-white border border-blue-600 rounded-md">
       <header className="lg:flex justify-between mb-4">

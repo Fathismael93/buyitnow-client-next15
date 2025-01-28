@@ -95,7 +95,7 @@ const ProductItem = ({ product }) => {
             </span>
 
             <p
-              className="text-green-500 md:text-xs lg:text-md"
+              className="text-green-700 md:text-xs lg:text-md"
               title="Shipping text"
             >
               Free Shipping

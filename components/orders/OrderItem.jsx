@@ -19,11 +19,11 @@ const OrderItem = ({ order }) => {
           <p className="font-semibold">
             <span>Order ID: {order?._id} </span>
             {order?.paymentStatus === 'paid' ? (
-              <span className="text-green-500">
+              <span className="text-green-800 font-semibold">
                 • {order?.paymentStatus?.toUpperCase()}
               </span>
             ) : (
-              <span className="text-red-500">
+              <span className="text-red-800 font-semibold">
                 • {order?.paymentStatus?.toUpperCase()}
               </span>
             )}{' '}
@@ -43,7 +43,7 @@ const OrderItem = ({ order }) => {
       </header>
       <div className="grid md:grid-cols-4 gap-1">
         <div>
-          <p className="text-gray-400 mb-1">Person</p>
+          <p className="text-blue-700 mb-1">Person</p>
           <ul className="text-gray-600">
             <li>{order?.user?.name}</li>
             <li>{order?.user?.phone}</li>
@@ -52,7 +52,7 @@ const OrderItem = ({ order }) => {
         </div>
         {order?.shippingInfo !== undefined && (
           <div>
-            <p className="text-gray-400 mb-1">Delivery address</p>
+            <p className="text-gray-700 mb-1">Delivery address</p>
             <ul className="text-gray-600">
               <li>{order?.shippingInfo?.street}</li>
               <li>
@@ -64,7 +64,7 @@ const OrderItem = ({ order }) => {
           </div>
         )}
         <div>
-          <p className="text-gray-400 mb-1">Amount Paid</p>
+          <p className="text-gray-700 mb-1">Amount Paid</p>
           <ul className="text-gray-600">
             <li>
               <span className="font-bold">Total Price:</span> $

@@ -35,6 +35,8 @@ const CustomPagination = memo(({ totalPages }) => {
         current={page}
         total={totalPages}
         onPageChange={handlePageChange}
+        ariaPreviousLabel=""
+        ariaNextLabel=""
       />
     </div>
   );

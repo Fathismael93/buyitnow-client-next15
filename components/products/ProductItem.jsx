@@ -45,7 +45,6 @@ const ProductItem = ({ product }) => {
             }}
           >
             <Image
-              priority
               loader={customLoader}
               src={
                 product?.images !== undefined && product?.images[0]
@@ -56,8 +55,6 @@ const ProductItem = ({ product }) => {
               title={product?.name}
               width="240"
               height="240"
-              placeholder="blur"
-              blurDataURL="/images/default_product.png"
               style={{ objectFit: 'cover' }}
             />
           </div>

@@ -105,7 +105,7 @@ const Cart = () => {
                   </ul>
 
                   <Link
-                    className="px-4 py-3 mb-2 inline-block text-lg w-full text-center font-bold text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 cursor-pointer"
+                    className="px-4 py-3 mb-2 inline-block text-lg w-full text-center font-bold text-white bg-green-800 border border-transparent rounded-md hover:bg-green-700 cursor-pointer"
                     onClick={checkoutHandler}
                     title="Continue"
                     href="/shipping-choice"
@@ -116,7 +116,7 @@ const Cart = () => {
                   <Link
                     title="Back to shop"
                     href="/"
-                    className="px-4 py-3 inline-block text-lg w-full text-center font-semibold text-green-600 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100"
+                    className="px-4 py-3 inline-block text-lg w-full text-center font-semibold text-green-800 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100"
                   >
                     Back to shop
                   </Link>

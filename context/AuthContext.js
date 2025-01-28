@@ -64,15 +64,15 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
 
-      const { data } = await axios.put(
+      const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/auth/me/update`,
-        formData,
         {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+          method: 'PUT',
+          body: formData,
         },
       );
+
+      const data = await res.json();
 
       if (data?.updatedUser) {
         loadUser();

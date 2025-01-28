@@ -39,6 +39,9 @@ export const updateProfile = async (req, res) => {
   try {
     // CHECKING IF PASSWORD ENTERED IS THE SAME AS PASSWORD STORED
 
+    console.log('Request Body');
+    console.log(req.body);
+
     const user = await User.findOne({ email: req.user.email });
 
     if (!user) {

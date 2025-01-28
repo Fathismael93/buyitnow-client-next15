@@ -39,17 +39,17 @@ const Profile = ({ addresses }) => {
       <hr className="my-4" />
       <div className="flex items-start gap-x-2">
         <Link href="/address/new">
-          <button className="px-4 inline-block text-sm text-green-600 rounded-md hover:bg-gray-100">
+          <button className="p-4 inline-block text-sm text-green-600 font-semibold rounded-md hover:bg-gray-100">
             <i className="mr-1 fa fa-plus"></i> Address
           </button>
         </Link>
         <Link href="/me/update">
-          <button className="px-4 inline-block text-sm text-orange-600 rounded-md hover:bg-gray-100">
+          <button className="p-4 inline-block text-sm text-orange-600 font-semibold rounded-md hover:bg-gray-100">
             <i className="mr-1 fa fa-pencil"></i> Profile
           </button>
         </Link>
         <Link href="/me/update_password">
-          <button className="px-4 inline-block text-sm text-blue-600 rounded-md hover:bg-gray-100">
+          <button className="p-4 inline-block text-sm text-blue-600 font-semibold rounded-md hover:bg-gray-100">
             <i className="mr-1 fa fa-pencil"></i> Mot de passe
           </button>
         </Link>

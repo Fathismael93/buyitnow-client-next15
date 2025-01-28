@@ -84,12 +84,12 @@ const Sidebar = ({ open, setOpen }) => {
 
         <li>
           {' '}
-          <a
+          <p
             className="block px-3 py-2 text-red-800 hover:bg-red-100 hover:text-white-500 rounded-md cursor-pointer"
             onClick={logoutHandler}
           >
             Logout
-          </a>
+          </p>
         </li>
       </ul>
     </aside>

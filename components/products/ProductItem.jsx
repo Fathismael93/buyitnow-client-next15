@@ -53,7 +53,7 @@ const ProductItem = ({ product }) => {
               title={product?.name}
               width="240"
               height="240"
-              onError={() => toast.error('Failed to load image')}
+              onError={() => ''}
               style={{ objectFit: 'cover' }}
             />
           </div>

@@ -184,6 +184,7 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
                     height="150"
                     placeholder="blur"
                     blurDataURL="/images/default_product.png"
+                    onError={() => ''}
                     style={{ objectFit: 'fill' }}
                   />
                   <div className="mt-3 align-bottom">

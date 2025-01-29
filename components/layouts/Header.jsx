@@ -29,7 +29,7 @@ const Header = () => {
           <div className="flex-shrink-0 mr-5">
             <Link href="/">
               <Image
-                priority
+                priority={true}
                 src="/images/logo.png"
                 height={40}
                 width={120}

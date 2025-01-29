@@ -16,7 +16,7 @@ const nextConfig = {
         pathname: '**',
       },
     ],
-    loader: 'cloudinaryLoader',
+    loader: 'custom',
     loaderFile: './helpers/helpers.js',
   },
   experimental: {

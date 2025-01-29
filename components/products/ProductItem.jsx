@@ -5,7 +5,7 @@ import { INCREASE } from '@/helpers/constants';
 import AuthContext from '@/context/AuthContext';
 import Link from 'next/link';
 import Image from 'next/image';
-import { cloudinaryLoader } from '@/helpers/helpers';
+import cloudinaryLoader from '@/helpers/helpers';
 
 const ProductItem = ({ product }) => {
   const { addItemToCart, updateCart, cart } = useContext(CartContext);

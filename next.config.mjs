@@ -17,7 +17,7 @@ const nextConfig = {
       },
     ],
     loader: 'custom',
-    loaderFile: './helpers/helpers/cloudinaryLoader',
+    loaderFile: './helpers/helpers',
   },
   experimental: {
     optimizePackageImports: ['icon-library'],

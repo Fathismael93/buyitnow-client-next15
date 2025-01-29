@@ -5,7 +5,6 @@ import { INCREASE } from '@/helpers/constants';
 import AuthContext from '@/context/AuthContext';
 import Link from 'next/link';
 import Image from 'next/image';
-import cloudinaryLoader from '@/helpers/helpers';
 
 const ProductItem = ({ product }) => {
   const { addItemToCart, updateCart, cart } = useContext(CartContext);
@@ -45,7 +44,6 @@ const ProductItem = ({ product }) => {
             }}
           >
             <Image
-              loader={cloudinaryLoader}
               src={
                 product?.images !== undefined && product?.images[0]
                   ? product?.images[0]?.url

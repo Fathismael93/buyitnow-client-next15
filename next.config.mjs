@@ -16,8 +16,6 @@ const nextConfig = {
         pathname: '**',
       },
     ],
-    loader: 'custom',
-    loaderFile: './helpers/helpers.js',
   },
   experimental: {
     optimizePackageImports: ['icon-library'],

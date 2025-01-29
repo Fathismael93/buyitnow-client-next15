@@ -104,9 +104,10 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
                           loading="lazy"
                           width={14}
                           height={14}
-                          onError={() =>
-                            setImgPreview('/images/default_product.png')
-                          }
+                          onError={(e) => {
+                            e.currentTarget.src = '/images/default_product.png';
+                            setImgPreview('/images/default_product.png');
+                          }}
                           style={{ objectFit: 'cover' }}
                         />
                       </div>

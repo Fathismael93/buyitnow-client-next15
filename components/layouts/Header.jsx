@@ -17,7 +17,6 @@ const Header = () => {
 
   useEffect(() => {
     if (data) {
-      console.log(data?.user);
       setUser(data?.user);
       setCartToState();
     }

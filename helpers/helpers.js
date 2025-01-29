@@ -12,27 +12,29 @@ export const getPriceQueryParams = (queryParams, key, value) => {
 };
 
 export const parseCallbackUrl = (url) => {
-  const res = url.replace(/%3A/g, ":").replace(/%2F/g, "/");
+  const res = url.replace(/%3A/g, ':').replace(/%2F/g, '/');
   return res;
 };
 
 export const getCookieName = () => {
-  let cookieName = "";
+  let cookieName = '';
 
-  if (process.env.NODE_ENV === "development") {
-    cookieName = "next-auth.session-token";
+  if (process.env.NODE_ENV === 'development') {
+    cookieName = 'next-auth.session-token';
   }
 
-  if (process.env.NODE_ENV === "production") {
-    cookieName = "__Secure-next-auth.session-token";
+  if (process.env.NODE_ENV === 'production') {
+    cookieName = '__Secure-next-auth.session-token';
   }
 
   return cookieName;
 };
 
-export const customLoader = ({ src, width }) => {
-  return `${src}?w=${width}`;
-};
+// Demo: https://res.cloudinary.com/demo/image/upload/w_300,c_limit,q_auto/turtles.jpg
+export function cloudinaryLoader({ src, width, quality }) {
+  const params = ['f_auto', 'c_limit', `w_${width}`, `q_${quality || 'auto'}`];
+  return `https://example.com/${params.join(',')}${src}`;
+}
 
 export const arrayHasData = (array) => {
   return array === undefined || !Array.isArray(array) || array?.length === 0;

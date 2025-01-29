@@ -16,6 +16,8 @@ const nextConfig = {
         pathname: '**',
       },
     ],
+    loader: 'custom',
+    loaderFile: './helpers/helpers/cloudinaryLoader',
   },
   experimental: {
     optimizePackageImports: ['icon-library'],

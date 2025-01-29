@@ -53,9 +53,7 @@ const ProductItem = ({ product }) => {
               title={product?.name}
               width="240"
               height="240"
-              onError={(e) =>
-                (e.currentTarget.src = '/images/default_product.png')
-              }
+              onError={() => toast.error('Failed to load image')}
               style={{ objectFit: 'cover' }}
             />
           </div>

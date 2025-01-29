@@ -53,6 +53,9 @@ const ProductItem = ({ product }) => {
               title={product?.name}
               width="240"
               height="240"
+              onError={(e) =>
+                (e.currentTarget.src = '/images/default_product.png')
+              }
               style={{ objectFit: 'cover' }}
             />
           </div>

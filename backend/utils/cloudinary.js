@@ -1,4 +1,4 @@
-import cloudinary from "cloudinary";
+import cloudinary from 'cloudinary';
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -19,11 +19,11 @@ const uploads = (file, folder) => {
       },
 
       {
-        resource_type: "auto",
+        resource_type: 'auto',
         folder: folder,
-      }
+      },
     );
   });
 };
 
-export { uploads, cloudinary };
+export { uploads };

@@ -101,8 +101,12 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
                           }
                           alt={product?.name}
                           title={product?.name}
+                          loading="lazy"
                           width={14}
                           height={14}
+                          onError={() =>
+                            setImgPreview('/images/default_product.png')
+                          }
                           style={{ objectFit: 'cover' }}
                         />
                       </div>

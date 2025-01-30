@@ -2,6 +2,7 @@
 
 import AuthContext from '@/context/AuthContext';
 import dynamic from 'next/dynamic';
+import Script from 'next/script';
 import React, { useContext, useState } from 'react';
 
 const Sidebar = dynamic(() => import('@/components/layouts/Sidebar'));
@@ -39,6 +40,8 @@ export default function UserLayout({ children }) {
           </div>
         </div>
       </section>
+
+      <Script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
     </>
   );
 }

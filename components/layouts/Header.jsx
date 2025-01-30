@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 const Search = dynamic(() => import('./Search'));
 import Image from 'next/image';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import CartContext from '@/context/CartContext';
 import { useSession } from 'next-auth/react';
 import AuthContext from '@/context/AuthContext';
@@ -28,7 +29,7 @@ const Header = () => {
         <div className="flex flex-wrap items-center">
           <div className="flex-shrink-0 mr-5">
             <Link href="/">
-              <Image
+              <LazyLoadImage
                 priority={true}
                 src="/images/logo.png"
                 height={40}
@@ -36,6 +37,14 @@ const Header = () => {
                 alt="BuyItNow"
                 style={{ width: '100%', height: 'auto' }}
               />
+              {/* <Image
+                priority={true}
+                src="/images/logo.png"
+                height={40}
+                width={120}
+                alt="BuyItNow"
+                style={{ width: '100%', height: 'auto' }}
+              /> */}
             </Link>
           </div>
           <Search setLoading={setLoading} />

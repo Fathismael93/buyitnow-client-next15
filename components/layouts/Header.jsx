@@ -29,10 +29,10 @@ const Header = () => {
         <div className="flex flex-wrap items-center">
           <div className="flex-shrink-0 mr-5">
             <Link href="/">
-              <LazyLoadImage
+              <Image
                 priority={true}
                 src="/images/logo.png"
-                height={80}
+                height={40}
                 width={120}
                 alt="BuyItNow"
               />

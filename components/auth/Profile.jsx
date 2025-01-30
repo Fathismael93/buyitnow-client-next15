@@ -20,7 +20,9 @@ const Profile = ({ addresses }) => {
       <figure className="flex items-start sm:items-center">
         <div className="relative mr-3">
           <Image
-            className="w-15 h-10 rounded-full mr-4"
+            className="rounded-full mr-4"
+            width={35}
+            height={25}
             src={user?.avatar ? user?.avatar?.url : '/images/default.png'}
             alt={user?.name}
           />

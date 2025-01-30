@@ -7,6 +7,7 @@ const bundleAnalyzer = withBundleAnalyzer({
 });
 
 const nextConfig = {
+  assetPrefix: 'https://cdnjs.cloudflare.com',
   images: {
     remotePatterns: [
       {

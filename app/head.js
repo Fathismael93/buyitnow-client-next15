@@ -10,7 +10,7 @@ export default function Head() {
       <link rel="icon" href="/favicon.ico" />
       <link
         rel="preload"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+        href="/ajax/libs/font-awesome/6.2.1/css/all.min.css"
         as="style"
         crossOrigin="no"
         type="text/css"

@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 const Search = dynamic(() => import('./Search'));
 import Image from 'next/image';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 import CartContext from '@/context/CartContext';
 import { useSession } from 'next-auth/react';
 import AuthContext from '@/context/AuthContext';

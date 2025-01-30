@@ -36,14 +36,6 @@ const Header = () => {
                 width={120}
                 alt="BuyItNow"
               />
-              {/* <Image
-                priority={true}
-                src="/images/logo.png"
-                height={40}
-                width={120}
-                alt="BuyItNow"
-                style={{ width: '100%', height: 'auto' }}
-              /> */}
             </Link>
           </div>
           <Search setLoading={setLoading} />

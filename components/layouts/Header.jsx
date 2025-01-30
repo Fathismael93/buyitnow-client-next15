@@ -32,7 +32,7 @@ const Header = () => {
               <LazyLoadImage
                 priority={true}
                 src="/images/logo.png"
-                height={40}
+                height={80}
                 width={120}
                 alt="BuyItNow"
               />

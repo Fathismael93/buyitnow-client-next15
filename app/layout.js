@@ -2,9 +2,12 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 
 import { GlobalProvider } from './GlobalProvider';
-dynamic(() => import('./globals.css'));
-const Header = dynamic(() => import('@/components/layouts/Header'));
-const Head = dynamic(() => import('@/app/head'));
+// dynamic(() => import('./globals.css'));
+// const Header = dynamic(() => import('@/components/layouts/Header'));
+// const Head = dynamic(() => import('@/app/head'));
+import './globals.css';
+import Header from '@/components/layouts/Header';
+import Head from '@/app/head';
 
 export default function RootLayout({ children }) {
   return (

@@ -1,5 +1,6 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
+import Script from 'next/script';
 
 import { GlobalProvider } from './GlobalProvider';
 dynamic(() => import('./globals.css'));
@@ -15,6 +16,8 @@ export default function RootLayout({ children }) {
           <Header />
           {children}
         </GlobalProvider>
+
+        <Script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
       </body>
     </html>
   );

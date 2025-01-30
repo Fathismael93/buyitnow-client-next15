@@ -9,13 +9,13 @@ const Head = dynamic(() => import('@/app/head'));
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <Head />
       <body>
         <GlobalProvider>
           <Header />
           {children}
         </GlobalProvider>
       </body>
+      <Head />
     </html>
   );
 }

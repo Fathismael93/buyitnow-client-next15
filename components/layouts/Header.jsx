@@ -82,8 +82,8 @@ const Header = () => {
                     data-testid="profile image"
                     alt="profile image"
                     className="rounded-full"
-                    width={15}
-                    height={10}
+                    width={35}
+                    height={25}
                     src={
                       user?.avatar ? user?.avatar?.url : '/images/default.png'
                     }

@@ -12,8 +12,8 @@ export default function Head() {
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
         precedence="default"
-        defer
       /> */}
+      <link rel="preload" href="https://cdnjs.cloudflare.com/"></link>
     </>
   );
 }

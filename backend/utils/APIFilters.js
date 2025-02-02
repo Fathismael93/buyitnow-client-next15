@@ -1,4 +1,4 @@
-import mongoose, { Types } from "mongoose";
+import mongoose from 'mongoose';
 
 class APIFilters {
   constructor(query, queryStr) {
@@ -11,7 +11,7 @@ class APIFilters {
       ? {
           name: {
             $regex: this.queryStr.keyword,
-            $options: "i",
+            $options: 'i',
           },
         }
       : {};
@@ -23,17 +23,17 @@ class APIFilters {
   filter() {
     const queryCopy = { ...this.queryStr };
 
-    const removeFields = ["keyword", "page"];
+    const removeFields = ['keyword', 'page'];
     removeFields.forEach((el) => delete queryCopy[el]);
 
     let output = {};
-    let prop = "";
+    let prop = '';
 
     for (let key in queryCopy) {
       if (!key.match(/\b(gt|gte|lt|lte)/)) {
-        if (key === "category") {
+        if (key === 'category') {
           const categoryId = mongoose.Types.ObjectId.createFromHexString(
-            queryCopy[key]
+            queryCopy[key],
           );
 
           output[key] = categoryId;
@@ -41,7 +41,7 @@ class APIFilters {
           output[key] = queryCopy[key];
         }
       } else {
-        prop = key.split("[")[0];
+        prop = key.split('[')[0];
 
         let operator = key.match(/\[(.*)\]/)[1];
 

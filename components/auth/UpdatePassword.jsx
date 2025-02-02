@@ -30,7 +30,7 @@ const UpdatePassword = () => {
     <>
       <div
         style={{ maxWidth: '480px' }}
-        className="mt-5 mb-20 p-4 md:p-7 mx-auto rounded bg-white"
+        className="mt-5 mb-20 p-4 md:p-7 mx-auto rounded-sm bg-white"
       >
         <form onSubmit={submitHandler}>
           <h2 className="mb-5 text-2xl font-semibold">Update Password</h2>
@@ -38,7 +38,7 @@ const UpdatePassword = () => {
           <div className="mb-4">
             <label className="block mb-1"> Current Password </label>
             <input
-              className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+              className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
               type="password"
               placeholder="Type your password"
               minLength={6}
@@ -51,7 +51,7 @@ const UpdatePassword = () => {
           <div className="mb-4">
             <label className="block mb-1"> New Password </label>
             <input
-              className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+              className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
               type="password"
               placeholder="Type your password"
               minLength={6}

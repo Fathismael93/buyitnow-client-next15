@@ -45,7 +45,7 @@ const Register = () => {
   return (
     <div
       style={{ maxWidth: '480px' }}
-      className="mt-10 mb-20 p-4 md:p-7 mx-auto rounded bg-white shadow-lg"
+      className="mt-10 mb-20 p-4 md:p-7 mx-auto rounded-sm bg-white shadow-lg"
     >
       <form onSubmit={submitHandler}>
         <h2 className="mb-5 text-2xl font-semibold">Register Account</h2>
@@ -53,7 +53,7 @@ const Register = () => {
         <div className="mb-4">
           <label className="block mb-1"> Full Name </label>
           <input
-            className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+            className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
             type="text"
             placeholder="Type your name"
             value={name}
@@ -65,7 +65,7 @@ const Register = () => {
         <div className="mb-4">
           <label className="block mb-1"> Mobile Number </label>
           <input
-            className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+            className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
             type="tel"
             placeholder="Type your number"
             value={phone}
@@ -77,7 +77,7 @@ const Register = () => {
         <div className="mb-4">
           <label className="block mb-1"> Email </label>
           <input
-            className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+            className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
             type="text"
             placeholder="Type your email"
             value={email}
@@ -89,7 +89,7 @@ const Register = () => {
         <div className="mb-4">
           <label className="block mb-1"> Password </label>
           <input
-            className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+            className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
             type="password"
             placeholder="Type your password"
             minLength={6}

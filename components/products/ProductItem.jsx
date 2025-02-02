@@ -30,7 +30,7 @@ const ProductItem = ({ product }) => {
   };
 
   return (
-    <article className="border border-gray-200 overflow-hidden bg-white shadow-sm rounded mb-5">
+    <article className="border border-gray-200 overflow-hidden bg-white shadow-xs rounded-sm mb-5">
       <Link
         href={`/product/${product?._id}`}
         className="flex flex-col md:flex-row hover:bg-blue-100"

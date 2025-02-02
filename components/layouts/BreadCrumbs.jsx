@@ -5,7 +5,7 @@ import { arrayHasData } from '@/helpers/helpers';
 const BreadCrumbs = memo(({ breadCrumbs }) => {
   return (
     <section className="py-5 sm:py-7 bg-blue-100">
-      <div className="container max-w-screen-xl mx-auto px-4">
+      <div className="container max-w-(--breakpoint-xl) mx-auto px-4">
         <ol className="inline-flex flex-wrap text-gray-600 space-x-1 md:space-x-3 items-center">
           {arrayHasData(breadCrumbs)
             ? ''

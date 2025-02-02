@@ -11,7 +11,7 @@ const ErrorPage = () => {
   return (
     <>
       <section className="py-5 sm:py-7 bg-blue-100">
-        <div className="container max-w-screen-xl mx-auto px-4">
+        <div className="container max-w-(--breakpoint-xl) mx-auto px-4">
           <h2 className="text-xl font-semibold mb-2">
             Le stock des produits ci-dessous est inférieur à votre demande.
             Retournez dans votre panier et relancez l'achat en vérifiant que
@@ -22,17 +22,17 @@ const ErrorPage = () => {
 
       {!arrayHasData(lowStockProducts) && (
         <section className="py-10">
-          <div className="container max-w-screen-xl mx-auto px-4">
+          <div className="container max-w-(--breakpoint-xl) mx-auto px-4">
             <div className="flex flex-col md:flex-row gap-4">
               <main className="md:w-3/4">
-                <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
+                <article className="border border-gray-200 bg-white shadow-xs rounded-sm mb-5 p-3 lg:p-5">
                   {lowStockProducts?.map((product) => (
                     <div key={product?.id}>
                       <div className="flex flex-wrap lg:flex-row gap-5  mb-4">
                         <div className="w-full lg:w-2/5 xl:w-2/4">
                           <figure className="flex leading-5">
                             <div>
-                              <div className="block w-16 h-16 rounded border border-gray-200 overflow-hidden">
+                              <div className="block w-16 h-16 rounded-sm border border-gray-200 overflow-hidden">
                                 <img
                                   src={
                                     product?.image

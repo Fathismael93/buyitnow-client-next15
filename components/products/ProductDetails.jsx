@@ -62,7 +62,7 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
     <>
       <BreadCrumbs breadCrumbs={breadCrumbs} />
       <section className="bg-white py-10">
-        <div className="container max-w-screen-xl mx-auto px-4">
+        <div className="container max-w-(--breakpoint-xl) mx-auto px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-5">
             {product === undefined || product?.length === 0 ? (
               <div className="w-full">
@@ -73,7 +73,7 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
             ) : (
               <>
                 <aside>
-                  <div className="border border-gray-200 shadow-sm p-3 text-center rounded mb-5">
+                  <div className="border border-gray-200 shadow-xs p-3 text-center rounded-sm mb-5">
                     <img
                       ref={imgRef}
                       className="object-cover inline-block"
@@ -182,7 +182,7 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
                     title={product?.name}
                     width="100"
                     height="150"
-                    placeholder="blur"
+                    placeholder="blur-sm"
                     blurDataURL="/images/default_product.png"
                     onError={() => ''}
                     style={{ objectFit: 'fill' }}

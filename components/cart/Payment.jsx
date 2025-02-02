@@ -77,10 +77,10 @@ const Payment = () => {
     <div>
       <BreadCrumbs breadCrumbs={breadCrumbs} />
       <section className="py-10 bg-gray-50">
-        <div className="container max-w-screen-xl mx-auto px-4">
+        <div className="container max-w-(--breakpoint-xl) mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-4 lg:gap-8">
             <main className="md:w-2/3">
-              <article className="border border-gray-200 bg-white shadow-sm rounded p-4 lg:p-6 mb-5">
+              <article className="border border-gray-200 bg-white shadow-xs rounded-sm p-4 lg:p-6 mb-5">
                 <h2 className="text-xl font-semibold mb-5">
                   Payment information
                 </h2>
@@ -121,7 +121,7 @@ const Payment = () => {
                 <div className="mb-4">
                   <label className="block mb-1"> Account Name </label>
                   <input
-                    className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+                    className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
                     type="text"
                     placeholder="Account Name"
                     required
@@ -131,7 +131,7 @@ const Payment = () => {
                 <div className="mb-4">
                   <label className="block mb-1"> Account Number </label>
                   <input
-                    className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+                    className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
                     type="tel"
                     placeholder="Account Number"
                     required
@@ -143,7 +143,7 @@ const Payment = () => {
               <div className="flex justify-end space-x-2 mt-10">
                 <Link
                   href="/shipping"
-                  className="px-5 py-2 inline-block text-gray-700 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100 hover:text-blue-600"
+                  className="px-5 py-2 inline-block text-gray-700 bg-white shadow-xs border border-gray-200 rounded-md hover:bg-gray-100 hover:text-blue-600"
                 >
                   Back
                 </Link>

@@ -79,7 +79,7 @@ const Filters = ({ categories, setLoading }) => {
   return (
     <aside className="md:w-1/3 lg:w-1/4 px-4">
       <button
-        className="md:hidden mb-5 cursor-pointer w-full text-center px-4 py-2 inline-block text-lg text-gray-700 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100 hover:text-blue-600"
+        className="md:hidden mb-5 cursor-pointer w-full text-center px-4 py-2 inline-block text-lg text-gray-700 bg-white shadow-xs border border-gray-200 rounded-md hover:bg-gray-100 hover:text-blue-600"
         onClick={() => setOpen((prev) => !prev)}
       >
         Filter by
@@ -94,7 +94,7 @@ const Filters = ({ categories, setLoading }) => {
           <div className="mb-4">
             <input
               name="min"
-              className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+              className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
               type="number"
               min="0"
               placeholder="Min"
@@ -106,7 +106,7 @@ const Filters = ({ categories, setLoading }) => {
           <div className="mb-4">
             <input
               name="max"
-              className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+              className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
               type="number"
               min="0"
               placeholder="Max"

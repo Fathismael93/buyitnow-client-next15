@@ -82,13 +82,13 @@ const UpdateAddress = ({ id, address }) => {
   return (
     <>
       <section className="py-10">
-        <div className="container max-w-screen-xl mx-auto px-4">
+        <div className="container max-w-(--breakpoint-xl) mx-auto px-4">
           <div className="flex flex-col md:flex-row -mx-4">
             <Sidebar />
             <main className="md:w-2/3 lg:w-3/4 px-4">
               <div
                 style={{ maxWidth: '480px' }}
-                className="mt-1 mb-20 p-4 md:p-7 mx-auto rounded bg-white shadow-lg"
+                className="mt-1 mb-20 p-4 md:p-7 mx-auto rounded-sm bg-white shadow-lg"
               >
                 <form onSubmit={submitHandler}>
                   <h2 className="mb-5 text-2xl font-semibold">
@@ -98,7 +98,7 @@ const UpdateAddress = ({ id, address }) => {
                   <div className="mb-4 md:col-span-2">
                     <label className="block mb-1"> Street* </label>
                     <input
-                      className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+                      className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
                       type="text"
                       placeholder="Type your address"
                       value={street}
@@ -110,7 +110,7 @@ const UpdateAddress = ({ id, address }) => {
                     <div className="mb-4 md:col-span-1">
                       <label className="block mb-1"> City </label>
                       <input
-                        className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+                        className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
                         type="text"
                         placeholder="Type your city"
                         value={city}
@@ -121,7 +121,7 @@ const UpdateAddress = ({ id, address }) => {
                     <div className="mb-4 md:col-span-1">
                       <label className="block mb-1"> State </label>
                       <input
-                        className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+                        className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
                         type="text"
                         placeholder="Type state here"
                         value={state}
@@ -134,7 +134,7 @@ const UpdateAddress = ({ id, address }) => {
                     <div className="mb-4 md:col-span-1">
                       <label className="block mb-1"> ZIP code </label>
                       <input
-                        className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+                        className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
                         type="number"
                         placeholder="Type zip code here"
                         value={zipCode}
@@ -145,7 +145,7 @@ const UpdateAddress = ({ id, address }) => {
                     <div className="mb-4 md:col-span-1">
                       <label className="block mb-1"> Phone No </label>
                       <input
-                        className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+                        className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
                         type="tel"
                         placeholder="Type phone no here"
                         value={phoneNo}
@@ -157,7 +157,7 @@ const UpdateAddress = ({ id, address }) => {
                   <div className="mb-4 md:col-span-2">
                     <label className="block mb-1"> Country </label>
                     <select
-                      className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+                      className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
                     >

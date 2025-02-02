@@ -6,7 +6,7 @@ const ItemShipping = ({ item }) => {
   return (
     <figure className="flex items-center mb-4 leading-5">
       <div>
-        <div className="block relative w-20 h-20 rounded p-1 border border-gray-200">
+        <div className="block relative w-20 h-20 rounded-sm p-1 border border-gray-200">
           <LazyLoadImage
             src={
               item?.product?.images[0]?.url
@@ -17,7 +17,7 @@ const ItemShipping = ({ item }) => {
             title="Product Image"
             width="50"
             height="50"
-            effect="blur"
+            effect="blur-sm"
             wrapperProps={{
               // If you need to, you can tweak the effect transition using the wrapper style.
               style: { transitionDelay: '1s' },

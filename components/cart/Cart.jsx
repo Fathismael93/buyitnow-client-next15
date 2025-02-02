@@ -55,7 +55,7 @@ const Cart = () => {
   ) : (
     <>
       <section className="py-5 sm:py-7 bg-blue-100">
-        <div className="container max-w-screen-xl mx-auto px-4">
+        <div className="container max-w-(--breakpoint-xl) mx-auto px-4">
           <h2
             className="text-3xl font-semibold mb-2"
             title="count items in cart"
@@ -67,10 +67,10 @@ const Cart = () => {
 
       {cartCount > 0 ? (
         <section className="py-10">
-          <div className="container max-w-screen-xl mx-auto px-4">
+          <div className="container max-w-(--breakpoint-xl) mx-auto px-4">
             <div className="flex flex-col md:flex-row gap-4">
               <main className="md:w-3/4">
-                <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
+                <article className="border border-gray-200 bg-white shadow-xs rounded-sm mb-5 p-3 lg:p-5">
                   {cart?.map((cartItem) => (
                     <ItemCart
                       key={cartItem._id}
@@ -83,7 +83,7 @@ const Cart = () => {
                 </article>
               </main>
               <aside className="md:w-1/4">
-                <article className="border border-gray-200 bg-white shadow-sm rounded mb-5 p-3 lg:p-5">
+                <article className="border border-gray-200 bg-white shadow-xs rounded-sm mb-5 p-3 lg:p-5">
                   <ul className="mb-5">
                     <li
                       className="flex justify-between text-gray-600  mb-1"
@@ -116,7 +116,7 @@ const Cart = () => {
                   <Link
                     title="Back to shop"
                     href="/"
-                    className="px-4 py-3 inline-block text-lg w-full text-center font-semibold text-green-800 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100"
+                    className="px-4 py-3 inline-block text-lg w-full text-center font-semibold text-green-800 bg-white shadow-xs border border-gray-200 rounded-md hover:bg-gray-100"
                   >
                     Back to shop
                   </Link>

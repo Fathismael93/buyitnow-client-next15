@@ -71,7 +71,7 @@ const UpdateProfile = () => {
     <>
       <div
         style={{ maxWidth: '480px' }}
-        className="mt-1 mb-20 p-4 md:p-7 mx-auto rounded bg-white"
+        className="mt-1 mb-20 p-4 md:p-7 mx-auto rounded-sm bg-white"
       >
         <form onSubmit={submitHandler} encType="multipart/form-data">
           <h2 className="mb-5 text-2xl font-semibold">Update Profile</h2>
@@ -79,7 +79,7 @@ const UpdateProfile = () => {
           <div className="mb-4">
             <label className="block mb-1"> Full Name </label>
             <input
-              className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+              className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
               type="text"
               placeholder="Type your name"
               required
@@ -91,7 +91,7 @@ const UpdateProfile = () => {
           <div className="mb-4">
             <label className="block mb-1"> Mobile Number </label>
             <input
-              className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
+              className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-hidden focus:border-gray-400 w-full"
               type="tel"
               placeholder="Type your mobile number"
               required
@@ -109,7 +109,7 @@ const UpdateProfile = () => {
               <div className="md:w-2/3 lg:w-80">
                 <input
                   name="image"
-                  className="form-control block w-full px-2 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none mt-6"
+                  className="form-control block w-full px-2 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded-sm transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-hidden mt-6"
                   type="file"
                   id="formFile"
                   onChange={onChange}

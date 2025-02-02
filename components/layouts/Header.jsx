@@ -24,9 +24,9 @@ const Header = () => {
 
   return (
     <header className="bg-white py-2 border-b">
-      <div className="container max-w-screen-xl mx-auto px-4">
+      <div className="container max-w-(--breakpoint-xl) mx-auto px-4">
         <div className="flex flex-wrap items-center">
-          <div className="flex-shrink-0 mr-5">
+          <div className="shrink-0 mr-5">
             <Link href="/">
               <Image
                 priority={true}
@@ -45,7 +45,7 @@ const Header = () => {
                 alt="shopping-cart link"
                 data-testid="cart link"
                 href="/cart"
-                className="px-3 py-2 inline-block text-center text-gray-700 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-blue-100 hover:border-gray-300"
+                className="px-3 py-2 inline-block text-center text-gray-700 bg-white shadow-xs border border-gray-200 rounded-md hover:bg-blue-100 hover:border-gray-300"
               >
                 <i
                   className="text-gray-400 w-5 fa fa-shopping-cart"
@@ -69,7 +69,7 @@ const Header = () => {
                 data-testid="login"
                 alt="login"
                 href="/login"
-                className="px-3 py-2 inline-block text-center text-gray-700 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-blue-100 hover:border-gray-300"
+                className="px-3 py-2 inline-block text-center text-gray-700 bg-white shadow-xs border border-gray-200 rounded-md hover:bg-blue-100 hover:border-gray-300"
               >
                 <i className="text-gray-400 w-5 fa fa-user"></i>
                 <span className="hidden lg:inline ml-1">Sign in</span>

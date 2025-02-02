@@ -15,7 +15,7 @@ const ItemCart = ({
         <div className="w-full lg:w-2/5 xl:w-2/4">
           <figure className="flex leading-5">
             <div>
-              <div className="block w-16 h-16 rounded border border-gray-200 overflow-hidden">
+              <div className="block w-16 h-16 rounded-sm border border-gray-200 overflow-hidden">
                 <LazyLoadImage
                   src={
                     cartItem?.product?.images !== undefined &&
@@ -26,7 +26,7 @@ const ItemCart = ({
                   alt={cartItem?.product?.name}
                   title="Product Image"
                   width="100%"
-                  effect="blur"
+                  effect="blur-sm"
                   wrapperProps={{
                     // If you need to, you can tweak the effect transition using the wrapper style.
                     style: { transitionDelay: '1s' },
@@ -56,14 +56,14 @@ const ItemCart = ({
               title="decrement"
               data-action="decrement"
               data-testid="decrement"
-              className=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-none"
+              className=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-hidden"
               onClick={() => decreaseQty(cartItem)}
             >
               <span className="m-auto text-2xl font-thin">−</span>
             </button>
             <input
               type="number"
-              className="outline-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black  md:text-basecursor-default flex items-center text-gray-900  outline-none custom-input-number"
+              className="outline-hidden focus:outline-hidden text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black  md:text-basecursor-default flex items-center text-gray-900  outline-hidden custom-input-number"
               name="custom-input-number"
               value={cartItem?.quantity}
               readOnly
@@ -96,7 +96,7 @@ const ItemCart = ({
         <div className="flex-auto">
           <div className="float-right">
             <button
-              className="px-4 py-2 inline-block text-red-600 bg-white shadow-sm border border-gray-200 rounded-md hover:bg-gray-100 cursor-pointer"
+              className="px-4 py-2 inline-block text-red-600 bg-white shadow-xs border border-gray-200 rounded-md hover:bg-gray-100 cursor-pointer"
               onClick={() => deleteItemFromCart(cartItem._id)}
             >
               Remove

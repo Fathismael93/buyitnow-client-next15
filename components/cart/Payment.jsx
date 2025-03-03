@@ -36,6 +36,7 @@ const Payment = () => {
       ...orderInfo,
       shippingInfo,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const breadCrumbs = [

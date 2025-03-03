@@ -20,6 +20,7 @@ const Header = () => {
       setUser(data?.user);
       setCartToState();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   return (

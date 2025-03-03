@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { memo } from 'react';
 import Link from 'next/link';
 import { arrayHasData } from '@/helpers/helpers';
@@ -30,5 +31,7 @@ const BreadCrumbs = memo(({ breadCrumbs }) => {
     </section>
   );
 });
+
+BreadCrumbs.displayName = 'BreadCrumbs';
 
 export default BreadCrumbs;

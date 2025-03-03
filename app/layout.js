@@ -6,6 +6,7 @@ dynamic(() => import('./globals.css'));
 const Header = dynamic(() => import('@/components/layouts/Header'));
 const Head = dynamic(() => import('@/app/head'));
 
+// eslint-disable-next-line react/prop-types
 export default function RootLayout({ children }) {
   return (
     <html lang="en">

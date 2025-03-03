@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 'use client'; // Error boundaries must be Client Components
 
 import React from 'react';

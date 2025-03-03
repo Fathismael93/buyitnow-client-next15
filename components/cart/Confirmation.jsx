@@ -16,6 +16,7 @@ const Confirmation = () => {
 
   useEffect(() => {
     setCartToState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (secret === undefined || secret === null) {
@@ -75,7 +76,7 @@ const Confirmation = () => {
                   className="px-5 py-2 inline-block text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 cursor-pointer"
                   href="/"
                 >
-                  Retour à l'accueil
+                  Retour à l&apos;accueil
                 </Link>
               </div>
             </aside>

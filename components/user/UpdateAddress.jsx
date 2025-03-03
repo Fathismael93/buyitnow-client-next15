@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 'use client';
 
 import React, { useState, useContext, useEffect } from 'react';
@@ -43,6 +44,7 @@ const UpdateAddress = ({ id, address }) => {
       toast.error(error);
       clearErrors();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error, updated]);
 
   const submitHandler = async (e) => {

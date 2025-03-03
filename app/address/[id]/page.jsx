@@ -1,4 +1,5 @@
-import React from 'react'
+/* eslint-disable react/prop-types */
+import React from 'react';
 import dynamic from 'next/dynamic';
 
 import { getSingleAddress } from '@/backend/utils/server-only-methods';

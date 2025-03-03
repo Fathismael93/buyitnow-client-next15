@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 'use client';
 
 import dynamic from 'next/dynamic';

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 'use client'; // Error boundaries must be Client Components
 
 import React from 'react';
@@ -5,7 +6,9 @@ import React from 'react';
 export default function Error({ error, reset }) {
   return (
     <div>
-      <h2>Something went wrong while finding the adress ! Please try again later.</h2>
+      <h2>
+        Something went wrong while finding the adress ! Please try again later.
+      </h2>
       <p>{error?.message}</p>
       <button
         onClick={

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { arrayHasData } from '@/helpers/helpers';
 import Link from 'next/link';
 import React, { memo } from 'react';
@@ -31,5 +32,7 @@ const UserAddresses = memo(({ addresses }) => {
     ))
   );
 });
+
+UserAddresses.displayName = 'UserAddresses';
 
 export default UserAddresses;

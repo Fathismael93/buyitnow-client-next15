@@ -12,6 +12,7 @@ const UserAddresses = dynamic(() => import('@/components/user/UserAddresses'), {
   loading: () => <Loading />,
 });
 
+// eslint-disable-next-line react/prop-types
 const Profile = ({ addresses }) => {
   const { user } = useContext(AuthContext);
 

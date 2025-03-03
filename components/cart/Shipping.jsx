@@ -29,6 +29,7 @@ const Shipping = () => {
     }
 
     router.prefetch('/payment');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const totalAmount = Number(checkoutInfo?.amount) + deliveryPrice;
@@ -39,6 +40,7 @@ const Shipping = () => {
     }
 
     router.push('/payment');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shippingInfo]);
 
   const setShippingAddress = (address) => {

@@ -6,6 +6,7 @@ import React, { useContext, useState } from 'react';
 
 const Sidebar = dynamic(() => import('@/components/layouts/Sidebar'));
 
+// eslint-disable-next-line react/prop-types
 export default function UserLayout({ children }) {
   const { user } = useContext(AuthContext);
   const [open, setOpen] = useState(false);

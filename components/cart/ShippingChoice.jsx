@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -59,6 +60,7 @@ const ShippingChoice = ({ addresses, payments, deliveryPrice }) => {
     });
 
     router.prefetch('/payment');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const breadCrumbs = [

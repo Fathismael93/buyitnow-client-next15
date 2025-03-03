@@ -4,6 +4,7 @@ import React, { useContext } from 'react';
 import OrderContext from '@/context/OrderContext';
 import { arrayHasData } from '@/helpers/helpers';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const ErrorPage = () => {
   const { lowStockProducts } = useContext(OrderContext);
@@ -14,8 +15,8 @@ const ErrorPage = () => {
         <div className="container max-w-(--breakpoint-xl) mx-auto px-4">
           <h2 className="text-xl font-semibold mb-2">
             Le stock des produits ci-dessous est inférieur à votre demande.
-            Retournez dans votre panier et relancez l'achat en vérifiant que
-            votre demande est bien égale au stock disponible.
+            Retournez dans votre panier et relancez l&apos;achat en vérifiant
+            que votre demande est bien égale au stock disponible.
           </h2>
         </div>
       </section>
@@ -33,13 +34,15 @@ const ErrorPage = () => {
                           <figure className="flex leading-5">
                             <div>
                               <div className="block w-16 h-16 rounded-sm border border-gray-200 overflow-hidden">
-                                <img
+                                <Image
                                   src={
                                     product?.image
                                       ? product?.image
                                       : '/images/default_product.png'
                                   }
                                   alt={product?.name}
+                                  width={20}
+                                  height={20}
                                 />
                               </div>
                             </div>

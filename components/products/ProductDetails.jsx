@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react/prop-types */
 'use client';
 
 import React, { useRef, useContext } from 'react';
@@ -10,6 +12,7 @@ import CartContext from '@/context/CartContext';
 import Image from 'next/image';
 import { arrayHasData } from '@/helpers/helpers';
 import Link from 'next/link';
+import { INCREASE } from '@/helpers/constants';
 const BreadCrumbs = dynamic(() => import('@/components/layouts/BreadCrumbs'));
 
 const ProductDetails = ({ product, sameCategoryProducts }) => {

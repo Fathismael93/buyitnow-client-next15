@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 'use client';
 
 import { arrayHasData } from '@/helpers/helpers';
@@ -20,6 +21,7 @@ const ListOrders = ({ orders }) => {
 
   useEffect(() => {
     setDeliveryPrice(orders?.deliveryPrice[0]?.deliveryPrice);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

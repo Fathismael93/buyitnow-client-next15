@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 
 import AuthContext from '@/context/AuthContext';
 import { profileSchema } from '@/helpers/schemas';
+import Image from 'next/image';
 
 const UpdateProfile = () => {
   const { user, error, loading, updateProfile, clearErrors } =
@@ -19,7 +20,7 @@ const UpdateProfile = () => {
   useEffect(() => {
     if (user) {
       setName(user?.name);
-      setPhone(user?.phone)
+      setPhone(user?.phone);
       if (user?.avatar?.url) {
         setAvatarPreview(user?.avatar?.url);
       }
@@ -29,6 +30,7 @@ const UpdateProfile = () => {
       toast.error(error);
       clearErrors();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error, user]);
 
   const submitHandler = async (e) => {
@@ -104,7 +106,13 @@ const UpdateProfile = () => {
             <label className="block mb-1"> Avatar </label>
             <div className="mb-4 flex flex-col md:flex-row">
               <div className="flex items-center mb-4 space-x-3 mt-4 cursor-pointer md:w-1/5 lg:w-1/4">
-                <img className="w-14 h-14 rounded-full" src={avatarPreview} />
+                <Image
+                  className="w-14 h-14 rounded-full"
+                  src={avatarPreview}
+                  width={14}
+                  height={14}
+                  alt="user avatar"
+                />
               </div>
               <div className="md:w-2/3 lg:w-80">
                 <input

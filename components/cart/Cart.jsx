@@ -26,6 +26,7 @@ const Cart = () => {
   useEffect(() => {
     setCartToState();
     router.prefetch('/shipping');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const increaseQty = (cartItem) => {

@@ -4,6 +4,7 @@ import React from 'react';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
 const OrderedProduct = ({ item }) => {
+  console.log(item);
   return (
     <figure className="flex flex-row mb-4">
       <div>

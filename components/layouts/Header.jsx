@@ -77,7 +77,7 @@ const Header = () => {
               </Link>
             ) : (
               <Link href="/me">
-                <div className="flex items-center mb-4 space-x-3 mt-4 cursor-pointer hover:bg-blue-100 hover:rounded-md">
+                <div className="flex items-center mb-4 space-x-3 mt-4 px-1 cursor-pointer hover:bg-blue-100 hover:rounded-md">
                   <Image
                     data-testid="profile image"
                     alt="profile image"

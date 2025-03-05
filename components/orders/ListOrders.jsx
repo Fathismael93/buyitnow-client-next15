@@ -19,9 +19,6 @@ const CustomPagination = dynamic(
 const ListOrders = ({ orders }) => {
   const { setDeliveryPrice } = useContext(OrderContext);
 
-  console.log('orders: ');
-  console.log(orders);
-
   useEffect(() => {
     setDeliveryPrice(orders?.deliveryPrice[0]?.deliveryPrice);
     // eslint-disable-next-line react-hooks/exhaustive-deps

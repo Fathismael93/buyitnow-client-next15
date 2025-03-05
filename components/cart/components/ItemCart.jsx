@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 import Link from 'next/link';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
+import Image from 'next/image';
 
 const ItemCart = ({
   cartItem,
@@ -17,7 +17,7 @@ const ItemCart = ({
           <figure className="flex leading-5">
             <div>
               <div className="block w-16 h-16 rounded-sm border border-gray-200 overflow-hidden">
-                <LazyLoadImage
+                <Image
                   src={
                     cartItem?.product?.images !== undefined &&
                     cartItem?.product?.images[0]?.url
@@ -26,12 +26,8 @@ const ItemCart = ({
                   }
                   alt={cartItem?.product?.name}
                   title="Product Image"
-                  width="100%"
-                  effect="blur-sm"
-                  wrapperProps={{
-                    // If you need to, you can tweak the effect transition using the wrapper style.
-                    style: { transitionDelay: '1s' },
-                  }}
+                  width={16}
+                  height={16}
                 />
               </div>
             </div>

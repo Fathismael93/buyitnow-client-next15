@@ -1,8 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/prop-types */
 'use client';
 
-import React, { useRef, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import dynamic from 'next/dynamic';
 
 import { toast } from 'react-toastify';
@@ -18,19 +17,18 @@ const BreadCrumbs = dynamic(() => import('@/components/layouts/BreadCrumbs'));
 const ProductDetails = ({ product, sameCategoryProducts }) => {
   const { user } = useContext(AuthContext);
   const { addItemToCart, updateCart, cart } = useContext(CartContext);
-
-  const imgRef = useRef(
-    product === undefined || product?.length === 0
-      ? null
-      : product?.images[0]?.url,
+  // State to track the currently selected image
+  const [selectedImage, setSelectedImage] = useState(
+    product?.images[0]?.url || '/images/default_product.png',
   );
 
   const relatedProducts = arrayHasData(sameCategoryProducts)
     ? null
     : sameCategoryProducts?.filter((element) => element?._id !== product?._id);
 
-  const setImgPreview = (url) => {
-    imgRef.current.src = url;
+  // Function to handle image selection
+  const handleImageSelect = (image) => {
+    setSelectedImage(image);
   };
 
   const inStock =
@@ -77,14 +75,9 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
               <>
                 <aside>
                   <div className="border border-gray-200 shadow-xs p-3 text-center rounded-sm mb-5">
-                    <img
-                      ref={imgRef}
+                    <Image
                       className="object-cover inline-block"
-                      src={
-                        product?.images[0]
-                          ? product?.images[0].url
-                          : '/images/default_product.png'
-                      }
+                      src={selectedImage}
                       alt="Product title"
                       width="340"
                       height="340"
@@ -95,7 +88,7 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
                       <div
                         key={img?.url}
                         className="inline-block border border-gray-200 p-1 rounded-md hover:border-blue-500"
-                        onClick={() => setImgPreview(img?.url)}
+                        onClick={() => handleImageSelect(img?.url)}
                       >
                         <Image
                           className="w-14 h-14"
@@ -108,7 +101,7 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
                           width={14}
                           height={14}
                           onError={() => {
-                            setImgPreview('/images/default_product.png');
+                            setSelectedImage('/images/default_product.png');
                           }}
                           style={{ objectFit: 'cover' }}
                         />

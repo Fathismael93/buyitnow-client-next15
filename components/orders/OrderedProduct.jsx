@@ -1,10 +1,8 @@
 /* eslint-disable react/prop-types */
-import Image from 'next/image';
 import React from 'react';
-import 'react-lazy-load-image-component/src/effects/blur.css';
+import Image from 'next/image';
 
 const OrderedProduct = ({ item }) => {
-  console.log(item);
   return (
     <figure className="flex flex-row mb-4">
       <div>

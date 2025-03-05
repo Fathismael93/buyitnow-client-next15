@@ -99,8 +99,8 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
                           }
                           alt={product?.name}
                           title={product?.name}
-                          width="30"
-                          height="30"
+                          width={30}
+                          height={30}
                           onError={() => {
                             setSelectedImage('/images/default_product.png');
                           }}

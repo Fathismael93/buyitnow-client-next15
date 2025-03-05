@@ -75,6 +75,8 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
               <>
                 <aside>
                   <div className="border border-gray-200 shadow-xs p-3 text-center rounded-sm mb-5">
+                    {console.log('selectedImage: ')}
+                    {console.log(selectedImage)}
                     <Image
                       className="object-cover inline-block"
                       src={selectedImage}
@@ -87,7 +89,7 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
                     {product?.images?.map((img) => (
                       <div
                         key={img?.url}
-                        className="inline-block border border-gray-200 p-1 rounded-md hover:border-blue-500"
+                        className={`inline-block border ${selectedImage === img?.url ? 'border-blue-500' : 'border-gray-200'} p-1 rounded-md`}
                         onClick={() => handleImageSelect(img?.url)}
                       >
                         <Image

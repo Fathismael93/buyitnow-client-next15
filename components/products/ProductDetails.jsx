@@ -89,7 +89,7 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
                     {product?.images?.map((img) => (
                       <div
                         key={img?.url}
-                        className={`inline-block border ${selectedImage === img?.url ? 'border-blue-500' : 'border-gray-200'} p-1 rounded-md`}
+                        className={`inline-block border ${selectedImage === img?.url ? 'border-blue-500' : 'border-gray-200'} cursor-pointer p-1 rounded-md`}
                         onClick={() => handleImageSelect(img?.url)}
                       >
                         <Image
@@ -127,7 +127,7 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
 
                   <div className="flex flex-wrap gap-2 mb-5">
                     <button
-                      className="px-4 py-2 inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+                      className="px-4 py-2 inline-block text-white cursor-pointer bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
                       onClick={addToCartHandler}
                       disabled={!inStock}
                     >

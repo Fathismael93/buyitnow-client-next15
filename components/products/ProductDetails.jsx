@@ -93,19 +93,18 @@ const ProductDetails = ({ product, sameCategoryProducts }) => {
                         onClick={() => handleImageSelect(img?.url)}
                       >
                         <Image
-                          className="w-14 h-14"
+                          className="w-30 h-30"
                           src={
                             img?.url ? img.url : '/images/default_product.png'
                           }
                           alt={product?.name}
                           title={product?.name}
-                          loading="lazy"
                           width={14}
                           height={14}
                           onError={() => {
                             setSelectedImage('/images/default_product.png');
                           }}
-                          style={{ objectFit: 'cover' }}
+                          style={{ objectFit: 'contain' }}
                         />
                       </div>
                     ))}

@@ -111,7 +111,7 @@ const nextConfig = {
               },
             ],
             permanent: true,
-            destination: 'https://:host/:path*',
+            destination: 'https://buyitnow-client-next15.vercel.app/:path*',
           },
         ]
       : [];

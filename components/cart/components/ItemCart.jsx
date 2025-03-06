@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 import Link from 'next/link';
-import 'react-lazy-load-image-component/src/effects/blur.css';
 import Image from 'next/image';
 
 const ItemCart = ({

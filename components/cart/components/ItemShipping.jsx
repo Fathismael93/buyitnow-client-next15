@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import Image from 'next/image';
 import React from 'react';
-import 'react-lazy-load-image-component/src/effects/blur.css';
 
 const ItemShipping = ({ item }) => {
   return (

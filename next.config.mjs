@@ -63,8 +63,7 @@ const nextConfig = {
     },
 
     // Nouvelles optimisations
-    serverComponentsExternalPackages: ['mongoose'],
-    instrumentationHook: true,
+    serverExternalPackages: ['mongoose'],
   },
 
   // Compression

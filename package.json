@@ -28,7 +28,6 @@
     "query-string": "^9.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-lazy-load-image-component": "^1.6.3",
     "react-responsive-pagination": "^2.10.0",
     "react-toastify": "^11.0.3",
     "server-only": "^0.0.1",

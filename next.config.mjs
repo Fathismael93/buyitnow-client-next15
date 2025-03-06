@@ -30,6 +30,9 @@ const nextConfig = {
     pagesBufferLength: 5,
   },
 
+  // Nouvelles optimisations
+  serverExternalPackages: ['mongoose'],
+
   // Optimisations expérimentales
   experimental: {
     // Optimiser les importations de packages
@@ -61,9 +64,6 @@ const nextConfig = {
         '.json',
       ],
     },
-
-    // Nouvelles optimisations
-    serverExternalPackages: ['mongoose'],
   },
 
   // Compression

@@ -68,15 +68,11 @@ export const metadata = {
       'Plateforme e-commerce avec une large sélection de produits de qualité',
     creator: '@buyitnow',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-  },
-  verification: {
-    google: 'google-site-verification-code',
-    yandex: 'yandex-verification-code',
-  },
+  // viewport: {
+  //   width: 'device-width',
+  //   initialScale: 1,
+  //   maximumScale: 5,
+  // },
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',
@@ -87,10 +83,10 @@ export const metadata = {
     statusBarStyle: 'black-translucent',
     capable: true,
   },
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#1f2937' },
-  ],
+  // themeColor: [
+  //   { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+  //   { media: '(prefers-color-scheme: dark)', color: '#1f2937' },
+  // ],
 };
 
 export default function RootLayout({ children }) {

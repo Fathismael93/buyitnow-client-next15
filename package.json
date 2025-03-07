@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@next/bundle-analyzer": "^15.1.4",
+    "@sentry/nextjs": "^9.5.0",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.5.1",
     "countries-list": "^3.1.1",

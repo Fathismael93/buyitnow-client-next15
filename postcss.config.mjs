@@ -34,8 +34,8 @@ const config = {
               './components/**/*.{js,jsx,ts,tsx}',
               './app/**/*.{js,jsx,ts,tsx}',
             ],
-            defaultExtractor: (content) =>
-              content.match(/[\w-/:]+(?<!:)/g) || [],
+            // defaultExtractor: (content) =>
+            //   content.match(/[\w-/:]+(?<!:)/g) || [],
             safelist: {
               standard: ['html', 'body', /^react-/, /^next-/],
               deep: [/toast/, /lazy-load/],

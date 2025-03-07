@@ -1,34 +1,78 @@
+/* eslint-disable no-unused-vars */
 import User from '../models/user';
 import Cart from '../models/cart';
 import { DECREASE, INCREASE } from '@/helpers/constants';
 import Product from '../models/product';
-import next from 'next';
 import ErrorHandler from '../utils/errorHandler';
+import { captureException } from '@/monitoring/sentry';
 
-export const newCart = async (req, res) => {
+/**
+ * Ajoute un produit au panier
+ * @route POST /api/cart
+ */
+export const newCart = async (req, res, next) => {
   try {
+    // Vérifier que l'utilisateur existe
     const user = await User.findOne({ email: req.user.email }).select('_id');
 
     if (!user) {
-      return next(new ErrorHandler('User not found', 404));
+      return next(new ErrorHandler('Utilisateur non trouvé', 404));
     }
 
-    const body = JSON.parse(req.body);
+    // Valider et parser le corps de la requête
+    let cartData;
+    try {
+      cartData = JSON.parse(req.body);
+    } catch (err) {
+      return next(new ErrorHandler('Format JSON invalide', 400));
+    }
 
-    const product = await Product.findById(body.productId);
+    // Vérifier que le productId est présent
+    if (!cartData.productId) {
+      return next(new ErrorHandler('ID de produit requis', 400));
+    }
+
+    // Vérifier que le produit existe
+    const product = await Product.findById(cartData.productId);
 
     if (!product) {
-      return next(new ErrorHandler('Product not found', 404));
+      return next(new ErrorHandler('Produit non trouvé', 404));
     }
 
-    let quantity = 1;
+    // Vérifier si le produit est déjà dans le panier
+    const existingCartItem = await Cart.findOne({
+      user: user._id,
+      product: product._id,
+    });
 
-    // IF QUANTITY ASKED BY THE USER IS MORE THEN THE PRODUCT'STOCK...
+    if (existingCartItem) {
+      // Si le produit est déjà dans le panier, augmenter la quantité
+      const newQuantity = existingCartItem.quantity + 1;
 
+      // Vérifier si la quantité demandée est disponible
+      if (newQuantity > product.stock) {
+        return next(new ErrorHandler('Quantité demandée non disponible', 400));
+      }
+
+      existingCartItem.quantity = newQuantity;
+      await existingCartItem.save();
+
+      return res.status(200).json({
+        success: true,
+        cartAdded: existingCartItem,
+        message: 'Quantité augmentée dans le panier',
+      });
+    }
+
+    // Définir la quantité par défaut à 1
+    const quantity = 1;
+
+    // Vérifier si la quantité demandée est disponible
     if (quantity > product.stock) {
-      return next(new ErrorHandler('Product inavailable', 404));
+      return next(new ErrorHandler('Produit non disponible en stock', 400));
     }
 
+    // Créer l'élément de panier
     const cart = {
       product: product._id,
       user: user._id,
@@ -38,124 +82,220 @@ export const newCart = async (req, res) => {
     const cartAdded = await Cart.create(cart);
 
     return res.status(201).json({
+      success: true,
       cartAdded,
+      message: 'Produit ajouté au panier',
     });
   } catch (error) {
-    return res.json(error);
+    captureException(error, {
+      tags: { action: 'add_to_cart' },
+      extra: { user: req.user?.email },
+    });
+    return next(new ErrorHandler(error.message, 500));
   }
 };
 
-export const getCart = async (req, res) => {
+/**
+ * Récupère le panier de l'utilisateur
+ * @route GET /api/cart
+ */
+export const getCart = async (req, res, next) => {
   try {
+    // Vérifier que l'utilisateur existe
     const user = await User.findOne({ email: req.user.email }).select('_id');
 
     if (!user) {
-      return next(new ErrorHandler('User not found', 404));
+      return next(new ErrorHandler('Utilisateur non trouvé', 404));
     }
 
-    let cart;
-    const result = await Cart.find({ user: user._id }).populate('product');
-    cart = result;
+    // Récupérer les articles du panier
+    let cartItems = await Cart.find({ user: user._id }).populate({
+      path: 'product',
+      select: 'name price images stock category',
+    });
 
-    // IF THE QUANTITY HAS EXCEDEED THE PRODUCT STOCK AVAILABLE THEN UPDATE THE QUANTITY TO EQUAL THE PRODUCT STOCK
+    // Vérifier si des produits du panier dépassent le stock disponible
+    // et ajuster les quantités en conséquence
+    const updatedCartItems = [];
 
-    for (let index = 0; index < result.length; index++) {
-      const productQuantity = result[index].quantity;
-      const productStock = result[index].product.stock;
-      const id = result[index]._id;
-
-      if (productQuantity > productStock) {
-        const cartUpdated = await Cart.findByIdAndUpdate(id, {
-          quantity: productStock,
-        });
-
-        cart = cartUpdated;
+    for (const item of cartItems) {
+      if (!item.product) {
+        // Si le produit a été supprimé, supprimer l'élément du panier
+        await Cart.findByIdAndDelete(item._id);
+        continue;
       }
+
+      if (item.quantity > item.product.stock) {
+        // Ajuster la quantité au stock disponible
+        item.quantity = item.product.stock;
+        await item.save();
+      }
+
+      updatedCartItems.push(item);
     }
 
-    const cartCount = cart.length;
+    // Recalculer le nombre d'articles dans le panier
+    const cartCount = updatedCartItems.length;
+
+    // Calculer le total du panier
+    const cartTotal = updatedCartItems.reduce((total, item) => {
+      return total + item.product.price * item.quantity;
+    }, 0);
 
     return res.status(200).json({
+      success: true,
       cartCount,
-      cart,
+      cart: updatedCartItems,
+      cartTotal,
     });
   } catch (error) {
-    return res.json(error);
+    captureException(error, {
+      tags: { action: 'get_cart' },
+      extra: { user: req.user?.email },
+    });
+    return next(new ErrorHandler(error.message, 500));
   }
 };
 
-export const updateCart = async (req, res) => {
+/**
+ * Met à jour un article du panier (quantité)
+ * @route PUT /api/cart
+ */
+export const updateCart = async (req, res, next) => {
   try {
+    // Vérifier que l'utilisateur existe
     const user = await User.findOne({ email: req.user.email });
 
     if (!user) {
-      return next(new ErrorHandler('User not found', 404));
+      return next(new ErrorHandler('Utilisateur non trouvé', 404));
     }
 
-    const body = JSON.parse(req.body);
-
-    const productId = body.product.product._id;
-    const product = await Product.findById(productId);
-
-    if (!product) {
-      return next(new ErrorHandler('Product not found', 404));
+    // Valider et parser le corps de la requête
+    let updateData;
+    try {
+      updateData = JSON.parse(req.body);
+    } catch (err) {
+      return next(new ErrorHandler('Format JSON invalide', 400));
     }
 
-    // IF THE USER WANT TO INCREASE THE QUANTITY OF A PRODUCT IN THE CART THEN THE VALUE WILL BE INCREASE
+    // Vérifier les données requises
+    if (!updateData.product || !updateData.value) {
+      return next(new ErrorHandler('Données de mise à jour incomplètes', 400));
+    }
 
-    if (body.value === INCREASE) {
-      const neededQuantity = body.product.quantity + 1;
-      if (neededQuantity > product.stock) {
-        return next(new ErrorHandler('Inavailable Quantity', 404));
+    const { product, value } = updateData;
+
+    // Vérifier que le produit existe
+    const productFromDB = await Product.findById(product.product._id);
+
+    if (!productFromDB) {
+      return next(new ErrorHandler('Produit non trouvé', 404));
+    }
+
+    // Si l'utilisateur veut augmenter la quantité
+    if (value === INCREASE) {
+      const neededQuantity = product.quantity + 1;
+
+      // Vérifier si la quantité demandée est disponible
+      if (neededQuantity > productFromDB.stock) {
+        return next(new ErrorHandler('Quantité non disponible', 400));
       }
 
-      const updatedCart = await Cart.findByIdAndUpdate(body.product._id, {
-        quantity: neededQuantity,
-      });
+      const updatedCart = await Cart.findByIdAndUpdate(
+        product._id,
+        { quantity: neededQuantity },
+        { new: true },
+      );
 
       if (updatedCart) {
-        return res.status(200).json('Item updated in cart');
+        return res.status(200).json('Quantité mise à jour dans le panier');
       } else {
-        return next(new ErrorHandler('Unknown error! Try again later', 500));
+        return next(
+          new ErrorHandler('Erreur lors de la mise à jour du panier', 500),
+        );
       }
     }
 
-    // IF THE USER WANT TO DECREASE THE QUANTITY OF A PRODUCT IN THE CART THEN THE VALUE WILL BE DECREASE
+    // Si l'utilisateur veut diminuer la quantité
+    if (value === DECREASE) {
+      const neededQuantity = product.quantity - 1;
 
-    if (body.value === DECREASE) {
-      const neededQuantity = body.product.quantity - 1;
-      const updatedCart = await Cart.findByIdAndUpdate(body.product._id, {
-        quantity: neededQuantity,
-      });
+      // Vérifier que la quantité n'est pas inférieure à 1
+      if (neededQuantity < 1) {
+        return next(
+          new ErrorHandler('La quantité ne peut pas être inférieure à 1', 400),
+        );
+      }
+
+      const updatedCart = await Cart.findByIdAndUpdate(
+        product._id,
+        { quantity: neededQuantity },
+        { new: true },
+      );
 
       if (updatedCart) {
-        return res.status(200).json('Item updated in cart');
+        return res.status(200).json('Quantité mise à jour dans le panier');
       } else {
-        return next(new ErrorHandler('Unknown error! Try again later', 500));
+        return next(
+          new ErrorHandler('Erreur lors de la mise à jour du panier', 500),
+        );
       }
     }
+
+    return next(new ErrorHandler('Opération non valide', 400));
   } catch (error) {
-    return res.json(error);
+    captureException(error, {
+      tags: { action: 'update_cart' },
+      extra: { user: req.user?.email },
+    });
+    return next(new ErrorHandler(error.message, 500));
   }
 };
 
-export const deleteCart = async (req, res) => {
+/**
+ * Supprime un article du panier
+ * @route DELETE /api/cart/:id
+ */
+export const deleteCart = async (req, res, next) => {
   try {
+    // Vérifier que l'utilisateur existe
     const user = await User.findOne({ email: req.user.email });
 
     if (!user) {
-      return next(new ErrorHandler('User not found', 404));
+      return next(new ErrorHandler('Utilisateur non trouvé', 404));
     }
 
-    const cartid = req.query.id;
-    const deleteCart = await Cart.findByIdAndDelete(cartid);
-
-    if (deleteCart) {
-      return res.status(200).json('Item deleted in cart');
-    } else {
-      return next(new ErrorHandler('Unknown error! Try again later', 500));
+    // Vérifier que l'ID de l'article est fourni
+    const cartId = req.query.id;
+    if (!cartId) {
+      return next(new ErrorHandler("ID de l'article du panier requis", 400));
     }
+
+    // Vérifier que l'article du panier existe et appartient à l'utilisateur
+    const cartItem = await Cart.findById(cartId);
+
+    if (!cartItem) {
+      return next(new ErrorHandler('Article du panier non trouvé', 404));
+    }
+
+    if (cartItem.user.toString() !== user._id.toString()) {
+      return next(
+        new ErrorHandler('Non autorisé à supprimer cet article', 403),
+      );
+    }
+
+    // Supprimer l'article du panier
+    await Cart.findByIdAndDelete(cartId);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Article supprimé du panier',
+    });
   } catch (error) {
-    return res.json(error);
+    captureException(error, {
+      tags: { action: 'delete_from_cart' },
+      extra: { user: req.user?.email, cartId: req.query.id },
+    });
+    return next(new ErrorHandler(error.message, 500));
   }
 };

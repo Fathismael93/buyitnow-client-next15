@@ -1,0 +1,19 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Pages privées
+Disallow: /me/
+Disallow: /cart/
+Disallow: /address/
+Disallow: /shipping/
+Disallow: /api/
+
+# Allow product and category pages
+Allow: /product/
+Allow: /?keyword=
+Allow: /?category=
+
+# Sitemaps
+Sitemap: https://buyitnow-client-next15.vercel.app/sitemap.xml
+Sitemap: https://buyitnow-client-next15.vercel.app/server-sitemap.xml

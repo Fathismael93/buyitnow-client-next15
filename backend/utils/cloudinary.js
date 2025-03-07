@@ -8,13 +8,13 @@ cloudinary.config({
 });
 
 const uploads = (file, folder) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     cloudinary.uploader.upload(
       file,
       (result) => {
         resolve({
           public_id: result.public_id,
-          url: result.url,
+          url: result.secure_url,
         });
       },
 

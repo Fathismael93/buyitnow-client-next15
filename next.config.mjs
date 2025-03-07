@@ -50,6 +50,7 @@ const nextConfig = {
   swcMinify: true,
   reactStrictMode: true,
   poweredByHeader: false,
+  serverExternalPackages: ['mongoose'],
   images: {
     remotePatterns: [
       {
@@ -64,7 +65,6 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['react-toastify', 'yup', 'mongoose', 'lodash'],
-    serverComponentsExternalPackages: ['mongoose'],
     turbo: {
       rules: {
         '*.svg': {

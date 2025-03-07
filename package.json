@@ -29,6 +29,7 @@
     "query-string": "^9.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-error-boundary": "^5.0.0",
     "react-responsive-pagination": "^2.10.0",
     "react-toastify": "^11.0.3",
     "server-only": "^0.0.1",

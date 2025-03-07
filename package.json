@@ -3,15 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch",
     "analyze": "cross-env ANALYZE=true next build",
-    "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
-    "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
+    "postbuild": "next-sitemap",
+    "clean": "rimraf .next out",
+    "prebuild": "npm run clean",
+    "prod-build": "npm run clean && next build"
   },
   "dependencies": {
     "@next/bundle-analyzer": "^15.1.4",

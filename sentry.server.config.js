@@ -1,19 +1,9 @@
-// This file configures the initialization of Sentry on the server.
-// The config you add here will be used whenever the server handles a request.
-// https://docs.sentry.io/platforms/javascript/guides/nextjs/
-
 import * as Sentry from '@sentry/nextjs';
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-
-  // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
-
-  // Setting this option to true will print helpful debug information to the console
-  debug: process.env.NODE_ENV === 'development',
-
-  // Only enable in production
+  debug: false,
   enabled: process.env.NODE_ENV === 'production',
 
   // Common server-side ignore rules
@@ -25,28 +15,53 @@ Sentry.init({
     'socket hang up',
     'ETIMEDOUT',
     'Unexpected token',
+    'DEPTH_ZERO_SELF_SIGNED_CERT',
+    'getaddrinfo ENOTFOUND',
+    'getaddrinfo EAI_AGAIN',
+    'database timeout',
+    'read ECONNRESET',
+    'connect ETIMEDOUT',
+    'MongoNetworkError',
+    'MongoError',
   ],
 
   integrations: [
     new Sentry.Integrations.Http({ tracing: true }),
     new Sentry.Integrations.Express(),
-    new Sentry.Integrations.Mongo(),
+    new Sentry.Integrations.Mongo({
+      useMongoose: true,
+    }),
+    new Sentry.Integrations.Node(),
   ],
 
-  // You can filter out certain users' data
+  // Anonymiser des données sensibles
   beforeSend(event) {
-    // Remove sensitive data
-    if (event.request?.headers?.cookie) {
-      event.request.headers.cookie = '[Filtered]';
+    // Anonymiser les headers
+    if (event.request && event.request.headers) {
+      const sanitizedHeaders = { ...event.request.headers };
+
+      // Supprimer les données sensibles des headers
+      if (sanitizedHeaders.cookie) sanitizedHeaders.cookie = '[FILTERED]';
+      if (sanitizedHeaders.authorization)
+        sanitizedHeaders.authorization = '[FILTERED]';
+      if (sanitizedHeaders['x-auth-token'])
+        sanitizedHeaders['x-auth-token'] = '[FILTERED]';
+
+      event.request.headers = sanitizedHeaders;
     }
 
-    if (event.request?.cookies) {
-      event.request.cookies = '[Filtered]';
+    // Anonymiser les cookies
+    if (event.request && event.request.cookies) {
+      event.request.cookies = '[FILTERED]';
     }
 
-    // Filter out any user data
-    if (event.user?.email) {
-      event.user.email = '[Filtered]';
+    // Anonymiser les données utilisateurs
+    if (event.user) {
+      if (event.user.email) event.user.email = '[FILTERED]';
+      if (event.user.id)
+        event.user.id =
+          event.user.id.substring(0, 2) + '...' + event.user.id.slice(-2);
+      if (event.user.ip_address) event.user.ip_address = '[FILTERED]';
     }
 
     return event;

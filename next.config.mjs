@@ -50,7 +50,7 @@ const nextConfig = {
   swcMinify: true,
   reactStrictMode: true,
   poweredByHeader: false,
-  serverExternalPackages: ['mongoose'],
+  // serverExternalPackages: ['mongoose'],
   images: {
     remotePatterns: [
       {

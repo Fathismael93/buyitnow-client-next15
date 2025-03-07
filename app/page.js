@@ -25,20 +25,7 @@ export const metadata = {
   },
 };
 
-// Fonction pour générer les métadonnées dynamiquement
-export async function generateMetadata({ searchParams }) {
-  const keyword = searchParams.keyword || '';
-
-  if (keyword) {
-    return {
-      title: `Résultats pour "${keyword}" - Buy It Now`,
-      description: `Découvrez nos produits correspondant à "${keyword}"`,
-    };
-  }
-
-  return metadata;
-}
-
+// eslint-disable-next-line react/prop-types
 const HomePage = async ({ searchParams }) => {
   // Récupération des données avec un fallback en cas d'erreur
   const productsData = await getAllProducts(searchParams).catch(() => ({

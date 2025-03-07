@@ -97,8 +97,6 @@ const nextConfig = {
       },
     ];
   },
-  // Optimisation du chargement des polices
-  optimizeFonts: true,
   // Configuration de la redirection des erreurs 404
   async redirects() {
     return [
@@ -108,10 +106,6 @@ const nextConfig = {
         permanent: false,
       },
     ];
-  },
-  // Désactivation de la télémétrie
-  telemetry: {
-    disabled: true,
   },
   // Configuration du runtime
   serverRuntimeConfig: {

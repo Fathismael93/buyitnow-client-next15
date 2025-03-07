@@ -16,7 +16,6 @@ const Header = dynamic(() => import('@/components/layouts/Header'), {
 // Import dynamique du gestionnaire de Service Worker
 const ServiceWorkerManager = dynamic(
   () => import('@/components/utils/ServiceWorkerManager'),
-  { ssr: false },
 );
 
 // Métadonnées globales pour le site

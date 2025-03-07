@@ -18,15 +18,15 @@ module.exports = {
   },
   exclude: ['/address/*', '/api/*', '/cart', '/me/*', '/shipping'],
   outDir: 'public',
-  transform: async (path) => {
+  transform: async (url) => {
     // Custom transformation logic for individual pages
-    // Return object if you want to modify a path
+    // Return object if you want to modify a url
     // Skip returning an object if you want to keep the default configuration
 
     // Example: Set higher priority for product pages
-    if (path.startsWith('/product/')) {
+    if (url.startsWith('/product/')) {
       return {
-        loc: path,
+        loc: url,
         changefreq: 'daily',
         priority: 0.8,
         lastmod: new Date().toISOString(),
@@ -34,18 +34,18 @@ module.exports = {
     }
 
     // Example: Set higher priority for category pages
-    if (path.startsWith('/category/')) {
+    if (url.startsWith('/category/')) {
       return {
-        loc: path,
+        loc: url,
         changefreq: 'weekly',
         priority: 0.7,
         lastmod: new Date().toISOString(),
       };
     }
 
-    // Use default transformation for all other paths
+    // Use default transformation for all other urls
     return {
-      loc: path,
+      loc: url,
       changefreq: 'weekly',
       priority: 0.5,
       lastmod: new Date().toISOString(),

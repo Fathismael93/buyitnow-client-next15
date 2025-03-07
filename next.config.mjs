@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 import { withSentryConfig } from '@sentry/nextjs';
 import withBundleAnalyzer from '@next/bundle-analyzer';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -36,6 +38,8 @@ const securityHeaders = [
     value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
   },
 ];
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig = {
   images: {

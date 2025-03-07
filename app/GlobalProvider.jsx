@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 'use client';
 
 import React from 'react';
@@ -15,7 +16,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
     <div className="min-h-screen flex items-center justify-center py-12 px-4">
       <div className="max-w-md w-full space-y-8 bg-white p-6 rounded-lg shadow">
         <h2 className="text-xl font-bold text-center text-red-600">
-          Quelque chose s'est mal passé
+          Quelque chose s&apos;est mal passé
         </h2>
         <p className="text-gray-700 text-center">
           {error.message || 'Une erreur inattendue est survenue'}

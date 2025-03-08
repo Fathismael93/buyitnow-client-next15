@@ -64,7 +64,7 @@ export const getAllProducts = async (searchParams) => {
     const cacheControl = getCacheHeaders('products');
 
     // S'assurer que l'URL est correctement formatée
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || ''}/api/products${searchQuery ? `?${searchQuery}` : ''}`;
+    const apiUrl = `/api/products${searchQuery ? `?${searchQuery}` : ''}`;
 
     console.log('Fetching from URL:', apiUrl);
 

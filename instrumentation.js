@@ -72,3 +72,12 @@ export async function register() {
     });
   }
 }
+
+// Ajout de l'instrumentation onRequestError pour les composants serveur React
+export function onRequestError({ error, request }) {
+  // Importer Sentry de manière synchrone pour l'accès au hook onRequestError
+  const Sentry = require('@sentry/nextjs');
+
+  // Capturer l'erreur avec des informations sur la requête
+  Sentry.captureRequestError(error, request);
+}

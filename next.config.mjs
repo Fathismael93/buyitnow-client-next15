@@ -191,7 +191,7 @@ const nextConfig = {
       config.cache = {
         type: 'filesystem',
         buildDependencies: {
-          config: [__filename],
+          config: [__dirname],
         },
         cacheDirectory: path.resolve(__dirname, '.next/cache/webpack'),
       };

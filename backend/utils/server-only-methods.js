@@ -41,6 +41,8 @@ async function getAuthHeaders() {
  */
 export const getAllProducts = async (searchParams) => {
   try {
+    console.log('Starting getAllProducts with params:', await searchParams);
+
     const urlParams = {
       keyword: (await searchParams).keyword,
       page: (await searchParams).page,
@@ -63,34 +65,47 @@ export const getAllProducts = async (searchParams) => {
 
     const searchQuery = queryString.stringify(urlParams);
     const cacheControl = getCacheHeaders('products');
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/products?${searchQuery}`;
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/products?${searchQuery}`,
-      {
-        next: {
-          revalidate: CACHE_TTL.products,
-          tags: [
-            'products',
-            ...(urlParams.category ? [`category-${urlParams.category}`] : []),
-          ],
-        },
-        headers: {
-          'Cache-Control': cacheControl,
-        },
+    console.log('Fetching from URL:', apiUrl);
+
+    const res = await fetch(apiUrl, {
+      next: {
+        revalidate: CACHE_TTL.products,
+        tags: [
+          'products',
+          ...(urlParams.category ? [`category-${urlParams.category}`] : []),
+        ],
       },
-    );
+      headers: {
+        'Cache-Control': cacheControl,
+      },
+    });
+
+    console.log('API response status:', res.status);
 
     if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      console.error('Erreur lors de la récupération des produits:', errorData);
-
+      const errorText = await res.text();
+      console.error('Error in getAllProducts API call:', res.status, errorText);
       // Renvoyer un objet vide pour éviter de planter l'application
       return { products: [], categories: [], totalPages: 0 };
     }
 
-    const data = await res.json();
-    return data;
+    try {
+      const data = await res.json();
+      console.log(
+        'Successfully parsed products data, count:',
+        data?.products?.length || 0,
+      );
+      return data;
+    } catch (parseError) {
+      console.error('JSON parsing error in getAllProducts:', parseError);
+      const rawText = await res.clone().text();
+      console.error('Raw response text:', rawText.substring(0, 200) + '...'); // Log des premiers 200 caractères
+      return { products: [], categories: [], totalPages: 0 };
+    }
   } catch (error) {
+    console.error('Exception in getAllProducts:', error);
     captureException(error, {
       tags: { action: 'get_all_products' },
       extra: { searchParams },

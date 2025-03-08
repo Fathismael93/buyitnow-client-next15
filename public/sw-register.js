@@ -1,52 +1,62 @@
 // Script pour enregistrer le service worker
 
 // Ne s'exécute que dans un navigateur compatible et en production
-if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-  window.addEventListener('load', function () {
-    // Délai de 3 secondes pour ne pas bloquer le chargement initial de la page
-    setTimeout(() => {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then(function (registration) {
-          console.log(
-            'Service Worker enregistré avec succès:',
-            registration.scope,
-          );
+if ('serviceWorker' in navigator) {
+  // Utiliser la variable exposée par EnvInit ou détecter l'environnement
+  const isProduction =
+    typeof window !== 'undefined' &&
+    (window.NEXT_PUBLIC_NODE_ENV === 'production' ||
+      // Fallback au cas où la variable n'est pas disponible
+      (window.location.hostname !== 'localhost' &&
+        !window.location.hostname.includes('127.0.0.1')));
 
-          // Vérifier si un nouveau service worker est en attente d'installation
-          if (registration.waiting) {
-            // Notifier l'utilisateur de la mise à jour
-            notifyUpdate(registration);
-          }
+  if (isProduction) {
+    window.addEventListener('load', function () {
+      // Délai de 3 secondes pour ne pas bloquer le chargement initial de la page
+      setTimeout(() => {
+        navigator.serviceWorker
+          .register('/sw.js')
+          .then(function (registration) {
+            console.log(
+              'Service Worker enregistré avec succès:',
+              registration.scope,
+            );
 
-          // Écouter les mises à jour du service worker
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
+            // Vérifier si un nouveau service worker est en attente d'installation
+            if (registration.waiting) {
+              // Notifier l'utilisateur de la mise à jour
+              notifyUpdate(registration);
+            }
 
-            newWorker.addEventListener('statechange', () => {
-              if (
-                newWorker.state === 'installed' &&
-                navigator.serviceWorker.controller
-              ) {
-                notifyUpdate(registration);
-              }
+            // Écouter les mises à jour du service worker
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+
+              newWorker.addEventListener('statechange', () => {
+                if (
+                  newWorker.state === 'installed' &&
+                  navigator.serviceWorker.controller
+                ) {
+                  notifyUpdate(registration);
+                }
+              });
             });
+          })
+          .catch(function (error) {
+            console.log("Échec de l'enregistrement du Service Worker:", error);
           });
-        })
-        .catch(function (error) {
-          console.log("Échec de l'enregistrement du Service Worker:", error);
-        });
-    }, 3000);
+      }, 3000);
 
-    // Recharger la page lors d'un changement de service worker contrôlant la page
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) {
-        refreshing = true;
-        window.location.reload();
-      }
+      // Recharger la page lors d'un changement de service worker contrôlant la page
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
+      });
     });
-  });
+  }
 }
 
 // Fonction pour notifier l'utilisateur d'une mise à jour

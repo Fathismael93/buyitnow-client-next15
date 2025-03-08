@@ -41,31 +41,29 @@ async function getAuthHeaders() {
  */
 export const getAllProducts = async (searchParams) => {
   try {
-    console.log('Starting getAllProducts with params:', await searchParams);
+    console.log('Starting getAllProducts with params:', searchParams);
 
-    const urlParams = {
-      keyword: (await searchParams).keyword,
-      page: (await searchParams).page,
-      category: (await searchParams).category,
-      'price[gte]': (await searchParams).min,
-      'price[lte]': (await searchParams).max,
-      'ratings[gte]': (await searchParams).ratings,
-    };
+    // Créer un objet pour stocker les paramètres filtrés
+    const urlParams = {};
 
-    // Filtrer les paramètres vides ou null
-    Object.keys(urlParams).forEach((key) => {
-      if (
-        urlParams[key] === undefined ||
-        urlParams[key] === null ||
-        urlParams[key] === ''
-      ) {
-        delete urlParams[key];
-      }
-    });
+    // Vérifier si searchParams est défini avant d'y accéder
+    if (searchParams) {
+      // Ajouter les paramètres qui existent
+      if (searchParams.keyword) urlParams.keyword = searchParams.keyword;
+      if (searchParams.page) urlParams.page = searchParams.page;
+      if (searchParams.category) urlParams.category = searchParams.category;
+      if (searchParams.min) urlParams['price[gte]'] = searchParams.min;
+      if (searchParams.max) urlParams['price[lte]'] = searchParams.max;
+      if (searchParams.ratings)
+        urlParams['ratings[gte]'] = searchParams.ratings;
+    }
 
-    const searchQuery = queryString.stringify(urlParams);
+    // Construire la chaîne de requête
+    const searchQuery = new URLSearchParams(urlParams).toString();
     const cacheControl = getCacheHeaders('products');
-    const apiUrl = `/api/products?${searchQuery}`;
+
+    // S'assurer que l'URL est correctement formatée
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || ''}/api/products${searchQuery ? `?${searchQuery}` : ''}`;
 
     console.log('Fetching from URL:', apiUrl);
 

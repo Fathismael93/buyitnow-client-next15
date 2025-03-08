@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Script from 'next/script';
 
 /**
@@ -8,10 +8,15 @@ import Script from 'next/script';
  * Ce composant est conçu pour être inclus dans le layout principal
  */
 const ServiceWorkerManager = () => {
-  // Détection du mode développement ou production
-  const isProduction = process.env.NODE_ENV === 'production';
+  const [isProduction, setIsProduction] = useState(false);
 
   useEffect(() => {
+    // Vérifier si la variable d'environnement est disponible
+    if (typeof window !== 'undefined') {
+      // Utiliser la variable d'environnement exposée par EnvInit
+      setIsProduction(window.NEXT_PUBLIC_NODE_ENV === 'production');
+    }
+
     // Désactiver la mise en cache en développement
     if (!isProduction && 'serviceWorker' in navigator) {
       // Désinscrire tout Service Worker existant en mode développement

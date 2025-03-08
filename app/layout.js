@@ -6,6 +6,7 @@ import { GlobalProvider } from './GlobalProvider';
 import './globals.css';
 import Loading from './loading';
 import Link from 'next/link';
+import EnvInit from '@/components/utils/EnvInit';
 
 // Import dynamique des composants avec loading fallback
 const Header = dynamic(() => import('@/components/layouts/Header'), {
@@ -108,6 +109,8 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="flex flex-col min-h-screen bg-gray-50">
+        {/* Composant pour initialiser les variables d'environnement côté client */}
+        <EnvInit />
         <GlobalProvider>
           <ServiceWorkerManager />
           <Suspense fallback={<Loading />}>

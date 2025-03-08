@@ -1,20 +1,16 @@
 // app/page.js
-export const dynamicPage = 'force-dynamic';
+// Définir explicitement le mode dynamique pour cette page
+export const dynamicParams = true;
+export const dynamic = 'force-dynamic';
 
 import React from 'react';
 import { Suspense } from 'react';
-import dynamic from 'next/dynamic';
+import { lazy } from 'react';
 import { getAllProducts } from '@/backend/utils/server-only-methods';
 import Loading from './loading';
 
-// Utilisation de dynamic import avec preload pour les composants critiques
-const ListProducts = dynamic(
-  () => import('@/components/products/ListProducts'),
-  {
-    loading: () => <Loading />,
-    ssr: true,
-  },
-);
+// Utilisation de lazy au lieu de dynamic pour éviter le conflit de nom
+const ListProducts = lazy(() => import('@/components/products/ListProducts'));
 
 export const metadata = {
   title: 'Buy It Now - Votre boutique en ligne',

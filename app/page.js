@@ -27,7 +27,7 @@ export const metadata = {
 
 // eslint-disable-next-line react/prop-types
 const HomePage = async ({ searchParams }) => {
-  // Récupération des données avec un fallback en cas d'erreur
+  // Pas besoin d'await ici, searchParams est déjà un objet
   const productsData = await getAllProducts(searchParams).catch(() => ({
     products: [],
     categories: [],

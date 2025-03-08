@@ -41,15 +41,16 @@ async function getAuthHeaders() {
  */
 export const getAllProducts = async (searchParams) => {
   try {
-    console.log('Starting getAllProducts with params:', await searchParams);
+    // Convertir searchParams en objet simple sans await
+    const params = typeof searchParams === 'object' ? searchParams : {};
 
     const urlParams = {
-      keyword: (await searchParams).keyword,
-      page: (await searchParams).page,
-      category: (await searchParams).category,
-      'price[gte]': (await searchParams).min,
-      'price[lte]': (await searchParams).max,
-      'ratings[gte]': (await searchParams).ratings,
+      keyword: params.keyword,
+      page: params.page,
+      category: params.category,
+      'price[gte]': params.min,
+      'price[lte]': params.max,
+      'ratings[gte]': params.ratings,
     };
 
     // Filtrer les paramètres vides ou null
@@ -67,8 +68,6 @@ export const getAllProducts = async (searchParams) => {
     const cacheControl = getCacheHeaders('products');
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/products?${searchQuery}`;
 
-    console.log('Fetching from URL:', apiUrl);
-
     const res = await fetch(apiUrl, {
       next: {
         revalidate: CACHE_TTL.products,
@@ -82,36 +81,26 @@ export const getAllProducts = async (searchParams) => {
       },
     });
 
-    console.log('API response status:', res.status);
-
     if (!res.ok) {
       const errorText = await res.text();
       console.error('Error in getAllProducts API call:', res.status, errorText);
-      // Renvoyer un objet vide pour éviter de planter l'application
       return { products: [], categories: [], totalPages: 0 };
     }
 
     try {
       const data = await res.json();
-      console.log(
-        'Successfully parsed products data, count:',
-        data?.products?.length || 0,
-      );
       return data;
     } catch (parseError) {
       console.error('JSON parsing error in getAllProducts:', parseError);
-      const rawText = await res.clone().text();
-      console.error('Raw response text:', rawText.substring(0, 200) + '...'); // Log des premiers 200 caractères
       return { products: [], categories: [], totalPages: 0 };
     }
   } catch (error) {
     console.error('Exception in getAllProducts:', error);
     captureException(error, {
       tags: { action: 'get_all_products' },
-      extra: { searchParams },
+      extra: { searchParams: JSON.stringify(searchParams) },
     });
 
-    // Renvoyer un objet vide pour éviter de planter l'application
     return { products: [], categories: [], totalPages: 0 };
   }
 };

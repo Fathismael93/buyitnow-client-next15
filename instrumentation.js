@@ -28,14 +28,14 @@ export async function register() {
         'MongoError',
       ],
 
-      integrations: [
-        new Sentry.Integrations.Http({ tracing: true }),
-        new Sentry.Integrations.Express(),
-        new Sentry.Integrations.Mongo({
-          useMongoose: true,
-        }),
-        new Sentry.Integrations.Node(),
-      ],
+      // integrations: [
+      //   new Sentry.Integrations.Http({ tracing: true }),
+      //   new Sentry.Integrations.Express(),
+      //   new Sentry.Integrations.Mongo({
+      //     useMongoose: true,
+      //   }),
+      //   new Sentry.Integrations.Node(),
+      // ],
 
       // Anonymiser des données sensibles
       beforeSend(event) {

@@ -1,3 +1,6 @@
+// app/page.js
+export const dynamicPage = 'force-dynamic';
+
 import React from 'react';
 import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
@@ -27,7 +30,7 @@ export const metadata = {
 
 // eslint-disable-next-line react/prop-types
 const HomePage = async ({ searchParams }) => {
-  // Pas besoin d'await ici, searchParams est déjà un objet
+  // Récupération des données avec un fallback en cas d'erreur
   const productsData = await getAllProducts(searchParams).catch(() => ({
     products: [],
     categories: [],

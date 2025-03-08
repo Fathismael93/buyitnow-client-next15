@@ -49,7 +49,6 @@ const securityHeaders = [
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  serverExternalPackages: ['mongoose'],
   images: {
     remotePatterns: [
       {

@@ -53,18 +53,18 @@ export default withAuth(
       }
 
       // Rate limiting for login attempts
-      if (url === '/login' && req.method === 'POST') {
-        // Basic rate limiting implementation
-        // For production, consider using a more robust solution like Redis
-        const ip = req.headers.get('x-forwarded-for') || req.ip;
-        const rateLimitKey = `login_${ip}`;
+      // if (url === '/login' && req.method === 'POST') {
+      //   // Basic rate limiting implementation
+      //   // For production, consider using a more robust solution like Redis
+      //   const ip = req.headers.get('x-forwarded-for') || req.ip;
+      //   const rateLimitKey = `login_${ip}`;
 
-        // In a real implementation, check rate limit against a cache/database
-        // This is a placeholder for demonstration
+      //   // In a real implementation, check rate limit against a cache/database
+      //   // This is a placeholder for demonstration
 
-        // Allow the request to continue
-        return NextResponse.next();
-      }
+      //   // Allow the request to continue
+      //   return NextResponse.next();
+      // }
 
       // Allow authenticated requests to continue
       return NextResponse.next();

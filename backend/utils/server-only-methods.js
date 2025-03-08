@@ -104,6 +104,7 @@ export const getAllProducts = async (searchParams) => {
       return { products: [], categories: [], totalPages: 0 };
     }
   } catch (error) {
+    console.log('Are we here ?');
     console.error('Exception in getAllProducts:', error);
     captureException(error, {
       tags: { action: 'get_all_products' },

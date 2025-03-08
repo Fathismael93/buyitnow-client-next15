@@ -161,7 +161,7 @@ export const captureMessage = (message, context = {}) => {
  */
 export const setUser = (user) => {
   if (!user) {
-    Sentry.configureScope((scope) => scope.setUser(null));
+    Sentry.setUser(null);
     return;
   }
 

@@ -186,6 +186,24 @@ const nextConfig = {
       };
     }
 
+    // Ajouter cette configuration pour le cache
+    if (!dev) {
+      config.cache = {
+        type: 'filesystem',
+        buildDependencies: {
+          config: [__filename],
+        },
+        cacheDirectory: path.resolve(__dirname, '.next/cache/webpack'),
+      };
+    }
+
+    // Supprimer les avertissements pour les grandes chaînes
+    if (!dev) {
+      config.infrastructureLogging = {
+        level: 'error', // Réduit le niveau de log pour ne montrer que les erreurs
+      };
+    }
+
     return config;
   },
   eslint: {

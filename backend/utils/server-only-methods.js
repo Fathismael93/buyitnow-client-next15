@@ -63,11 +63,11 @@ export const getAllProducts = async (searchParams) => {
     const cacheControl = getCacheHeaders('products');
 
     // S'assurer que l'URL est correctement formatée
-    const apiUrl = `/api/products${searchQuery ? `?${searchQuery}` : ''}`;
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || ''}/api/products${searchQuery ? `?${searchQuery}` : ''}`;
 
     console.log('Fetching from URL:', apiUrl);
 
-    const res = await fetch(apiUrl, {
+    await fetch(apiUrl, {
       next: {
         revalidate: CACHE_TTL.products,
         tags: [
@@ -78,9 +78,19 @@ export const getAllProducts = async (searchParams) => {
       headers: {
         'Cache-Control': cacheControl,
       },
-    });
+    })
+      .then((result) => {
+        console.log('Result in getAllProducts');
+        console.log(result);
+      })
+      .catch((error) => {
+        console.log('Error in getAllProducts');
+        console.log(error);
+      });
 
     console.log('API response status:', res.status);
+
+    const res = {};
 
     if (!res.ok) {
       const errorText = await res.text();

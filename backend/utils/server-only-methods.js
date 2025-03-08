@@ -40,6 +40,7 @@ async function getAuthHeaders() {
  * @returns {Promise<Object>} - Données des produits, catégories et pagination
  */
 export const getAllProducts = async (searchParams) => {
+  console.log('WE ARE IN THE GET PRODUCTS METHOD');
   try {
     console.log('Starting getAllProducts with params:', searchParams);
 
@@ -67,7 +68,7 @@ export const getAllProducts = async (searchParams) => {
 
     console.log('Fetching from URL:', apiUrl);
 
-    await fetch(apiUrl, {
+    const res = await fetch(apiUrl, {
       next: {
         revalidate: CACHE_TTL.products,
         tags: [
@@ -78,19 +79,9 @@ export const getAllProducts = async (searchParams) => {
       headers: {
         'Cache-Control': cacheControl,
       },
-    })
-      .then((result) => {
-        console.log('Result in getAllProducts');
-        console.log(result);
-      })
-      .catch((error) => {
-        console.log('Error in getAllProducts');
-        console.log(error);
-      });
+    });
 
     console.log('API response status:', res.status);
-
-    const res = {};
 
     if (!res.ok) {
       const errorText = await res.text();

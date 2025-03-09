@@ -61,7 +61,7 @@ export const getAllProducts = async (searchParams) => {
 
     // Construire la chaîne de requête
     const searchQuery = new URLSearchParams(urlParams).toString();
-    // const cacheControl = getCacheHeaders('products');
+    const cacheControl = getCacheHeaders('products');
 
     // S'assurer que l'URL est correctement formatée
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || ''}/api/products${searchQuery ? `?${searchQuery}` : ''}`;
@@ -69,16 +69,16 @@ export const getAllProducts = async (searchParams) => {
     console.log('Fetching from URL:', apiUrl);
 
     const res = await fetch(apiUrl, {
-      // next: {
-      //   revalidate: CACHE_TTL.products,
-      //   tags: [
-      //     'products',
-      //     ...(urlParams.category ? [`category-${urlParams.category}`] : []),
-      //   ],
-      // },
-      // headers: {
-      //   'Cache-Control': cacheControl,
-      // },
+      next: {
+        revalidate: CACHE_TTL.products,
+        tags: [
+          'products',
+          ...(urlParams.category ? [`category-${urlParams.category}`] : []),
+        ],
+      },
+      headers: {
+        'Cache-Control': cacheControl,
+      },
     });
 
     console.log('API response status:', res.status);

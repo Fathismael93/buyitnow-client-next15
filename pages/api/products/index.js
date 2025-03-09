@@ -7,7 +7,15 @@ const router = createRouter();
 
 console.log('WE ARE IN THE GET PRODUCTS API');
 
-dbConnect();
+await dbConnect()
+  .then((result) => {
+    console.log('RESULT IN DATABASE CONNECTION');
+    console.log(result);
+  })
+  .catch((error) => {
+    console.error('Error IN DATABASE CONNECTION');
+    console.error(error);
+  });
 
 router.get(getProducts);
 

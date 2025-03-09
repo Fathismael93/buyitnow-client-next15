@@ -12,7 +12,7 @@ import { getCacheHeaders } from '@/utils/cache';
 export const getProducts = async (req, res, next) => {
   try {
     // Définir le nombre d'éléments par page
-    const resPerPage = 8;
+    const resPerPage = 3;
     const cacheControl = getCacheHeaders('products');
 
     // Appliquer les filtres de recherche et de catégorie

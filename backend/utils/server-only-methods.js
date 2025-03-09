@@ -69,13 +69,13 @@ export const getAllProducts = async (searchParams) => {
     console.log('Fetching from URL:', apiUrl);
 
     await fetch(apiUrl, {
-      next: {
-        revalidate: CACHE_TTL.products,
-        tags: [
-          'products',
-          ...(urlParams.category ? [`category-${urlParams.category}`] : []),
-        ],
-      },
+      // next: {
+      //   revalidate: CACHE_TTL.products,
+      //   tags: [
+      //     'products',
+      //     ...(urlParams.category ? [`category-${urlParams.category}`] : []),
+      //   ],
+      // },
       headers: {
         'Cache-Control': cacheControl,
       },

@@ -85,7 +85,6 @@ export const getAllProducts = async (searchParams) => {
         console.log(result);
       })
       .catch((error) => {
-        console.error('Error in Fetch all products');
         console.error(error);
       });
 

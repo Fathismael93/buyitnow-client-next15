@@ -20,10 +20,6 @@ const securityHeaders = [
     value: 'max-age=63072000; includeSubDomains; preload',
   },
   {
-    key: 'X-XSS-Protection',
-    value: '1; mode=block',
-  },
-  {
     key: 'X-Frame-Options',
     value: 'SAMEORIGIN',
   },
@@ -81,7 +77,7 @@ const nextConfig = {
     removeConsole:
       process.env.NODE_ENV === 'production'
         ? {
-            exclude: ['error', 'warn'],
+            exclude: ['log', 'error', 'warn'],
           }
         : false,
   },

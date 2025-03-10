@@ -204,7 +204,7 @@ const nextConfig = {
     return config;
   },
   eslint: {
-    ignoreDuringBuilds: true, // Ignorer les erreurs ESLint pendant le build
+    ignoreDuringBuilds: false, // Ignorer les erreurs ESLint pendant le build
   },
   typescript: {
     ignoreBuildErrors: true, // Ignorer les erreurs TypeScript pendant le build

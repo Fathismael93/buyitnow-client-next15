@@ -6,13 +6,24 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "next lint --cache --max-warnings=0",
+    "lint:fix": "next lint --fix",
     "test": "jest",
+    "test:ci": "jest --ci --coverage",
+    "test:watch": "jest --watch",
+    "test:e2e": "cypress run",
+    "test:e2e:open": "cypress open",
+    "test:perf": "lighthouse --output=html --output-path=./lighthouse-report.html",
     "analyze": "cross-env ANALYZE=true next build",
-    "postbuild": "echo 'Sitemap generation disabled'",
-    "clean": "rimraf .next out",
+    "postbuild": "next-sitemap",
+    "clean": "rimraf .next out coverage .eslintcache node_modules/.cache",
     "prebuild": "npm run clean",
-    "prod-build": "npm run clean && next build"
+    "prod-build": "npm run security && npm run clean && npm run optimize-images && next build",
+    "security": "npm audit --production && npx snyk test",
+    "optimize-images": "next-image-optimize",
+    "check-deps": "npx depcheck",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@next/bundle-analyzer": "^15.1.4",
@@ -20,13 +31,16 @@
     "@sentry/replay": "^7.116.0",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.5.1",
+    "compression": "^1.7.4",
     "countries-list": "^3.1.1",
     "cross-env": "^7.0.3",
+    "helmet": "^7.1.0",
     "mongoose": "^8.9.5",
     "multer": "^1.4.5-lts.1",
     "next": "^15.1.4",
     "next-auth": "^4.24.11",
     "next-connect": "^1.0.0",
+    "next-sitemap": "^5.0.0",
     "nodemailer": "^6.9.16",
     "query-string": "^9.1.1",
     "react": "^19.0.0",
@@ -36,16 +50,21 @@
     "react-toastify": "^11.0.3",
     "rimraf": "^6.0.1",
     "server-only": "^0.0.1",
+    "sharp": "^0.33.2",
     "yup": "^1.6.1"
   },
   "devDependencies": {
+    "@axe-core/react": "^4.8.4",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
+    "@testing-library/user-event": "^14.5.2",
     "cssnano": "^7.0.6",
+    "cypress": "^13.6.4",
+    "depcheck": "^1.4.7",
     "eslint": "^9.18.0",
     "eslint-config-next": "^15.1.4",
     "eslint-config-prettier": "^10.0.1",
@@ -55,13 +74,32 @@
     "eslint-plugin-optimize-regex": "^1.2.1",
     "eslint-plugin-prettier": "^5.2.2",
     "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-security": "^3.0.1",
     "eslint-plugin-testing-library": "^7.1.1",
     "globals": "^16.0.0",
+    "husky": "^9.0.11",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "lighthouse": "^11.5.0",
+    "lint-staged": "^15.2.0",
+    "next-image-optimize": "^1.0.0",
     "postcss": "^8.5.1",
     "prettier": "^3.4.2",
+    "snyk": "^1.1247.0",
     "tailwindcss": "^4.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
   }
 }

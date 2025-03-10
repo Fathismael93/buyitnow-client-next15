@@ -1,10 +1,11 @@
 /** @type {import('next').NextConfig} */
 import { withSentryConfig } from '@sentry/nextjs';
 import withBundleAnalyzer from '@next/bundle-analyzer';
-import path from 'path';
+import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -190,7 +191,7 @@ const nextConfig = {
         buildDependencies: {
           config: [__dirname],
         },
-        cacheDirectory: path.resolve(__dirname, '.next/cache/webpack'),
+        cacheDirectory: path.resolve(__filename, '.next/cache/webpack'),
       };
     }
 

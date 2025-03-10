@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
 import { Replay } from '@sentry/replay';
-import { BrowserTracing } from '@sentry/browser';
 
 // Vérification de l'environnement pour une configuration conditionnelle
 const environment = process.env.NODE_ENV || 'development';
@@ -451,13 +450,6 @@ Sentry.init({
 
   // Intégrations avancées
   integrations: [
-    // Activation du traçage pour améliorer la visibilité des performances
-    new BrowserTracing({
-      // Paramètres personnalisés pour le traçage
-      tracingOrigins: ['localhost', 'buyitnow-client-next15.vercel.app', /^\//],
-      // Limite les spans pour éviter des données excessives
-      maxTransactionDuration: 60, // 60 secondes max
-    }),
     // Activation de Replay avec paramètres améliorés
     new Replay({
       // Paramètres généraux
@@ -470,40 +462,27 @@ Sentry.init({
       blockSelector: 'input[type="password"], .credit-card-form, .address-form',
       maskTextSelector: 'h1[id], span[data-private]',
       ignoreClass: 'replay-ignore',
-      maskTextFn: (text) => {
-        if (text.length < 3) return text; // Préserver les textes très courts
-        // Anonymiser les textes longs mais préserver la structure
-        return text
-          .split(' ')
-          .map((word) => {
-            if (word.length <= 2) return word; // Préserver les petits mots
-            return (
-              word.charAt(0) +
-              '•'.repeat(Math.min(word.length - 2, 3)) +
-              word.charAt(word.length - 1)
-            );
-          })
-          .join(' ');
-      },
 
       // Configuration avancée du sampling
-      sessionSampler: (samplingContext) => {
-        // Échantillonnage basé sur le chemin de l'URL
-        const path = window.location.pathname;
+      sessionSampler: (context) => {
+        if (typeof window !== 'undefined') {
+          // Échantillonnage basé sur le chemin de l'URL
+          const path = window.location.pathname;
 
-        // Pages critiques: plus d'échantillons
-        if (path.includes('/checkout') || path.includes('/payment')) {
-          return isProd ? 0.3 : 0.7; // 30% en prod, 70% ailleurs
-        }
+          // Pages critiques: plus d'échantillons
+          if (path.includes('/checkout') || path.includes('/payment')) {
+            return isProd ? 0.3 : 0.7; // 30% en prod, 70% ailleurs
+          }
 
-        // Pages de panier: échantillonnage moyen
-        if (path.includes('/cart') || path.includes('/basket')) {
-          return isProd ? 0.1 : 0.5;
-        }
+          // Pages de panier: échantillonnage moyen
+          if (path.includes('/cart') || path.includes('/basket')) {
+            return isProd ? 0.1 : 0.5;
+          }
 
-        // Pages de produit: échantillonnage faible
-        if (path.includes('/product') || path.includes('/category')) {
-          return isProd ? 0.05 : 0.2;
+          // Pages de produit: échantillonnage faible
+          if (path.includes('/product') || path.includes('/category')) {
+            return isProd ? 0.05 : 0.2;
+          }
         }
 
         // Autres pages: échantillonnage minimal
@@ -562,37 +541,25 @@ Sentry.init({
   },
 });
 
-// Configurer le signalement automatique des Web Vitals
+// Configurer le signalement des Web Vitals avec une approche compatible
 if (typeof window !== 'undefined') {
-  let vitalsReported = false;
-
   // Attacher la fonction à la fenêtre pour que Next.js puisse l'utiliser
   window.reportWebVitals = ({ id, name, value, label }) => {
-    Sentry.metrics.gauge(`web.vitals.${name.toLowerCase()}`, value, {
-      unit: name === 'CLS' ? 'none' : 'millisecond',
-      route: window.location.pathname,
-      label: label || 'web-vital',
-    });
-
-    // Envoyer un événement pour les mesures particulièrement mauvaises
-    if (!vitalsReported) {
-      const isHighCLS = name === 'CLS' && value > 0.1;
-      const isHighFID = name === 'FID' && value > 100;
-      const isHighLCP = name === 'LCP' && value > 2500;
-      const isHighINP = name === 'INP' && value > 200;
-
-      if (isHighCLS || isHighFID || isHighLCP || isHighINP) {
-        Sentry.captureMessage(`Poor web vital detected: ${name}=${value}`, {
-          level: 'warning',
-          tags: {
-            webVital: name,
-            webVitalValue: value,
-            webVitalRoute: window.location.pathname,
-          },
-        });
-
-        vitalsReported = true; // Ne rapporter qu'une fois par chargement de page
-      }
+    // Utiliser captureMessage au lieu de metrics.gauge qui n'est pas disponible
+    if (
+      (name === 'CLS' && value > 0.1) ||
+      (name === 'FID' && value > 100) ||
+      (name === 'LCP' && value > 2500) ||
+      (name === 'INP' && value > 200)
+    ) {
+      Sentry.captureMessage(`Web vital: ${name}=${value}`, {
+        level: 'warning',
+        tags: {
+          webVital: name,
+          webVitalValue: value,
+          webVitalRoute: window.location.pathname,
+        },
+      });
     }
   };
 

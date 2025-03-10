@@ -26,7 +26,6 @@ const eslintConfig = [
   ...compat.extends(
     'eslint:recommended',
     'plugin:react/recommended',
-    'airbnb',
     'plugin:prettier/recommended',
     'next/core-web-vitals',
     'plugin:jest/recommended',

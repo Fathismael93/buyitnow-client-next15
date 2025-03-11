@@ -34,19 +34,19 @@ const config = {
     // Sécurité: Purger le CSS inutilisé
     ...(process.env.NODE_ENV === 'production'
       ? {
-          '@fullhuman/postcss-purgecss': {
-            content: [
-              './pages/**/*.{js,jsx,ts,tsx}',
-              './components/**/*.{js,jsx,ts,tsx}',
-            ],
-            defaultExtractor: (content) =>
-              content.match(/[\w-/:]+(?<!:)/g) || [],
-            safelist: {
-              standard: ['html', 'body', /^[a-z]?-/],
-              deep: [/dark/, /light/, /active/, /disabled/, /open/],
-              greedy: [/modal/, /dialog/, /toast/, /alert/, /dropdown/],
-            },
-          },
+          // '@fullhuman/postcss-purgecss': {
+          //   content: [
+          //     './pages/**/*.{js,jsx,ts,tsx}',
+          //     './components/**/*.{js,jsx,ts,tsx}',
+          //   ],
+          //   defaultExtractor: (content) =>
+          //     content.match(/[\w-/:]+(?<!:)/g) || [],
+          //   safelist: {
+          //     standard: ['html', 'body', /^[a-z]?-/],
+          //     deep: [/dark/, /light/, /active/, /disabled/, /open/],
+          //     greedy: [/modal/, /dialog/, /toast/, /alert/, /dropdown/],
+          //   },
+          // },
         }
       : {}),
 

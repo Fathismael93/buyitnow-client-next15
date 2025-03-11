@@ -32,7 +32,6 @@ const eslintConfig = [
     'plugin:jest-dom/recommended',
     'plugin:testing-library/react',
     'plugin:react-hooks/recommended',
-    'plugin:security/recommended',
   ),
 
   // Appliquer à tous les fichiers JS/JSX

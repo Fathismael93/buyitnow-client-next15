@@ -8,6 +8,7 @@ import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import jestPlugin from 'eslint-plugin-jest';
 import jestDomPlugin from 'eslint-plugin-jest-dom';
 import testingLibraryPlugin from 'eslint-plugin-testing-library';
+import securityPlugin from 'eslint-plugin-security';
 import importPlugin from 'eslint-plugin-import';
 import optimizeRegexPlugin from 'eslint-plugin-optimize-regex';
 
@@ -56,6 +57,7 @@ const eslintConfig = [
       jest: jestPlugin,
       'jest-dom': jestDomPlugin,
       'testing-library': testingLibraryPlugin,
+      security: securityPlugin,
       import: importPlugin,
       'optimize-regex': optimizeRegexPlugin,
     },

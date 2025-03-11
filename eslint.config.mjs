@@ -4,6 +4,7 @@ import { FlatCompat } from '@eslint/eslintrc';
 import globals from 'globals';
 import js from '@eslint/js';
 import reactPlugin from 'eslint-plugin-react';
+import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import jestPlugin from 'eslint-plugin-jest';
 import jestDomPlugin from 'eslint-plugin-jest-dom';
 import testingLibraryPlugin from 'eslint-plugin-testing-library';
@@ -29,6 +30,7 @@ const eslintConfig = [
     'plugin:jest/recommended',
     'plugin:jest-dom/recommended',
     'plugin:testing-library/react',
+    'plugin:react-hooks/recommended',
   ),
 
   // Appliquer à tous les fichiers JS/JSX
@@ -50,6 +52,7 @@ const eslintConfig = [
     // Configurations spécifiques qui complètent celles importées ci-dessus
     plugins: {
       react: reactPlugin,
+      'react-hooks': reactHooksPlugin,
       jest: jestPlugin,
       'jest-dom': jestDomPlugin,
       'testing-library': testingLibraryPlugin,

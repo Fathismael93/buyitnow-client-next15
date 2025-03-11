@@ -55,20 +55,20 @@ const config = {
       ? {
           // Minifier le CSS
           cssnano: {
-            // preset: [
-            //   'advanced',
-            //   {
-            //     discardComments: {
-            //       removeAll: true,
-            //     },
-            //     minifyFontValues: true,
-            //     minifyGradients: true,
-            //     mergeLonghand: true,
-            //     colormin: true,
-            //     zindex: false, // Éviter les problèmes de z-index
-            //     reduceIdents: false, // Éviter les problèmes avec animations/keyframes
-            //   },
-            // ],
+            preset: [
+              'advanced',
+              {
+                discardComments: {
+                  removeAll: true,
+                },
+                minifyFontValues: true,
+                minifyGradients: true,
+                mergeLonghand: true,
+                colormin: true,
+                zindex: false, // Éviter les problèmes de z-index
+                reduceIdents: false, // Éviter les problèmes avec animations/keyframes
+              },
+            ],
           },
 
           // Vérifier les problèmes potentiels

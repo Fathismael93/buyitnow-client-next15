@@ -3,6 +3,11 @@
  */
 
 import { captureException } from '@/monitoring/sentry';
+import {
+  memoizeWithTTL,
+  recordPerformanceMetric,
+  isSlowConnection,
+} from '@/utils/performance';
 
 // Configuration du cache pour les différentes ressources
 export const CACHE_CONFIGS = {
@@ -61,10 +66,52 @@ export function getCacheHeaders(resourceType) {
   };
 }
 
-// Eventbus pour notifier les événements de cache
-const EventEmitter =
-  typeof window !== 'undefined' ? window.EventEmitter : require('events');
-export const cacheEvents = new EventEmitter();
+// Implémentation minimaliste d'un EventEmitter compatible avec le navigateur et Node.js
+export const cacheEvents = (() => {
+  const listeners = {};
+
+  return {
+    on(event, callback) {
+      listeners[event] = listeners[event] || [];
+      listeners[event].push(callback);
+      return this;
+    },
+
+    emit(event, data) {
+      if (listeners[event]) {
+        listeners[event].forEach((callback) => {
+          try {
+            callback(data);
+          } catch (error) {
+            console.error(`Event error: ${error.message}`);
+          }
+        });
+      }
+      return this;
+    },
+
+    off(event, callback) {
+      if (!listeners[event]) return this;
+
+      if (callback) {
+        listeners[event] = listeners[event].filter((cb) => cb !== callback);
+      } else {
+        delete listeners[event];
+      }
+
+      return this;
+    },
+
+    once(event, callback) {
+      const onceCallback = (data) => {
+        this.off(event, onceCallback);
+        callback(data);
+      };
+
+      return this.on(event, onceCallback);
+    },
+  };
+})();
 
 /**
  * Serialize une valeur pour le stockage
@@ -112,26 +159,59 @@ function deserializeValue(storedData) {
 }
 
 /**
+ * Fonction utilitaire pour journaliser les erreurs de cache
+ * @param {Object} instance - Instance de cache
+ * @param {string} operation - Opération qui a échoué
+ * @param {string} key - Clé concernée
+ * @param {Error} error - Erreur survenue
+ */
+function logCacheError(instance, operation, key, error) {
+  instance.log(
+    `Cache error during ${operation} for key '${key}': ${error.message}`,
+  );
+
+  // Log plus détaillé pour le développement
+  if (process.env.NODE_ENV !== 'production') {
+    instance.log(error);
+  }
+
+  // Capturer l'exception pour Sentry en production
+  if (
+    process.env.NODE_ENV === 'production' &&
+    typeof captureException === 'function'
+  ) {
+    captureException(error, {
+      tags: {
+        component: 'cache',
+        operation,
+      },
+      extra: {
+        key,
+        cacheStats: instance.getStats?.() || {},
+      },
+    });
+  }
+}
+
+/**
  * Classe utilitaire pour gérer un cache en mémoire avec des fonctionnalités avancées
  */
 export class MemoryCache {
   /**
    * Crée une nouvelle instance du cache
-   * @param {Object} options - Options de configuration
-   * @param {number} [options.ttl=60000] - Durée de vie par défaut en ms
-   * @param {number} [options.maxSize=1000] - Nombre maximum d'entrées
-   * @param {number} [options.maxBytes=50000000] - Taille maximale en octets (50MB)
-   * @param {Function} [options.logFunction=console.debug] - Fonction de logging
-   * @param {boolean} [options.compress=false] - Compression automatique des grandes valeurs
+   * @param {Object|number} options - Options de configuration ou TTL
    */
   constructor(options = {}) {
+    const opts = typeof options === 'number' ? { ttl: options } : options;
+
     const {
       ttl = 60 * 1000,
       maxSize = 1000,
       maxBytes = 50 * 1024 * 1024, // 50MB
       logFunction = console.debug,
       compress = false,
-    } = typeof options === 'number' ? { ttl: options } : options;
+      name = 'memory-cache',
+    } = opts;
 
     this.cache = new Map();
     this.ttl = ttl;
@@ -140,6 +220,7 @@ export class MemoryCache {
     this.currentBytes = 0;
     this.log = logFunction;
     this.compress = compress;
+    this.name = name;
     this.cleanupIntervalId = null;
 
     // Statistiques de performance
@@ -167,9 +248,17 @@ export class MemoryCache {
    */
   get(key) {
     try {
+      const startTime =
+        typeof performance !== 'undefined' ? performance.now() : Date.now();
+
       if (!this.cache.has(key)) {
         this.stats.misses++;
         cacheEvents.emit('miss', { key, cache: this });
+
+        if (typeof recordPerformanceMetric === 'function') {
+          recordPerformanceMetric(`cache.${this.name}.miss`, 0);
+        }
+
         return null;
       }
 
@@ -180,6 +269,11 @@ export class MemoryCache {
         this.delete(key);
         this.stats.misses++;
         cacheEvents.emit('expire', { key, cache: this });
+
+        if (typeof recordPerformanceMetric === 'function') {
+          recordPerformanceMetric(`cache.${this.name}.expire`, 0);
+        }
+
         return null;
       }
 
@@ -189,10 +283,20 @@ export class MemoryCache {
       this.stats.hits++;
       cacheEvents.emit('hit', { key, cache: this });
 
-      return deserializeValue(entry.data);
+      const value = deserializeValue(entry.data);
+
+      if (typeof recordPerformanceMetric === 'function') {
+        const duration =
+          (typeof performance !== 'undefined'
+            ? performance.now()
+            : Date.now()) - startTime;
+        recordPerformanceMetric(`cache.${this.name}.get`, duration);
+      }
+
+      return value;
     } catch (error) {
       this.stats.errors++;
-      logCacheError('get', key, error);
+      logCacheError(this, 'get', key, error);
       cacheEvents.emit('error', { error, operation: 'get', key, cache: this });
       return null;
     }
@@ -202,15 +306,14 @@ export class MemoryCache {
    * Mettre une valeur en cache
    * @param {string} key - Clé de cache
    * @param {any} value - Valeur à mettre en cache
-   * @param {Object|number} [options] - Options ou durée de vie personnalisée en ms
-   * Si un nombre est fourni, il est utilisé comme durée de vie (ttl).
-   * Si un objet est fourni, il peut avoir les propriétés suivantes:
-   * - ttl: {number} Durée de vie personnalisée en ms
-   * - compress: {boolean} Si true, compresse la valeur si elle est grande
+   * @param {Object|number} options - Options ou durée de vie personnalisée
    * @returns {boolean} - True si l'opération a réussi
    */
   set(key, value, options = {}) {
     try {
+      const startTime =
+        typeof performance !== 'undefined' ? performance.now() : Date.now();
+
       // Validation de la clé
       if (!key || typeof key !== 'string') {
         throw new Error('Invalid cache key');
@@ -262,10 +365,18 @@ export class MemoryCache {
       this.stats.sets++;
       cacheEvents.emit('set', { key, size: serialized.size, cache: this });
 
+      if (typeof recordPerformanceMetric === 'function') {
+        const duration =
+          (typeof performance !== 'undefined'
+            ? performance.now()
+            : Date.now()) - startTime;
+        recordPerformanceMetric(`cache.${this.name}.set`, duration);
+      }
+
       return true;
     } catch (error) {
       this.stats.errors++;
-      logCacheError('set', key, error);
+      logCacheError(this, 'set', key, error);
       cacheEvents.emit('error', { error, operation: 'set', key, cache: this });
       return false;
     }
@@ -302,13 +413,14 @@ export class MemoryCache {
       return result;
     } catch (error) {
       this.stats.errors++;
-      logCacheError('delete', key, error);
+      logCacheError(this, 'delete', key, error);
       return false;
     }
   }
 
   /**
    * Vider tout le cache
+   * @returns {boolean} - True si l'opération a réussi
    */
   clear() {
     try {
@@ -318,7 +430,7 @@ export class MemoryCache {
       cacheEvents.emit('clear', { cache: this });
       return true;
     } catch (error) {
-      logCacheError('clear', 'all', error);
+      logCacheError(this, 'clear', 'all', error);
       return false;
     }
   }
@@ -385,7 +497,7 @@ export class MemoryCache {
 
       return keysToDelete.length;
     } catch (error) {
-      logCacheError('invalidatePattern', pattern.toString(), error);
+      logCacheError(this, 'invalidatePattern', pattern.toString(), error);
       return 0;
     }
   }
@@ -414,7 +526,7 @@ export class MemoryCache {
 
       return cleaned;
     } catch (error) {
-      logCacheError('cleanup', 'all', error);
+      logCacheError(this, 'cleanup', 'all', error);
       return 0;
     }
   }
@@ -537,6 +649,29 @@ export class MemoryCache {
     this.stopCleanupInterval();
     this.clear();
   }
+
+  /**
+   * Récupère en cache si disponible, sinon exécute la fonction et met en cache
+   * @param {string} key - Clé de cache
+   * @param {Function} fn - Fonction à exécuter si cache manquant
+   * @param {Object} options - Options de cache
+   * @returns {Promise<any>} - Valeur en cache ou résultat de la fonction
+   */
+  async getOrSet(key, fn, options = {}) {
+    const cachedValue = this.get(key);
+    if (cachedValue !== null) {
+      return cachedValue;
+    }
+
+    try {
+      const result = await Promise.resolve(fn());
+      this.set(key, result, options);
+      return result;
+    } catch (error) {
+      logCacheError(this, 'getOrSet', key, error);
+      throw error;
+    }
+  }
 }
 
 /**
@@ -550,9 +685,25 @@ export class PersistentCache extends MemoryCache {
    * @param {Object} options - Options similaires à MemoryCache
    */
   constructor(namespace, options = {}) {
-    super(options);
+    super({
+      ...options,
+      name: `persistent-${namespace}`,
+    });
+
     this.namespace = namespace;
     this.storageAvailable = this._isStorageAvailable();
+
+    // Adapter TTL pour les connexions lentes
+    if (
+      typeof window !== 'undefined' &&
+      typeof isSlowConnection === 'function' &&
+      isSlowConnection()
+    ) {
+      this.ttl = Math.max(this.ttl * 2, 5 * 60 * 1000); // Au moins 5 minutes
+      this.log(
+        `Slow connection detected, extending cache TTL to ${this.ttl}ms`,
+      );
+    }
 
     // Charger les données persistantes au démarrage
     if (this.storageAvailable) {
@@ -629,7 +780,7 @@ export class PersistentCache extends MemoryCache {
         this.log(`Loaded ${loadedCount} items from persistent storage`);
       }
     } catch (error) {
-      logCacheError('loadFromStorage', this.namespace, error);
+      logCacheError(this, 'loadFromStorage', this.namespace, error);
     }
   }
 
@@ -656,7 +807,7 @@ export class PersistentCache extends MemoryCache {
         }
       } catch (error) {
         // En cas d'erreur (ex: quota dépassé), logger mais ne pas échouer
-        logCacheError('persistToStorage', key, error);
+        logCacheError(this, 'persistToStorage', key, error);
       }
     }
 
@@ -674,7 +825,7 @@ export class PersistentCache extends MemoryCache {
         const storageKey = this._getStorageKey(key);
         window.localStorage.removeItem(storageKey);
       } catch (error) {
-        logCacheError('deleteFromStorage', key, error);
+        logCacheError(this, 'deleteFromStorage', key, error);
       }
     }
 
@@ -697,11 +848,52 @@ export class PersistentCache extends MemoryCache {
           }
         }
       } catch (error) {
-        logCacheError('clearStorage', this.namespace, error);
+        logCacheError(this, 'clearStorage', this.namespace, error);
       }
     }
 
     return result;
+  }
+
+  /**
+   * Méthode utilitaire pour mettre en cache une URL chargée
+   * Cette méthode est utile pour cacher les résultats de fetch API
+   * @param {string} url - URL à mettre en cache
+   * @param {Function} fetchFn - Fonction fetch à exécuter si cache manquant
+   * @param {Object} options - Options de cache et fetch
+   * @returns {Promise<any>} - Données en cache ou résultat du fetch
+   */
+  async cachedFetch(url, fetchFn, options = {}) {
+    const {
+      ttl = this.ttl,
+      revalidateOnError = true,
+      ...fetchOptions
+    } = options;
+
+    const cacheKey = `fetch:${url}`;
+    const cachedResponse = this.get(cacheKey);
+
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+
+    const doFetch =
+      fetchFn || ((url) => fetch(url, fetchOptions).then((r) => r.json()));
+
+    try {
+      const response = await doFetch(url);
+      this.set(cacheKey, response, { ttl });
+      return response;
+    } catch (error) {
+      logCacheError(this, 'cachedFetch', cacheKey, error);
+
+      if (revalidateOnError) {
+        // Invalider le cache en cas d'erreur pour forcer une réactualisation
+        this.delete(cacheKey);
+      }
+
+      throw error;
+    }
   }
 }
 
@@ -750,18 +942,84 @@ export function getCacheKey(prefix, params = {}) {
   return `${safePrefix}:${sortedParams || 'default'}`;
 }
 
+/**
+ * Crée une fonction memoizée avec intégration du système de cache
+ * Combine les fonctionnalités de memoizeWithTTL et MemoryCache
+ * @param {Function} fn - Fonction à mettre en cache
+ * @param {Object} options - Options de cache
+ * @returns {Function} - Fonction mise en cache
+ */
+export function createCachedFunction(fn, options = {}) {
+  const {
+    ttl = 60 * 1000,
+    maxEntries = 100,
+    keyGenerator = (...args) => JSON.stringify(args),
+    name = fn.name || 'anonymous',
+  } = options;
+
+  // Vérifier si memoizeWithTTL est disponible
+  if (typeof memoizeWithTTL === 'function') {
+    // Utiliser la fonction de performance.js si disponible
+    return memoizeWithTTL(fn, ttl);
+  }
+
+  // Créer un cache dédié pour cette fonction
+  const functionCache = new MemoryCache({
+    ttl,
+    maxSize: maxEntries,
+    name: `function-${name}`,
+    logFunction: (msg) => console.debug(`[CachedFn:${name}] ${msg}`),
+  });
+
+  // Créer la fonction enveloppante
+  return async function (...args) {
+    try {
+      const cacheKey = keyGenerator(...args);
+
+      // Vérifier le cache
+      const cachedResult = functionCache.get(cacheKey);
+      if (cachedResult !== null) {
+        return cachedResult;
+      }
+
+      // Exécuter la fonction
+      const startTime =
+        typeof performance !== 'undefined' ? performance.now() : Date.now();
+      const result = await Promise.resolve(fn.apply(this, args));
+      const duration =
+        (typeof performance !== 'undefined' ? performance.now() : Date.now()) -
+        startTime;
+
+      // Mettre en cache
+      functionCache.set(cacheKey, result);
+
+      // Enregistrer les métriques si disponible
+      if (typeof recordPerformanceMetric === 'function') {
+        recordPerformanceMetric(`function.${name}.execution`, duration);
+      }
+
+      return result;
+    } catch (error) {
+      logCacheError(functionCache, 'execution', fn.name, error);
+      throw error;
+    }
+  };
+}
+
 // Instances de cache pour l'application avec les configurations améliorées
 export const appCache = {
   products: new MemoryCache({
     ttl: CACHE_CONFIGS.products.maxAge * 1000,
     maxSize: 500,
     compress: true,
+    name: 'products',
     logFunction: (msg) => console.debug(`[ProductCache] ${msg}`),
   }),
 
   categories: new MemoryCache({
     ttl: CACHE_CONFIGS.categories.maxAge * 1000,
     maxSize: 100,
+    name: 'categories',
     logFunction: (msg) => console.debug(`[CategoryCache] ${msg}`),
   }),
 
@@ -785,35 +1043,4 @@ if (typeof process !== 'undefined' && process.on) {
       }
     });
   });
-}
-
-/**
- * Fonction utilitaire pour journaliser les erreurs de cache
- */
-function logCacheError(instance, operation, key, error) {
-  instance.log(
-    `Cache error during ${operation} for key '${key}': ${error.message}`,
-  );
-
-  // Log plus détaillé pour le développement
-  if (process.env.NODE_ENV !== 'production') {
-    instance.log(error);
-  }
-
-  // Capturer l'exception pour Sentry en production
-  if (
-    process.env.NODE_ENV === 'production' &&
-    typeof captureException === 'function'
-  ) {
-    captureException(error, {
-      tags: {
-        component: 'cache',
-        operation,
-      },
-      extra: {
-        key,
-        cacheStats: instance.getStats?.() || {},
-      },
-    });
-  }
 }

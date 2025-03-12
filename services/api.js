@@ -1,6 +1,7 @@
 // services/api.js
 import { captureException } from '@/monitoring/sentry';
 import { toast } from 'react-toastify';
+import ErrorHandler from '@/backend/utils/errorHandler'; // Ajustez le chemin si nécessaire
 
 // Configuration de base pour les requêtes API
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
@@ -109,16 +110,15 @@ class ApiService {
         let errorData;
         try {
           errorData = await response.json();
-          // eslint-disable-next-line no-unused-vars
         } catch (e) {
           errorData = { message: response.statusText };
         }
 
-        const error = new Error(
+        // Utiliser la classe ErrorHandler
+        const error = new ErrorHandler(
           errorData.message || `Erreur ${response.status}`,
+          response.status,
         );
-        error.status = response.status;
-        error.data = errorData;
 
         // Log l'erreur avec Sentry
         captureException(error, {

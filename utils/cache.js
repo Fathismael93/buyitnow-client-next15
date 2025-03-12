@@ -2,6 +2,8 @@
  * Configuration et utilitaires pour la gestion du cache
  */
 
+import { captureException } from '@/monitoring/sentry';
+
 // Configuration du cache pour les différentes ressources
 export const CACHE_CONFIGS = {
   // Durée de cache pour les produits (10 minutes)
@@ -59,14 +61,104 @@ export function getCacheHeaders(resourceType) {
   };
 }
 
+// Eventbus pour notifier les événements de cache
+const EventEmitter =
+  typeof window !== 'undefined'
+    ? window.EventEmitter || require('events').EventEmitter
+    : require('events').EventEmitter;
+
 /**
- * Classe utilitaire pour gérer un cache en mémoire
+ * Serialize une valeur pour le stockage
+ * @param {any} value - Valeur à sérialiser
+ * @param {boolean} compress - Si true, compresse les grandes valeurs
+ * @returns {Object} Objet avec la valeur et métadonnées
+ * @throws {Error} Si la valeur ne peut pas être sérialisée/compressée
+ */
+function serializeValue(value, compress = false) {
+  try {
+    const serialized = JSON.stringify(value);
+    const size = serialized.length;
+
+    // Compression pour les grandes valeurs
+    if (compress && size > 100000) {
+      // 100KB
+      // Compression simple, à remplacer par une vraie compression en production
+      const compressed = `${serialized.substring(0, 100)}...${serialized.substring(serialized.length - 100)}`;
+      return {
+        value: compressed,
+        originalSize: size,
+        compressed: true,
+      };
+    }
+
+    return { value: serialized, size, compressed: false };
+  } catch (error) {
+    throw new Error(`Failed to serialize cache value: ${error.message}`);
+  }
+}
+
+/**
+ * Désérialise une valeur du cache
+ * @param {Object} storedData - Données stockées
+ * @returns {any} Valeur désérialisée
+ * @throws {Error} Si la valeur ne peut pas être désérialisée
+ */
+function deserializeValue(storedData) {
+  try {
+    if (!storedData) return null;
+    return JSON.parse(storedData.value);
+  } catch (error) {
+    throw new Error(`Failed to deserialize cache value: ${error.message}`);
+  }
+}
+
+/**
+ * Classe utilitaire pour gérer un cache en mémoire avec des fonctionnalités avancées
  */
 export class MemoryCache {
-  constructor(ttl = 60 * 1000) {
-    // Durée de vie par défaut: 1 minute
+  /**
+   * Crée une nouvelle instance du cache
+   * @param {Object} options - Options de configuration
+   * @param {number} [options.ttl=60000] - Durée de vie par défaut en ms
+   * @param {number} [options.maxSize=1000] - Nombre maximum d'entrées
+   * @param {number} [options.maxBytes=50000000] - Taille maximale en octets (50MB)
+   * @param {Function} [options.logFunction=console.debug] - Fonction de logging
+   * @param {boolean} [options.compress=false] - Compression automatique des grandes valeurs
+   */
+  constructor(options = {}) {
+    const {
+      ttl = 60 * 1000,
+      maxSize = 1000,
+      maxBytes = 50 * 1024 * 1024, // 50MB
+      logFunction = console.debug,
+      compress = false,
+    } = typeof options === 'number' ? { ttl: options } : options;
+
     this.cache = new Map();
     this.ttl = ttl;
+    this.maxSize = maxSize;
+    this.maxBytes = maxBytes;
+    this.currentBytes = 0;
+    this.log = logFunction;
+    this.compress = compress;
+    this.cleanupIntervalId = null;
+
+    // Statistiques de performance
+    this.stats = {
+      hits: 0,
+      misses: 0,
+      sets: 0,
+      deletes: 0,
+      evictions: 0,
+      errors: 0,
+      cleanups: 0,
+    };
+
+    // Ordre LRU pour l'éviction
+    this.lruList = [];
+
+    // Démarrer le nettoyage périodique
+    this._startCleanupInterval();
   }
 
   /**
@@ -75,35 +167,109 @@ export class MemoryCache {
    * @returns {any|null} - Valeur en cache ou null si absente/expirée
    */
   get(key) {
-    if (!this.cache.has(key)) return null;
+    try {
+      if (!this.cache.has(key)) {
+        this.stats.misses++;
+        cacheEvents.emit('miss', { key, cache: this });
+        return null;
+      }
 
-    const { value, expiry } = this.cache.get(key);
+      const entry = this.cache.get(key);
 
-    // Vérifier si la valeur a expiré
-    if (expiry < Date.now()) {
-      this.delete(key);
+      // Vérifier si la valeur a expiré
+      if (entry.expiry < Date.now()) {
+        this.delete(key);
+        this.stats.misses++;
+        cacheEvents.emit('expire', { key, cache: this });
+        return null;
+      }
+
+      // Mettre à jour la position LRU
+      this._updateLRU(key);
+
+      this.stats.hits++;
+      cacheEvents.emit('hit', { key, cache: this });
+
+      return deserializeValue(entry.data);
+    } catch (error) {
+      this.stats.errors++;
+      logCacheError('get', key, error);
+      cacheEvents.emit('error', { error, operation: 'get', key, cache: this });
       return null;
     }
-
-    return value;
   }
 
   /**
    * Mettre une valeur en cache
    * @param {string} key - Clé de cache
    * @param {any} value - Valeur à mettre en cache
-   * @param {number} [customTtl] - Durée de vie personnalisée en ms
+   * @param {Object|number} [options] - Options ou durée de vie personnalisée en ms
+   * Si un nombre est fourni, il est utilisé comme durée de vie (ttl).
+   * Si un objet est fourni, il peut avoir les propriétés suivantes:
+   * - ttl: {number} Durée de vie personnalisée en ms
+   * - compress: {boolean} Si true, compresse la valeur si elle est grande
+   * @returns {boolean} - True si l'opération a réussi
    */
-  set(key, value, customTtl) {
-    const ttl = customTtl || this.ttl;
-    const expiry = Date.now() + ttl;
+  set(key, value, options = {}) {
+    try {
+      // Validation de la clé
+      if (!key || typeof key !== 'string') {
+        throw new Error('Invalid cache key');
+      }
 
-    this.cache.set(key, { value, expiry });
+      // Nettoyer les options
+      const opts = typeof options === 'number' ? { ttl: options } : options;
 
-    // Planifier le nettoyage automatique
-    setTimeout(() => {
-      this.delete(key);
-    }, ttl);
+      const ttl = opts.ttl || this.ttl;
+      const compress =
+        opts.compress !== undefined ? opts.compress : this.compress;
+      const expiry = Date.now() + ttl;
+
+      // Sérialiser la valeur
+      const serialized = serializeValue(value, compress);
+
+      // Vérifier la taille
+      if (serialized.size > this.maxBytes * 0.1) {
+        // Une entrée ne doit pas dépasser 10% du cache
+        this.log(`Cache entry too large: ${key} (${serialized.size} bytes)`);
+        return false;
+      }
+
+      // Si le cache atteint sa taille max, faire de la place
+      if (
+        this.cache.size >= this.maxSize ||
+        this.currentBytes + serialized.size > this.maxBytes
+      ) {
+        this._evict(serialized.size);
+      }
+
+      // Si la clé existe déjà, soustraire sa taille actuelle
+      if (this.cache.has(key)) {
+        const currentEntry = this.cache.get(key);
+        this.currentBytes -= currentEntry.data.size || 0;
+      }
+
+      // Ajouter au cache
+      this.cache.set(key, {
+        data: serialized,
+        expiry,
+        lastAccessed: Date.now(),
+      });
+
+      // Mettre à jour la taille totale et la liste LRU
+      this.currentBytes += serialized.size;
+      this._updateLRU(key);
+
+      this.stats.sets++;
+      cacheEvents.emit('set', { key, size: serialized.size, cache: this });
+
+      return true;
+    } catch (error) {
+      this.stats.errors++;
+      logCacheError('set', key, error);
+      cacheEvents.emit('error', { error, operation: 'set', key, cache: this });
+      return false;
+    }
   }
 
   /**
@@ -112,30 +278,433 @@ export class MemoryCache {
    * @returns {boolean} - True si la valeur existait
    */
   delete(key) {
-    return this.cache.delete(key);
+    try {
+      if (!this.cache.has(key)) return false;
+
+      // Récupérer l'entrée pour soustraire sa taille
+      const entry = this.cache.get(key);
+      if (entry?.data?.size) {
+        this.currentBytes -= entry.data.size;
+      }
+
+      // Supprimer de la liste LRU
+      const lruIndex = this.lruList.indexOf(key);
+      if (lruIndex !== -1) {
+        this.lruList.splice(lruIndex, 1);
+      }
+
+      const result = this.cache.delete(key);
+
+      if (result) {
+        this.stats.deletes++;
+        cacheEvents.emit('delete', { key, cache: this });
+      }
+
+      return result;
+    } catch (error) {
+      this.stats.errors++;
+      logCacheError('delete', key, error);
+      return false;
+    }
   }
 
   /**
    * Vider tout le cache
    */
   clear() {
-    this.cache.clear();
+    try {
+      this.cache.clear();
+      this.lruList = [];
+      this.currentBytes = 0;
+      cacheEvents.emit('clear', { cache: this });
+      return true;
+    } catch (error) {
+      logCacheError('clear', 'all', error);
+      return false;
+    }
   }
 
   /**
    * Obtenir la taille du cache
-   * @returns {number} - Nombre d'entrées dans le cache
+   * @returns {Object} - Statistiques de taille du cache
    */
   size() {
-    return this.cache.size;
+    return {
+      entries: this.cache.size,
+      bytes: this.currentBytes,
+      maxEntries: this.maxSize,
+      maxBytes: this.maxBytes,
+      utilization: Math.round((this.currentBytes / this.maxBytes) * 100) / 100,
+    };
+  }
+
+  /**
+   * Obtenir des statistiques sur l'utilisation du cache
+   * @returns {Object} - Statistiques d'utilisation
+   */
+  getStats() {
+    const sizeInfo = this.size();
+    const hitRatio =
+      this.stats.hits + this.stats.misses > 0
+        ? Math.round(
+            (this.stats.hits / (this.stats.hits + this.stats.misses)) * 1000,
+          ) / 10
+        : 0;
+
+    return {
+      ...this.stats,
+      size: sizeInfo,
+      hitRatio: `${hitRatio}%`,
+    };
+  }
+
+  /**
+   * Supprimer toutes les entrées correspondant à un pattern
+   * @param {RegExp|string} pattern - Pattern de clé à supprimer
+   * @returns {number} - Nombre d'entrées supprimées
+   */
+  invalidatePattern(pattern) {
+    try {
+      const regex = pattern instanceof RegExp ? pattern : new RegExp(pattern);
+      const keysToDelete = [];
+
+      // Collecter d'abord les clés pour éviter de modifier pendant l'itération
+      for (const key of this.cache.keys()) {
+        if (regex.test(key)) {
+          keysToDelete.push(key);
+        }
+      }
+
+      // Supprimer les clés collectées
+      keysToDelete.forEach((key) => this.delete(key));
+
+      cacheEvents.emit('invalidatePattern', {
+        pattern: pattern.toString(),
+        count: keysToDelete.length,
+        cache: this,
+      });
+
+      return keysToDelete.length;
+    } catch (error) {
+      logCacheError('invalidatePattern', pattern.toString(), error);
+      return 0;
+    }
+  }
+
+  /**
+   * Nettoie les entrées expirées du cache
+   * @returns {number} - Nombre d'entrées nettoyées
+   */
+  cleanup() {
+    try {
+      const now = Date.now();
+      let cleaned = 0;
+
+      for (const [key, entry] of this.cache.entries()) {
+        if (entry.expiry < now) {
+          this.delete(key);
+          cleaned++;
+        }
+      }
+
+      this.stats.cleanups++;
+
+      if (cleaned > 0) {
+        cacheEvents.emit('cleanup', { count: cleaned, cache: this });
+      }
+
+      return cleaned;
+    } catch (error) {
+      logCacheError('cleanup', 'all', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Démarre l'intervalle de nettoyage automatique
+   * @private
+   */
+  _startCleanupInterval() {
+    if (typeof setInterval !== 'undefined' && !this.cleanupIntervalId) {
+      // Nettoyer toutes les 5 minutes
+      this.cleanupIntervalId = setInterval(
+        () => {
+          this.cleanup();
+        },
+        5 * 60 * 1000,
+      );
+
+      // Assurer que l'intervalle ne bloque pas le garbage collector
+      if (
+        this.cleanupIntervalId &&
+        typeof this.cleanupIntervalId === 'object'
+      ) {
+        this.cleanupIntervalId.unref?.();
+      }
+    }
+  }
+
+  /**
+   * Arrête l'intervalle de nettoyage automatique
+   */
+  stopCleanupInterval() {
+    if (this.cleanupIntervalId && typeof clearInterval !== 'undefined') {
+      clearInterval(this.cleanupIntervalId);
+      this.cleanupIntervalId = null;
+    }
+  }
+
+  /**
+   * Met à jour la position LRU d'une clé
+   * @param {string} key - Clé à mettre à jour
+   * @private
+   */
+  _updateLRU(key) {
+    // Mettre à jour le timestamp de dernier accès
+    if (this.cache.has(key)) {
+      const entry = this.cache.get(key);
+      entry.lastAccessed = Date.now();
+    }
+
+    // Mettre à jour la position dans la liste LRU
+    const index = this.lruList.indexOf(key);
+    if (index !== -1) {
+      this.lruList.splice(index, 1);
+    }
+    this.lruList.push(key);
+  }
+
+  /**
+   * Supprime les entrées les moins récemment utilisées pour faire de la place
+   * @param {number} neededBytes - Nombre d'octets nécessaires
+   * @private
+   */
+  _evict(neededBytes = 0) {
+    let evicted = 0;
+    let freedBytes = 0;
+
+    // Commencer par les entrées expirées
+    const now = Date.now();
+    for (const [key, entry] of this.cache.entries()) {
+      if (entry.expiry < now) {
+        const size = entry.data.size || 0;
+        this.delete(key);
+        freedBytes += size;
+        evicted++;
+      }
+
+      // Si on a libéré assez d'espace, on s'arrête
+      if (
+        this.cache.size < this.maxSize &&
+        this.currentBytes + neededBytes <= this.maxBytes
+      ) {
+        break;
+      }
+    }
+
+    // Si on n'a pas libéré assez d'espace, on supprime les entrées LRU
+    while (
+      this.lruList.length > 0 &&
+      (this.cache.size >= this.maxSize ||
+        this.currentBytes + neededBytes > this.maxBytes)
+    ) {
+      const oldestKey = this.lruList.shift();
+      if (this.cache.has(oldestKey)) {
+        const entry = this.cache.get(oldestKey);
+        const size = entry.data.size || 0;
+        this.cache.delete(oldestKey);
+        this.currentBytes -= size;
+        freedBytes += size;
+        evicted++;
+        this.stats.evictions++;
+      }
+    }
+
+    if (evicted > 0) {
+      cacheEvents.emit('evict', {
+        count: evicted,
+        freedBytes,
+        cache: this,
+      });
+    }
+
+    return evicted;
+  }
+
+  /**
+   * S'assure que les ressources sont libérées lors de la destruction
+   */
+  destroy() {
+    this.stopCleanupInterval();
+    this.clear();
   }
 }
 
-// Instance de cache pour l'application
-export const appCache = {
-  products: new MemoryCache(CACHE_CONFIGS.products.maxAge * 1000),
-  categories: new MemoryCache(CACHE_CONFIGS.categories.maxAge * 1000),
-};
+/**
+ * Cache avec persistance dans localStorage (pour le navigateur uniquement)
+ * Avec fallback vers MemoryCache en environnement serveur
+ */
+export class PersistentCache extends MemoryCache {
+  /**
+   * Crée une nouvelle instance avec persistance localStorage
+   * @param {string} namespace - Espace de noms pour éviter les collisions
+   * @param {Object} options - Options similaires à MemoryCache
+   */
+  constructor(namespace, options = {}) {
+    super(options);
+    this.namespace = namespace;
+    this.storageAvailable = this._isStorageAvailable();
+
+    // Charger les données persistantes au démarrage
+    if (this.storageAvailable) {
+      this._loadFromStorage();
+    }
+  }
+
+  /**
+   * Vérifie si localStorage est disponible
+   * @returns {boolean} - True si disponible
+   * @private
+   */
+  _isStorageAvailable() {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return false;
+    }
+
+    try {
+      const testKey = '__cache_test__';
+      window.localStorage.setItem(testKey, 'test');
+      window.localStorage.removeItem(testKey);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /**
+   * Génère une clé avec namespace pour localStorage
+   * @param {string} key - Clé originale
+   * @returns {string} - Clé avec namespace
+   * @private
+   */
+  _getStorageKey(key) {
+    return `${this.namespace}:${key}`;
+  }
+
+  /**
+   * Charge les données depuis localStorage
+   * @private
+   */
+  _loadFromStorage() {
+    if (!this.storageAvailable) return;
+
+    try {
+      const now = Date.now();
+      let loadedCount = 0;
+
+      // Chercher toutes les clés qui commencent par notre namespace
+      for (let i = 0; i < window.localStorage.length; i++) {
+        const storageKey = window.localStorage.key(i);
+
+        if (storageKey && storageKey.startsWith(`${this.namespace}:`)) {
+          const cacheKey = storageKey.slice(this.namespace.length + 1);
+          const storedData = JSON.parse(
+            window.localStorage.getItem(storageKey),
+          );
+
+          // Vérifier si l'entrée n'a pas expiré
+          if (storedData && storedData.expiry > now) {
+            // Utiliser la méthode interne pour éviter de persister à nouveau
+            super.set(cacheKey, deserializeValue(storedData.data), {
+              ttl: storedData.expiry - now,
+            });
+            loadedCount++;
+          } else {
+            // Supprimer les entrées expirées
+            window.localStorage.removeItem(storageKey);
+          }
+        }
+      }
+
+      if (loadedCount > 0) {
+        this.log(`Loaded ${loadedCount} items from persistent storage`);
+      }
+    } catch (error) {
+      logCacheError('loadFromStorage', this.namespace, error);
+    }
+  }
+
+  /**
+   * @override
+   */
+  set(key, value, options = {}) {
+    // D'abord utiliser l'implémentation parente
+    const result = super.set(key, value, options);
+
+    // Si le stockage est disponible et l'opération a réussi, persister
+    if (result && this.storageAvailable) {
+      try {
+        const entry = this.cache.get(key);
+        if (entry) {
+          const storageKey = this._getStorageKey(key);
+          window.localStorage.setItem(
+            storageKey,
+            JSON.stringify({
+              data: entry.data,
+              expiry: entry.expiry,
+            }),
+          );
+        }
+      } catch (error) {
+        // En cas d'erreur (ex: quota dépassé), logger mais ne pas échouer
+        logCacheError('persistToStorage', key, error);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * @override
+   */
+  delete(key) {
+    const result = super.delete(key);
+
+    if (result && this.storageAvailable) {
+      try {
+        const storageKey = this._getStorageKey(key);
+        window.localStorage.removeItem(storageKey);
+      } catch (error) {
+        logCacheError('deleteFromStorage', key, error);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * @override
+   */
+  clear() {
+    const result = super.clear();
+
+    if (result && this.storageAvailable) {
+      try {
+        // Supprimer uniquement les entrées de notre namespace
+        for (let i = window.localStorage.length - 1; i >= 0; i--) {
+          const key = window.localStorage.key(i);
+          if (key && key.startsWith(`${this.namespace}:`)) {
+            window.localStorage.removeItem(key);
+          }
+        }
+      } catch (error) {
+        logCacheError('clearStorage', this.namespace, error);
+      }
+    }
+
+    return result;
+  }
+}
 
 /**
  * Fonction utilitaire pour obtenir une clé de cache canonique
@@ -144,11 +713,108 @@ export const appCache = {
  * @returns {string} - Clé de cache unique
  */
 export function getCacheKey(prefix, params = {}) {
-  const sortedParams = Object.keys(params)
+  // Vérifier et nettoyer les entrées pour la sécurité
+  const cleanParams = {};
+
+  for (const [key, value] of Object.entries(params)) {
+    // Ignorer les valeurs nulles ou undefined
+    if (value === undefined || value === null) continue;
+
+    // Éviter les injections en supprimant les caractères spéciaux
+    const cleanKey = String(key).replace(/[^a-zA-Z0-9_-]/g, '');
+    let cleanValue;
+
+    // Traiter différemment selon le type
+    if (typeof value === 'object') {
+      cleanValue = JSON.stringify(value);
+    } else {
+      cleanValue = String(value);
+    }
+
+    // Limiter la taille des valeurs pour éviter des clés trop longues
+    if (cleanValue.length > 100) {
+      cleanValue = cleanValue.substring(0, 97) + '...';
+    }
+
+    cleanParams[cleanKey] = encodeURIComponent(cleanValue);
+  }
+
+  // Trier les paramètres pour garantir l'unicité
+  const sortedParams = Object.keys(cleanParams)
     .sort()
-    .filter((key) => params[key] !== undefined && params[key] !== null)
-    .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+    .map((key) => `${key}=${cleanParams[key]}`)
     .join('&');
 
-  return `${prefix}:${sortedParams || 'default'}`;
+  // Préfixe validé
+  const safePrefix = String(prefix).replace(/[^a-zA-Z0-9_-]/g, '');
+
+  return `${safePrefix}:${sortedParams || 'default'}`;
+}
+
+// Instances de cache pour l'application avec les configurations améliorées
+export const appCache = {
+  products: new MemoryCache({
+    ttl: CACHE_CONFIGS.products.maxAge * 1000,
+    maxSize: 500,
+    compress: true,
+    logFunction: (msg) => console.debug(`[ProductCache] ${msg}`),
+  }),
+
+  categories: new MemoryCache({
+    ttl: CACHE_CONFIGS.categories.maxAge * 1000,
+    maxSize: 100,
+    logFunction: (msg) => console.debug(`[CategoryCache] ${msg}`),
+  }),
+
+  // Cache côté client pour les données UI fréquemment utilisées
+  ui:
+    typeof window !== 'undefined'
+      ? new PersistentCache('buyitnow_ui', {
+          ttl: 30 * 60 * 1000, // 30 min
+          maxSize: 50,
+          maxBytes: 2 * 1024 * 1024, // 2MB max
+        })
+      : null,
+};
+
+// Enregistrer un handler pour nettoyer les caches à l'arrêt de l'application
+if (typeof process !== 'undefined' && process.on) {
+  process.on('SIGTERM', () => {
+    Object.values(appCache).forEach((cache) => {
+      if (cache && typeof cache.destroy === 'function') {
+        cache.destroy();
+      }
+    });
+  });
+}
+
+/**
+ * Fonction utilitaire pour journaliser les erreurs de cache
+ */
+function logCacheError(instance, operation, key, error) {
+  instance.log(
+    `Cache error during ${operation} for key '${key}': ${error.message}`,
+  );
+
+  // Log plus détaillé pour le développement
+  if (process.env.NODE_ENV !== 'production') {
+    instance.log(error);
+  }
+
+  // Capturer l'exception pour Sentry en production
+  if (
+    process.env.NODE_ENV === 'production' &&
+    typeof captureException === 'function'
+  ) {
+    captureException(error, {
+      tags: {
+        component: 'cache',
+        operation,
+      },
+      extra: {
+        key,
+        cacheStats: instance.getStats?.() || {},
+      },
+    });
+  }
 }

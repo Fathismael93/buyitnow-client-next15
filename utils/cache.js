@@ -3,11 +3,7 @@
  */
 
 import { captureException } from '@/monitoring/sentry';
-import {
-  memoizeWithTTL,
-  recordPerformanceMetric,
-  isSlowConnection,
-} from '@/utils/performance';
+import { memoizeWithTTL, isSlowConnection } from '@/utils/performance';
 
 // Configuration du cache pour les différentes ressources
 export const CACHE_CONFIGS = {
@@ -255,10 +251,6 @@ export class MemoryCache {
         this.stats.misses++;
         cacheEvents.emit('miss', { key, cache: this });
 
-        if (typeof recordPerformanceMetric === 'function') {
-          recordPerformanceMetric(`cache.${this.name}.miss`, 0);
-        }
-
         return null;
       }
 
@@ -270,10 +262,6 @@ export class MemoryCache {
         this.stats.misses++;
         cacheEvents.emit('expire', { key, cache: this });
 
-        if (typeof recordPerformanceMetric === 'function') {
-          recordPerformanceMetric(`cache.${this.name}.expire`, 0);
-        }
-
         return null;
       }
 
@@ -284,14 +272,6 @@ export class MemoryCache {
       cacheEvents.emit('hit', { key, cache: this });
 
       const value = deserializeValue(entry.data);
-
-      if (typeof recordPerformanceMetric === 'function') {
-        const duration =
-          (typeof performance !== 'undefined'
-            ? performance.now()
-            : Date.now()) - startTime;
-        recordPerformanceMetric(`cache.${this.name}.get`, duration);
-      }
 
       return value;
     } catch (error) {
@@ -364,14 +344,6 @@ export class MemoryCache {
 
       this.stats.sets++;
       cacheEvents.emit('set', { key, size: serialized.size, cache: this });
-
-      if (typeof recordPerformanceMetric === 'function') {
-        const duration =
-          (typeof performance !== 'undefined'
-            ? performance.now()
-            : Date.now()) - startTime;
-        recordPerformanceMetric(`cache.${this.name}.set`, duration);
-      }
 
       return true;
     } catch (error) {
@@ -992,11 +964,6 @@ export function createCachedFunction(fn, options = {}) {
 
       // Mettre en cache
       functionCache.set(cacheKey, result);
-
-      // Enregistrer les métriques si disponible
-      if (typeof recordPerformanceMetric === 'function') {
-        recordPerformanceMetric(`function.${name}.execution`, duration);
-      }
 
       return result;
     } catch (error) {

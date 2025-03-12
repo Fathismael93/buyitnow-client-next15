@@ -63,9 +63,8 @@ export function getCacheHeaders(resourceType) {
 
 // Eventbus pour notifier les événements de cache
 const EventEmitter =
-  typeof window !== 'undefined'
-    ? window.EventEmitter || require('events').EventEmitter
-    : require('events').EventEmitter;
+  typeof window !== 'undefined' ? window.EventEmitter : require('events');
+export const cacheEvents = new EventEmitter();
 
 /**
  * Serialize une valeur pour le stockage

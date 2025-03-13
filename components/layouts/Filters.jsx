@@ -17,18 +17,6 @@ const Filters = ({ categories, setLoading }) => {
 
   const router = useRouter();
 
-  // Mise à jour des filtres quand l'URL change
-  // useEffect(() => {
-  //   const minParam = searchParams.get('min');
-  //   const maxParam = searchParams.get('max');
-  //   const categoryParam = searchParams.get('category');
-
-  //   if (minParam !== min) setMin(minParam || '');
-  //   if (maxParam !== max) setMax(maxParam || '');
-  //   if (categoryParam !== currentCategory)
-  //     setCurrentCategory(categoryParam || '');
-  // }, [searchParams, min, max, currentCategory]);
-
   const handleCategoryClick = (categoryId) => {
     setLoading(true);
 
@@ -90,12 +78,6 @@ const Filters = ({ categories, setLoading }) => {
     }
   };
 
-  console.log('Min price: ');
-  console.log(min);
-
-  console.log('Max price: ');
-  console.log(max);
-
   const resetFilters = () => {
     setLoading(true);
     setMin('');
@@ -126,7 +108,7 @@ const Filters = ({ categories, setLoading }) => {
           {(min || max || currentCategory) && (
             <button
               onClick={resetFilters}
-              className="text-sm text-blue-600 hover:text-blue-800 hidden md:block"
+              className="text-sm text-blue-600 cursor-pointer hover:text-blue-800 hidden md:block"
             >
               Réinitialiser
             </button>
@@ -178,7 +160,7 @@ const Filters = ({ categories, setLoading }) => {
             </div>
 
             <button
-              className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="w-full py-2 px-4 bg-blue-600 text-white cursor-pointer rounded-md hover:bg-blue-700 transition-colors"
               onClick={handlePriceFilter}
             >
               Appliquer
@@ -198,7 +180,7 @@ const Filters = ({ categories, setLoading }) => {
                 {categories?.map((category) => (
                   <button
                     key={category?._id}
-                    className={`flex items-center w-full p-2 rounded-md transition-colors ${
+                    className={`flex items-center w-full p-2 rounded-md transition-colors cursor-pointer ${
                       currentCategory === category?._id
                         ? 'bg-blue-100 text-blue-700'
                         : 'hover:bg-gray-100 text-gray-700'
@@ -217,7 +199,7 @@ const Filters = ({ categories, setLoading }) => {
             <div className="md:hidden">
               <button
                 onClick={resetFilters}
-                className="w-full py-2 text-center text-sm text-red-600 hover:text-red-800 border border-red-200 rounded-md hover:bg-red-50"
+                className="w-full py-2 text-center text-sm text-red-600 hover:text-red-800 border border-red-200 cursor-pointer rounded-md hover:bg-red-50"
               >
                 Réinitialiser les filtres
               </button>

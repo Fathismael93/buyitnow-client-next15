@@ -1,5 +1,6 @@
+// @ts-nocheck
 /* eslint-disable react/prop-types */
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { toast } from 'react-toastify';
 import CartContext from '@/context/CartContext';
 import { INCREASE } from '@/helpers/constants';
@@ -44,7 +45,9 @@ const ProductItem = ({ product }) => {
         className="flex flex-col md:flex-row hover:bg-blue-50"
       >
         <div className="md:w-1/4 p-3 flex justify-center">
+          {console.log('productImageUrl: ')}
           <div className="relative w-full aspect-square">
+            {console.log(productImageUrl)}
             <Image
               src={productImageUrl}
               alt={product?.name || 'Product image'}

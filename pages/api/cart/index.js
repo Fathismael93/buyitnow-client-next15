@@ -13,24 +13,26 @@ import { captureException } from '@/monitoring/sentry';
 console.log('nOUS DANS LE FICHIER API/CART index.js');
 
 // Configuration avancée pour next-connect
-const router = createRouter({
-  // Augmenter les timeouts pour les requêtes lourdes
-  onTimeout: (_req, res) => {
-    res.status(504).json({
-      success: false,
-      message: "La requête a pris trop de temps à s'exécuter",
-    });
-  },
-  timeout: 10000, // 10 secondes
+// const router = createRouter({
+//   // Augmenter les timeouts pour les requêtes lourdes
+//   onTimeout: (_req, res) => {
+//     res.status(504).json({
+//       success: false,
+//       message: "La requête a pris trop de temps à s'exécuter",
+//     });
+//   },
+//   timeout: 10000, // 10 secondes
 
-  // Vérification plus robuste des méthodes HTTP
-  onNoMatch: (_req, res) => {
-    res.status(405).json({
-      success: false,
-      message: `Méthode ${req.method} non autorisée`,
-    });
-  },
-});
+//   // Vérification plus robuste des méthodes HTTP
+//   onNoMatch: (_req, res) => {
+//     res.status(405).json({
+//       success: false,
+//       message: `Méthode ${req.method} non autorisée`,
+//     });
+//   },
+// });
+
+const router = createRouter();
 
 console.log('Le router est créé');
 

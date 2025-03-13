@@ -90,6 +90,12 @@ const Filters = ({ categories, setLoading }) => {
     }
   };
 
+  console.log('Min price: ');
+  console.log(min);
+
+  console.log('Max price: ');
+  console.log(max);
+
   const resetFilters = () => {
     setLoading(true);
     setMin('');

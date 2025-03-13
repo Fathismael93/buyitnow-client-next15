@@ -119,7 +119,7 @@ const Filters = ({ categories, setLoading }) => {
 
           {(min || max || currentCategory) && (
             <button
-              onClick={resetFilters}
+              onClick={() => resetFilters}
               className="text-sm text-blue-600 hover:text-blue-800 hidden md:block"
             >
               Réinitialiser

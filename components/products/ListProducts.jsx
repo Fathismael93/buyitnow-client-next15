@@ -79,17 +79,17 @@ const ListProducts = ({ data }) => {
 
   const filterSummary = getFilterSummary();
 
-  // useEffect(() => {
-  //   // Seulement pour l'initial render, pas pour les changements de filtres
-  //   if (isInitialLoad) {
-  //     setIsInitialLoad(false);
-  //   }
+  useEffect(() => {
+    // Seulement pour l'initial render, pas pour les changements de filtres
+    if (isInitialLoad) {
+      setIsInitialLoad(false);
+    }
 
-  //   if (loading) {
-  //     setLoading(false);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [data]);
+    if (loading) {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   return (
     <section className="py-8">

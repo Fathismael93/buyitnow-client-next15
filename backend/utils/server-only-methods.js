@@ -60,6 +60,7 @@ export const getAllProducts = async (searchParams) => {
     }
 
     // Construire la chaîne de requête
+    // @ts-ignore
     const searchQuery = new URLSearchParams(urlParams).toString();
     const cacheControl = getCacheHeaders('products');
 

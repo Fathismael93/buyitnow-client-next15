@@ -211,12 +211,12 @@ export async function register() {
             ];
 
             sensitiveHeaders.forEach((header) => {
-              if (sensitizedHeaders[header]) {
-                sensitizedHeaders[header] = '[FILTERED]';
+              if (sanitizedHeaders[header]) {
+                sanitizedHeaders[header] = '[FILTERED]';
               }
             });
 
-            event.request.headers = sensitizedHeaders;
+            event.request.headers = sanitizedHeaders;
           }
 
           // Anonymiser les cookies

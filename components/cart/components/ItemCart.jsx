@@ -13,6 +13,7 @@ const ItemCart = memo(
   }) => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [isImageError, setIsImageError] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     // Gestion optimisée de la suppression
     const handleDelete = async () => {
@@ -21,6 +22,7 @@ const ItemCart = memo(
       setIsDeleting(true);
       await deleteItemFromCart(cartItem._id);
       setIsDeleting(false);
+      setShowDeleteConfirm(false);
     };
 
     // Source de l'image avec fallback
@@ -38,8 +40,8 @@ const ItemCart = memo(
     const isOutOfStock = cartItem?.product?.stock === 0;
 
     return (
-      <div className="group">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4">
+      <div className="group relative">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4 transition-all duration-200 hover:bg-gray-50 rounded-lg p-2">
           <div className="w-full sm:w-2/5 flex">
             <div className="flex-shrink-0">
               <Link
@@ -152,37 +154,29 @@ const ItemCart = memo(
               {formatPrice(cartItem?.product?.price)} l'unité
             </div>
 
-            <button
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="mt-3 text-xs text-red-600 hover:text-red-800 transition-colors flex items-center disabled:opacity-50"
-            >
-              {isDeleting ? (
-                <>
-                  <svg
-                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-red-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
+            <div className="mt-3 relative">
+              {showDeleteConfirm ? (
+                <div className="flex items-center space-x-2 transition-all duration-200 ease-in-out">
+                  <button
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="text-xs bg-red-600 hover:bg-red-700 text-white py-1 px-2 rounded transition-colors disabled:opacity-50"
                   >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Suppression...
-                </>
+                    {isDeleting ? 'Suppression...' : 'Confirmer'}
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 py-1 px-2 rounded transition-colors"
+                  >
+                    Annuler
+                  </button>
+                </div>
               ) : (
-                <>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  disabled={isDeleting}
+                  className="text-xs text-red-600 hover:text-red-800 transition-colors flex items-center disabled:opacity-50 group-hover:underline"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-4 w-4 mr-1"
@@ -198,9 +192,9 @@ const ItemCart = memo(
                     />
                   </svg>
                   Supprimer
-                </>
+                </button>
               )}
-            </button>
+            </div>
           </div>
         </div>
 

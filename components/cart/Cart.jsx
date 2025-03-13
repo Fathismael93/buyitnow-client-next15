@@ -10,7 +10,6 @@ import React, {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { motion, AnimatePresence } from 'framer-motion';
 
 import CartContext from '@/context/CartContext';
 import { DECREASE, INCREASE } from '@/helpers/constants';
@@ -59,11 +58,7 @@ const CartItemSkeleton = () => (
 
 // Composant pour l'état vide du panier
 const EmptyCart = memo(() => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    className="py-12 flex flex-col items-center justify-center text-center px-4"
-  >
+  <div className="py-12 flex flex-col items-center justify-center text-center px-4 transition-all duration-300 transform translate-y-0 opacity-100">
     <div className="bg-gray-100 rounded-full p-6 mb-6">
       <svg
         className="w-12 h-12 text-gray-400"
@@ -91,7 +86,7 @@ const EmptyCart = memo(() => (
     >
       Découvrir nos produits
     </Link>
-  </motion.div>
+  </div>
 ));
 
 const CartSummary = memo(({ cartItems, amount, onCheckout }) => {
@@ -99,11 +94,7 @@ const CartSummary = memo(({ cartItems, amount, onCheckout }) => {
 
   return (
     <aside className="md:w-1/4">
-      <motion.article
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="border border-gray-200 bg-white shadow rounded-lg mb-5 p-4 lg:p-6 sticky top-24"
-      >
+      <div className="border border-gray-200 bg-white shadow rounded-lg mb-5 p-4 lg:p-6 sticky top-24 transition-all duration-300 ease-in-out transform translate-y-0 opacity-100">
         <h3 className="font-semibold text-lg mb-4 pb-4 border-b border-gray-200">
           Récapitulatif
         </h3>
@@ -151,7 +142,7 @@ const CartSummary = memo(({ cartItems, amount, onCheckout }) => {
             Continuer mes achats
           </Link>
         </div>
-      </motion.article>
+      </div>
     </aside>
   );
 });
@@ -171,6 +162,7 @@ const Cart = () => {
 
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [deleteInProgress, setDeleteInProgress] = useState(false);
+  const [itemBeingRemoved, setItemBeingRemoved] = useState(null);
   const router = useRouter();
 
   // Précharger la page de livraison
@@ -235,6 +227,7 @@ const Cart = () => {
     async (itemId) => {
       try {
         setDeleteInProgress(true);
+        setItemBeingRemoved(itemId);
         await deleteItemFromCart(itemId);
       } catch (error) {
         console.error("Erreur lors de la suppression d'un article:", error);
@@ -244,6 +237,7 @@ const Cart = () => {
         });
       } finally {
         setDeleteInProgress(false);
+        setItemBeingRemoved(null);
       }
     },
     [deleteItemFromCart],
@@ -288,11 +282,7 @@ const Cart = () => {
           ) : (
             <div className="flex flex-col md:flex-row gap-6">
               <main className="md:w-3/4">
-                <motion.article
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="bg-white shadow rounded-lg mb-5 p-4 lg:p-6"
-                >
+                <div className="bg-white shadow rounded-lg mb-5 p-4 lg:p-6 transition-all duration-300 ease-in-out transform translate-y-0 opacity-100">
                   {loading && initialLoadComplete ? (
                     <>
                       {[...Array(3)].map((_, index) => (
@@ -300,14 +290,11 @@ const Cart = () => {
                       ))}
                     </>
                   ) : (
-                    <AnimatePresence mode="popLayout">
+                    <>
                       {cart?.map((cartItem) => (
-                        <motion.div
+                        <div
                           key={cartItem._id}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                          transition={{ duration: 0.3 }}
+                          className={`transition-all duration-300 ease-in-out transform ${itemBeingRemoved === cartItem._id ? 'opacity-0 -translate-x-3 h-0 overflow-hidden' : 'opacity-100 translate-x-0'}`}
                         >
                           <ItemCart
                             cartItem={cartItem}
@@ -316,11 +303,11 @@ const Cart = () => {
                             increaseQty={increaseQty}
                             deleteInProgress={deleteInProgress}
                           />
-                        </motion.div>
+                        </div>
                       ))}
-                    </AnimatePresence>
+                    </>
                   )}
-                </motion.article>
+                </div>
               </main>
 
               {cart?.length > 0 && (

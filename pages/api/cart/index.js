@@ -52,6 +52,8 @@ const connectDB = async (_req, res, next) => {
   }
 };
 
+console.log('Le middleware connectDB est créé');
+
 // Middleware pour enregistrer les requêtes (monitoring)
 const logRequests = (req, res, next) => {
   console.log('Nous sommes dans ce middleware logRequests');
@@ -76,6 +78,8 @@ const logRequests = (req, res, next) => {
 
   next();
 };
+
+console.log('Le middleware logRequests est créé');
 
 // Middleware pour la sécurité et la validation
 const securityMiddleware = (req, res, next) => {
@@ -110,6 +114,8 @@ const securityMiddleware = (req, res, next) => {
   next();
 };
 
+console.log('Le middleware securityMiddleware est créé');
+
 // Cache pour améliorer les performances
 const cacheControl = (req, res, next) => {
   console.log('Nous sommes dans ce middleware cacheControl');
@@ -132,7 +138,11 @@ const cacheControl = (req, res, next) => {
   next();
 };
 
+console.log('Le middleware cacheControl est créé');
+
 // Définir les routes avec middlewares optimisés
+console.log('Nous commençons la consommation des middlewares');
+
 router
   .use(logRequests)
   .use(connectDB)

@@ -100,6 +100,7 @@ export const newCart = async (req, res, next) => {
  * @route GET /api/cart
  */
 export const getCart = async (req, res, next) => {
+  console.log('Nous sommes dans le GET CART controller');
   try {
     // Vérifier que l'utilisateur existe
     const user = await User.findOne({ email: req.user.email }).select('_id');
@@ -108,11 +109,15 @@ export const getCart = async (req, res, next) => {
       return next(new ErrorHandler('Utilisateur non trouvé', 404));
     }
 
+    console.log('Utilisateur existant');
+
     // Récupérer les articles du panier
     let cartItems = await Cart.find({ user: user._id }).populate({
       path: 'product',
       select: 'name price images stock category',
     });
+
+    console.log('Panier récuperer');
 
     // Vérifier si des produits du panier dépassent le stock disponible
     // et ajuster les quantités en conséquence
@@ -141,6 +146,8 @@ export const getCart = async (req, res, next) => {
     const cartTotal = updatedCartItems.reduce((total, item) => {
       return total + item.product.price * item.quantity;
     }, 0);
+
+    console.log("Entrain d'envoyer le response pour le panier");
 
     return res.status(200).json({
       success: true,

@@ -1,16 +1,16 @@
-import { createRouter } from "next-connect";
-import dbConnect from "@/backend/config/dbConnect";
-import { isAuthenticatedUser } from "@/backend/middlewares/auth";
-import onError from "@/backend/middlewares/errors";
+import { createRouter } from 'next-connect';
+import dbConnect from '@/backend/config/dbConnect';
+import { isAuthenticatedUser } from '@/backend/middlewares/auth';
+import onError from '@/backend/middlewares/errors';
 import {
   getCart,
   newCart,
   updateCart,
-} from "@/backend/controllers/cartControllers";
+} from '@/backend/controllers/cartControllers';
 
 const router = createRouter();
 
-dbConnect();
+await dbConnect();
 
 router.use(isAuthenticatedUser).get(getCart);
 router.use(isAuthenticatedUser).post(newCart);

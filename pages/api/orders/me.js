@@ -1,12 +1,12 @@
-import { createRouter } from "next-connect";
-import dbConnect from "@/backend/config/dbConnect";
-import onError from "@/backend/middlewares/errors";
-import { isAuthenticatedUser } from "@/backend/middlewares/auth";
-import { myOrders } from "@/backend/controllers/orderControllers";
+import { createRouter } from 'next-connect';
+import dbConnect from '@/backend/config/dbConnect';
+import onError from '@/backend/middlewares/errors';
+import { isAuthenticatedUser } from '@/backend/middlewares/auth';
+import { myOrders } from '@/backend/controllers/orderControllers';
 
 const router = createRouter();
 
-dbConnect();
+await dbConnect();
 
 router.use(isAuthenticatedUser).get(myOrders);
 

@@ -1,12 +1,12 @@
-import { createRouter } from "next-connect";
-import dbConnect from "@/backend/config/dbConnect";
-import onError from "@/backend/middlewares/errors";
-import { webhook } from "@/backend/controllers/orderControllers";
-import { isAuthenticatedUser } from "@/backend/middlewares/auth";
+import { createRouter } from 'next-connect';
+import dbConnect from '@/backend/config/dbConnect';
+import onError from '@/backend/middlewares/errors';
+import { webhook } from '@/backend/controllers/orderControllers';
+import { isAuthenticatedUser } from '@/backend/middlewares/auth';
 
 const router = createRouter();
 
-dbConnect();
+await dbConnect();
 
 router.use(isAuthenticatedUser).post(webhook);
 

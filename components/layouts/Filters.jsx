@@ -17,6 +17,18 @@ const Filters = ({ categories, setLoading }) => {
 
   const router = useRouter();
 
+  // Mise à jour des filtres quand l'URL change
+  useEffect(() => {
+    const minParam = searchParams.get('min');
+    const maxParam = searchParams.get('max');
+    const categoryParam = searchParams.get('category');
+
+    if (minParam !== min) setMin(minParam || '');
+    if (maxParam !== max) setMax(maxParam || '');
+    if (categoryParam !== currentCategory)
+      setCurrentCategory(categoryParam || '');
+  }, [searchParams, min, max, currentCategory]);
+
   const handleCategoryClick = (categoryId) => {
     setLoading(true);
 

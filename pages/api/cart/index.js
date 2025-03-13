@@ -10,10 +10,12 @@ import {
 } from '@/backend/controllers/cartControllers';
 import { captureException } from '@/monitoring/sentry';
 
+console.log('nOUS DANS LE FICHIER API/CART index.js');
+
 // Configuration avancée pour next-connect
 const router = createRouter({
   // Augmenter les timeouts pour les requêtes lourdes
-  onTimeout: (req, res) => {
+  onTimeout: (_req, res) => {
     res.status(504).json({
       success: false,
       message: "La requête a pris trop de temps à s'exécuter",
@@ -22,7 +24,7 @@ const router = createRouter({
   timeout: 10000, // 10 secondes
 
   // Vérification plus robuste des méthodes HTTP
-  onNoMatch: (req, res) => {
+  onNoMatch: (_req, res) => {
     res.status(405).json({
       success: false,
       message: `Méthode ${req.method} non autorisée`,
@@ -30,15 +32,19 @@ const router = createRouter({
   },
 });
 
+console.log('Le router est créé');
+
 // Middleware pour connecter à la base de données
-const connectDB = async (req, res, next) => {
+const connectDB = async (_req, res, next) => {
   try {
     await dbConnect();
+    console.log('Base de données connectées');
     next();
   } catch (error) {
     captureException(error, {
       tags: { component: 'API', route: '/api/cart', action: 'connectDB' },
     });
+    console.log('Base de données non connectées');
     res.status(500).json({
       success: false,
       message: 'Erreur de connexion à la base de données',
@@ -48,6 +54,7 @@ const connectDB = async (req, res, next) => {
 
 // Middleware pour enregistrer les requêtes (monitoring)
 const logRequests = (req, res, next) => {
+  console.log('Nous sommes dans ce middleware logRequests');
   // Log uniquement en développement ou configurez pour production si nécessaire
   if (process.env.NODE_ENV === 'development') {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
@@ -65,11 +72,14 @@ const logRequests = (req, res, next) => {
     }
   });
 
+  console.log('Nous quittons le middleware logRequests');
+
   next();
 };
 
 // Middleware pour la sécurité et la validation
 const securityMiddleware = (req, res, next) => {
+  console.log('Nous sommes dans ce middleware securityMiddleware');
   // Ajout d'en-têtes de sécurité
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader(
@@ -95,11 +105,14 @@ const securityMiddleware = (req, res, next) => {
     }
   }
 
+  console.log('Nous quittons le middleware securityMiddleware');
+
   next();
 };
 
 // Cache pour améliorer les performances
 const cacheControl = (req, res, next) => {
+  console.log('Nous sommes dans ce middleware cacheControl');
   // Ne pas mettre en cache les routes sensibles
   if (req.method !== 'GET') {
     res.setHeader('Cache-Control', 'no-store, must-revalidate');
@@ -113,6 +126,8 @@ const cacheControl = (req, res, next) => {
       'public, max-age=30, s-maxage=60, stale-while-revalidate=300',
     );
   }
+
+  console.log('Nous quittons le middleware cacheControl');
 
   next();
 };

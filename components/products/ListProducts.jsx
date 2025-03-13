@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 'use client';
 
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Loading from '@/app/loading';
 import { arrayHasData } from '@/helpers/helpers';
@@ -152,7 +152,10 @@ const ListProducts = ({ data }) => {
 
                 {data?.totalPages > 1 && (
                   <div className="mt-8">
-                    <CustomPagination totalPages={data?.totalPages} />
+                    <CustomPagination
+                      // @ts-ignore
+                      totalPages={data?.totalPages}
+                    />
                   </div>
                 )}
               </>

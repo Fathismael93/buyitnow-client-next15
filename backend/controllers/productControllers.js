@@ -144,6 +144,8 @@ export const getProduct = async (req, res, next) => {
       .sort({ createdAt: -1 })
       .limit(5);
 
+    console.log('Getting product with same category');
+
     // Calculer les produits recommandés (par exemple, les plus populaires de la catégorie)
     const recommendedProducts = await Product.find({
       category: product?.category,
@@ -153,6 +155,8 @@ export const getProduct = async (req, res, next) => {
       .sort({ stock: -1 }) // Les plus en stock d'abord
       .limit(3);
 
+    console.log('Checking stock status ');
+
     // Vérifier la disponibilité du stock
     const stockStatus =
       product.stock > 10
@@ -161,12 +165,16 @@ export const getProduct = async (req, res, next) => {
           ? 'low_stock'
           : 'out_of_stock';
 
+    console.log('stock status checked');
+
     // Enrichir les données du produit
     const enhancedProduct = {
       ...product.toObject(),
       stockStatus,
       isAvailable: product.stock > 0,
     };
+
+    console.log('Sending response to the client ');
 
     return res.status(200).json({
       success: true,

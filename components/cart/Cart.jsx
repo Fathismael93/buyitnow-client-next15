@@ -1,13 +1,160 @@
 'use client';
 
-import React, { useContext, useEffect } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  memo,
+  useCallback,
+} from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import CartContext from '@/context/CartContext';
 import { DECREASE, INCREASE } from '@/helpers/constants';
-import { useRouter } from 'next/navigation';
-import ItemCart from './components/ItemCart';
 import Loading from '@/app/loading';
+import dynamic from 'next/dynamic';
+import { captureException } from '@/monitoring/sentry';
+import { formatPrice } from '@/helpers/helpers';
+
+// Chargement dynamique du composant ItemCart
+const ItemCart = dynamic(() => import('./components/ItemCart'), {
+  loading: () => <CartItemSkeleton />,
+  ssr: true,
+});
+
+// Composant squelette pour le chargement des articles du panier
+const CartItemSkeleton = () => (
+  <div className="animate-pulse">
+    <div className="flex flex-wrap lg:flex-row gap-5 mb-4">
+      <div className="w-full lg:w-2/5 xl:w-2/4">
+        <div className="flex">
+          <div className="block w-16 h-16 rounded-sm bg-gray-200"></div>
+          <div className="ml-3 space-y-2">
+            <div className="h-4 bg-gray-200 rounded w-32"></div>
+            <div className="h-3 bg-gray-200 rounded w-20"></div>
+          </div>
+        </div>
+      </div>
+      <div className="w-24">
+        <div className="h-10 bg-gray-200 rounded"></div>
+      </div>
+      <div>
+        <div className="space-y-2">
+          <div className="h-4 bg-gray-200 rounded w-20"></div>
+          <div className="h-3 bg-gray-200 rounded w-32"></div>
+        </div>
+      </div>
+      <div className="flex-auto">
+        <div className="float-right">
+          <div className="h-8 bg-gray-200 rounded w-20"></div>
+        </div>
+      </div>
+    </div>
+    <hr className="my-4" />
+  </div>
+);
+
+// Composant pour l'état vide du panier
+const EmptyCart = memo(() => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="py-12 flex flex-col items-center justify-center text-center px-4"
+  >
+    <div className="bg-gray-100 rounded-full p-6 mb-6">
+      <svg
+        className="w-12 h-12 text-gray-400"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+        />
+      </svg>
+    </div>
+    <h2 className="text-2xl font-semibold mb-3 text-gray-800">
+      Votre panier est vide
+    </h2>
+    <p className="text-gray-600 mb-6 max-w-md">
+      Il semble que vous n'ayez pas encore ajouté d'articles à votre panier.
+    </p>
+    <Link
+      href="/"
+      className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md shadow hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    >
+      Découvrir nos produits
+    </Link>
+  </motion.div>
+));
+
+const CartSummary = memo(({ cartItems, amount, onCheckout }) => {
+  const totalUnits = cartItems.reduce((acc, item) => acc + item?.quantity, 0);
+
+  return (
+    <aside className="md:w-1/4">
+      <motion.article
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="border border-gray-200 bg-white shadow rounded-lg mb-5 p-4 lg:p-6 sticky top-24"
+      >
+        <h3 className="font-semibold text-lg mb-4 pb-4 border-b border-gray-200">
+          Récapitulatif
+        </h3>
+        <ul className="mb-5 space-y-3">
+          <li
+            className="flex justify-between text-gray-600"
+            title="Nombre total d'articles"
+          >
+            <span>Nombre d'articles:</span>
+            <span className="font-medium">{totalUnits}</span>
+          </li>
+
+          {totalUnits > 0 && (
+            <li className="flex justify-between text-gray-600">
+              <span>Prix unitaire moyen:</span>
+              <span className="font-medium">
+                {formatPrice(amount / totalUnits)}
+              </span>
+            </li>
+          )}
+
+          <li
+            className="text-lg font-bold border-t flex justify-between mt-3 pt-4"
+            title="Prix total"
+          >
+            <span>Total:</span>
+            <span className="text-blue-600">{formatPrice(amount)}</span>
+          </li>
+        </ul>
+
+        <div className="space-y-3">
+          <button
+            onClick={onCheckout}
+            className="px-4 py-3 inline-block text-sm font-medium w-full text-center text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm"
+            title="Continuer vers la livraison"
+          >
+            Continuer vers la livraison
+          </button>
+
+          <Link
+            href="/"
+            title="Continuer mes achats"
+            className="px-4 py-3 inline-block text-sm w-full text-center font-medium text-blue-600 bg-white shadow-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Continuer mes achats
+          </Link>
+        </div>
+      </motion.article>
+    </aside>
+  );
+});
 
 const Cart = () => {
   const {
@@ -19,118 +166,174 @@ const Cart = () => {
     setLoading,
     saveOnCheckout,
     setCartToState,
+    cartTotal,
   } = useContext(CartContext);
 
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [deleteInProgress, setDeleteInProgress] = useState(false);
   const router = useRouter();
 
+  // Précharger la page de livraison
   useEffect(() => {
-    setCartToState();
     router.prefetch('/shipping');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    router.prefetch('/shipping-choice');
 
-  const increaseQty = (cartItem) => {
-    setLoading(true);
-    updateCart(cartItem, INCREASE);
-  };
-
-  const decreaseQty = (cartItem) => {
-    setLoading(true);
-    updateCart(cartItem, DECREASE);
-  };
-
-  const amount = cart
-    ?.reduce((acc, item) => acc + item?.quantity * item?.product?.price, 0)
-    .toFixed(2);
-
-  const checkoutHandler = () => {
-    const data = {
-      amount,
+    // Chargement initial du panier
+    const loadCart = async () => {
+      try {
+        await setCartToState();
+      } catch (error) {
+        console.error('Erreur lors du chargement du panier:', error);
+        captureException(error, {
+          tags: { component: 'Cart', action: 'initialLoad' },
+        });
+        toast.error('Impossible de charger votre panier. Veuillez réessayer.');
+      } finally {
+        setInitialLoadComplete(true);
+      }
     };
 
-    saveOnCheckout(data);
-  };
+    loadCart();
+  }, [router, setCartToState]);
 
-  return loading ? (
-    <Loading />
-  ) : (
+  // Fonction optimisée pour augmenter la quantité
+  const increaseQty = useCallback(
+    async (cartItem) => {
+      try {
+        setLoading(true);
+        await updateCart(cartItem, INCREASE);
+      } catch (error) {
+        console.error("Erreur lors de l'augmentation de la quantité:", error);
+        captureException(error, {
+          tags: { component: 'Cart', action: 'increaseQty' },
+          extra: { cartItem },
+        });
+      }
+    },
+    [updateCart, setLoading],
+  );
+
+  // Fonction optimisée pour diminuer la quantité
+  const decreaseQty = useCallback(
+    async (cartItem) => {
+      try {
+        setLoading(true);
+        await updateCart(cartItem, DECREASE);
+      } catch (error) {
+        console.error('Erreur lors de la diminution de la quantité:', error);
+        captureException(error, {
+          tags: { component: 'Cart', action: 'decreaseQty' },
+          extra: { cartItem },
+        });
+      }
+    },
+    [updateCart, setLoading],
+  );
+
+  // Fonction optimisée pour supprimer un article
+  const handleDeleteItem = useCallback(
+    async (itemId) => {
+      try {
+        setDeleteInProgress(true);
+        await deleteItemFromCart(itemId);
+      } catch (error) {
+        console.error("Erreur lors de la suppression d'un article:", error);
+        captureException(error, {
+          tags: { component: 'Cart', action: 'deleteItem' },
+          extra: { itemId },
+        });
+      } finally {
+        setDeleteInProgress(false);
+      }
+    },
+    [deleteItemFromCart],
+  );
+
+  // Préparation au paiement
+  const checkoutHandler = useCallback(() => {
+    const checkoutData = {
+      amount: cartTotal.toFixed(2),
+      tax: 0, // À ajuster selon les besoins
+      totalAmount: cartTotal.toFixed(2),
+    };
+
+    saveOnCheckout(checkoutData);
+    router.push('/shipping-choice');
+  }, [cartTotal, saveOnCheckout, router]);
+
+  // Afficher un écran de chargement pendant le chargement initial
+  if (loading && !initialLoadComplete) {
+    return <Loading />;
+  }
+
+  return (
     <>
-      <section className="py-5 sm:py-7 bg-blue-100">
-        <div className="container max-w-(--breakpoint-xl) mx-auto px-4">
-          <h2
-            className="text-3xl font-semibold mb-2"
-            title="count items in cart"
-          >
-            {cartCount || 0} Item(s) in Cart
-          </h2>
+      <section className="py-5 sm:py-7 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div className="container max-w-6xl mx-auto px-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl md:text-3xl font-semibold text-gray-800">
+              Mon Panier
+            </h1>
+            <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+              {cartCount || 0} article{cartCount !== 1 ? 's' : ''}
+            </span>
+          </div>
         </div>
       </section>
 
-      {cartCount > 0 ? (
-        <section className="py-10">
-          <div className="container max-w-(--breakpoint-xl) mx-auto px-4">
-            <div className="flex flex-col md:flex-row gap-4">
+      <section className="py-8 md:py-10">
+        <div className="container max-w-6xl mx-auto px-4">
+          {!loading && cart?.length === 0 ? (
+            <EmptyCart />
+          ) : (
+            <div className="flex flex-col md:flex-row gap-6">
               <main className="md:w-3/4">
-                <article className="border border-gray-200 bg-white shadow-xs rounded-sm mb-5 p-3 lg:p-5">
-                  {cart?.map((cartItem) => (
-                    <ItemCart
-                      key={cartItem._id}
-                      cartItem={cartItem}
-                      deleteItemFromCart={deleteItemFromCart}
-                      decreaseQty={decreaseQty}
-                      increaseQty={increaseQty}
-                    />
-                  ))}
-                </article>
+                <motion.article
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="bg-white shadow rounded-lg mb-5 p-4 lg:p-6"
+                >
+                  {loading && initialLoadComplete ? (
+                    <>
+                      {[...Array(3)].map((_, index) => (
+                        <CartItemSkeleton key={index} />
+                      ))}
+                    </>
+                  ) : (
+                    <AnimatePresence mode="popLayout">
+                      {cart?.map((cartItem) => (
+                        <motion.div
+                          key={cartItem._id}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <ItemCart
+                            cartItem={cartItem}
+                            deleteItemFromCart={handleDeleteItem}
+                            decreaseQty={decreaseQty}
+                            increaseQty={increaseQty}
+                            deleteInProgress={deleteInProgress}
+                          />
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  )}
+                </motion.article>
               </main>
-              <aside className="md:w-1/4">
-                <article className="border border-gray-200 bg-white shadow-xs rounded-sm mb-5 p-3 lg:p-5">
-                  <ul className="mb-5">
-                    <li
-                      className="flex justify-between text-gray-600  mb-1"
-                      title="total units"
-                    >
-                      <span>Total Units:</span>
-                      <span className="text-green-800">
-                        {cart?.reduce((acc, item) => acc + item?.quantity, 0)}{' '}
-                        (Units)
-                      </span>
-                    </li>
-                    <li
-                      className="text-lg font-bold border-t flex justify-between mt-3 pt-3"
-                      title="total price"
-                    >
-                      <span>Total price:</span>
-                      <span>$ {amount}</span>
-                    </li>
-                  </ul>
 
-                  <Link
-                    className="px-4 py-3 mb-2 inline-block text-lg w-full text-center font-bold text-white bg-green-800 border border-transparent rounded-md hover:bg-green-700 cursor-pointer"
-                    onClick={checkoutHandler}
-                    title="Continue"
-                    href="/shipping-choice"
-                  >
-                    Continue
-                  </Link>
-
-                  <Link
-                    title="Back to shop"
-                    href="/"
-                    className="px-4 py-3 inline-block text-lg w-full text-center font-semibold text-green-800 bg-white shadow-xs border border-gray-200 rounded-md hover:bg-gray-100"
-                  >
-                    Back to shop
-                  </Link>
-                </article>
-              </aside>
+              {cart?.length > 0 && (
+                <CartSummary
+                  cartItems={cart}
+                  amount={cartTotal}
+                  onCheckout={checkoutHandler}
+                />
+              )}
             </div>
-          </div>
-        </section>
-      ) : (
-        <div className="w-full">
-          <p className="font-bold text-xl text-center">Cart Empty!</p>
+          )}
         </div>
-      )}
+      </section>
     </>
   );
 };

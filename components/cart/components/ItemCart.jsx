@@ -1,109 +1,214 @@
-/* eslint-disable react/prop-types */
-import React from 'react';
+import React, { memo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { formatPrice } from '@/helpers/helpers';
 
-const ItemCart = ({
-  cartItem,
-  deleteItemFromCart,
-  decreaseQty,
-  increaseQty,
-}) => {
-  return (
-    <div>
-      <div className="flex flex-wrap lg:flex-row gap-5  mb-4">
-        <div className="w-full lg:w-2/5 xl:w-2/4">
-          <figure className="flex leading-5">
-            <div>
-              <div className="block w-16 h-16 rounded-sm border border-gray-200 overflow-hidden">
+const ItemCart = memo(
+  ({
+    cartItem,
+    deleteItemFromCart,
+    decreaseQty,
+    increaseQty,
+    deleteInProgress,
+  }) => {
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isImageError, setIsImageError] = useState(false);
+
+    // Gestion optimisée de la suppression
+    const handleDelete = async () => {
+      if (deleteInProgress) return;
+
+      setIsDeleting(true);
+      await deleteItemFromCart(cartItem._id);
+      setIsDeleting(false);
+    };
+
+    // Source de l'image avec fallback
+    const imageSource =
+      isImageError ||
+      !cartItem?.product?.images ||
+      !cartItem?.product?.images[0]?.url
+        ? '/images/default_product.png'
+        : cartItem?.product?.images[0].url;
+
+    // Calculs pour l'affichage
+    const totalPrice = cartItem?.product?.price * cartItem?.quantity;
+    const isStockLow =
+      cartItem?.product?.stock <= 5 && cartItem?.product?.stock > 0;
+    const isOutOfStock = cartItem?.product?.stock === 0;
+
+    return (
+      <div className="group">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4">
+          <div className="w-full sm:w-2/5 flex">
+            <div className="flex-shrink-0">
+              <Link
+                href={`/product/${cartItem?.product?._id}`}
+                className="block relative h-24 w-24 rounded border overflow-hidden transition-shadow hover:shadow-md"
+              >
                 <Image
-                  src={
-                    cartItem?.product?.images !== undefined &&
-                    cartItem?.product?.images[0]?.url
-                      ? cartItem?.product?.images[0]?.url
-                      : '/images/default_product.png'
-                  }
-                  alt={cartItem?.product?.name}
-                  title="Product Image"
-                  width={16}
-                  height={16}
+                  src={imageSource}
+                  alt={cartItem?.product?.name || 'Produit'}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 96px, 96px"
+                  onError={() => setIsImageError(true)}
+                  priority={false}
                 />
+              </Link>
+            </div>
+
+            <div className="ml-4 flex flex-col">
+              <Link
+                href={`/product/${cartItem?.product?._id}`}
+                className="text-gray-800 font-semibold text-sm sm:text-base hover:text-blue-600 line-clamp-2 transition-colors"
+              >
+                {cartItem?.product?.name}
+              </Link>
+
+              <div className="flex items-center mt-1">
+                {isOutOfStock ? (
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-800">
+                    Rupture de stock
+                  </span>
+                ) : isStockLow ? (
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800">
+                    Stock limité: {cartItem?.product?.stock}
+                  </span>
+                ) : (
+                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-800">
+                    En stock
+                  </span>
+                )}
               </div>
             </div>
-            <figcaption className="ml-3">
-              <p>
-                <Link
-                  href={`/product/${cartItem?.product?._id}`}
-                  className="hover:text-blue-600 font-semibold"
+          </div>
+
+          <div className="flex items-center">
+            <div className="inline-flex items-center h-10 rounded-lg border border-gray-200 bg-gray-50">
+              <button
+                type="button"
+                className="w-10 h-full flex items-center justify-center rounded-l-lg text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => decreaseQty(cartItem)}
+                disabled={cartItem.quantity <= 1 || isOutOfStock}
+                aria-label="Diminuer la quantité"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  {cartItem?.product?.name}
-                </Link>
-              </p>
-              <p className="mt-1 text-gray-800" title="stock left">
-                {' '}
-                Stock: {cartItem?.product?.stock} items
-              </p>
-            </figcaption>
-          </figure>
-        </div>
-        <div className="w-24">
-          <div className="flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M20 12H4"
+                  />
+                </svg>
+              </button>
+
+              <input
+                type="text"
+                className="h-full w-12 border-transparent text-center text-sm font-medium text-gray-900 focus:ring-0 focus:outline-none bg-transparent"
+                value={cartItem?.quantity}
+                readOnly
+                aria-label="Quantité"
+              />
+
+              <button
+                type="button"
+                className="w-10 h-full flex items-center justify-center rounded-r-lg text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => increaseQty(cartItem)}
+                disabled={
+                  cartItem.quantity >= cartItem?.product?.stock || isOutOfStock
+                }
+                aria-label="Augmenter la quantité"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-start sm:items-end ml-auto">
+            <div className="text-blue-600 font-medium text-base sm:text-lg">
+              {formatPrice(totalPrice)}
+            </div>
+            <div className="text-gray-500 text-sm">
+              {formatPrice(cartItem?.product?.price)} l'unité
+            </div>
+
             <button
-              title="decrement"
-              data-action="decrement"
-              data-testid="decrement"
-              className=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-hidden"
-              onClick={() => decreaseQty(cartItem)}
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="mt-3 text-xs text-red-600 hover:text-red-800 transition-colors flex items-center disabled:opacity-50"
             >
-              <span className="m-auto text-2xl font-thin">−</span>
-            </button>
-            <input
-              type="number"
-              className="outline-hidden focus:outline-hidden text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black  md:text-basecursor-default flex items-center text-gray-900  outline-hidden custom-input-number"
-              name="custom-input-number"
-              value={cartItem?.quantity}
-              readOnly
-              title="item quantity"
-            ></input>
-            <button
-              title="increment"
-              data-action="increment"
-              className="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer"
-              onClick={() => increaseQty(cartItem)}
-            >
-              <span className="m-auto text-2xl font-thin">+</span>
+              {isDeleting ? (
+                <>
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-red-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Suppression...
+                </>
+              ) : (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                  Supprimer
+                </>
+              )}
             </button>
           </div>
         </div>
-        <div>
-          <div className="leading-5">
-            <p
-              className="font-semibold not-italic"
-              title="total price per item"
-            >
-              ${(cartItem?.product?.price * cartItem?.quantity).toFixed(2)}
-            </p>
-            <small className="text-gray-800" data-testid="unit price per item">
-              {' '}
-              ${cartItem?.product?.price} / per item{' '}
-            </small>
-          </div>
-        </div>
-        <div className="flex-auto">
-          <div className="float-right">
-            <button
-              className="px-4 py-2 inline-block text-red-600 bg-white shadow-xs border border-gray-200 rounded-md hover:bg-gray-100 cursor-pointer"
-              onClick={() => deleteItemFromCart(cartItem._id)}
-            >
-              Remove
-            </button>
-          </div>
-        </div>
+
+        <div className="border-t border-gray-100 my-2"></div>
       </div>
+    );
+  },
+);
 
-      <hr className="my-4" />
-    </div>
-  );
-};
-
+ItemCart.displayName = 'ItemCart';
 export default ItemCart;

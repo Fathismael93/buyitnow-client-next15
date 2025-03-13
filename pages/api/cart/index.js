@@ -144,7 +144,7 @@ console.log('Le middleware cacheControl est créé');
 console.log('Nous commençons la consommation des middlewares');
 
 router
-  .use(logRequests)
+  // .use(logRequests)
   .use(connectDB)
   .use(securityMiddleware)
   .use(cacheControl)

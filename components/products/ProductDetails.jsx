@@ -15,7 +15,6 @@ import CartContext from '@/context/CartContext';
 import Image from 'next/image';
 import Link from 'next/link';
 import { INCREASE } from '@/helpers/constants';
-import { memoizeWithTTL } from '@/utils/performance';
 import { formatPrice } from '@/helpers/helpers';
 
 // Chargement dynamique pour la performance

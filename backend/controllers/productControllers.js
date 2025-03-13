@@ -113,6 +113,7 @@ export const getProducts = async (req, res, next) => {
  * @route GET /api/products/:id
  */
 export const getProduct = async (req, res, next) => {
+  console.log('We are in the get single product API');
   try {
     const productId = req.query.id;
 
@@ -120,7 +121,11 @@ export const getProduct = async (req, res, next) => {
       return next(new ErrorHandler('ID de produit requis', 400));
     }
 
+    console.log('Product ID check');
+
     const cacheControl = getCacheHeaders('product');
+
+    console.log('cacheControl check');
 
     // Récupérer les détails du produit
     const product = await Product.findById(productId).populate('category');
@@ -128,6 +133,8 @@ export const getProduct = async (req, res, next) => {
     if (!product) {
       return next(new ErrorHandler('Produit non trouvé', 404));
     }
+
+    console.log('Found product needed check');
 
     // Récupérer les produits de la même catégorie (limité à 5)
     const sameCategoryProducts = await Product.find({

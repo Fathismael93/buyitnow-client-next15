@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { arrayHasData, getPriceQueryParams } from '@/helpers/helpers';
 import { toast } from 'react-toastify';
@@ -125,7 +125,7 @@ const Filters = ({ categories, setLoading }) => {
 
           {(min || max || currentCategory) && (
             <button
-              onClick={() => resetFilters}
+              onClick={resetFilters}
               className="text-sm text-blue-600 hover:text-blue-800 hidden md:block"
             >
               Réinitialiser

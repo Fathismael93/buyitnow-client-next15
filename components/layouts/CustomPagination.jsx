@@ -6,6 +6,7 @@ import React, { memo, useEffect, useState } from 'react';
 import ResponsivePaginationComponent from 'react-responsive-pagination';
 import 'react-responsive-pagination/themes/classic.css';
 
+// @ts-ignore
 const CustomPagination = memo(({ totalPages }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -60,6 +61,91 @@ const CustomPagination = memo(({ totalPages }) => {
     return null;
   }
 
+  // Générer les pages à afficher
+  const getPaginationItems = () => {
+    const items = [];
+    const maxPagesToShow = 5; // Limiter le nombre de pages affichées sur mobile
+
+    // Toujours afficher la première page
+    if (page > 2) {
+      items.push(
+        <button
+          key="first"
+          onClick={() => handlePageChange(1)}
+          className="hidden sm:flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-md hover:bg-blue-50 hover:text-blue-700"
+        >
+          1
+        </button>,
+      );
+    }
+
+    // Afficher l'ellipse si nécessaire
+    if (page > 3) {
+      items.push(
+        <span
+          key="ellipsis-start"
+          className="hidden sm:flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300"
+        >
+          ...
+        </span>,
+      );
+    }
+
+    // Calculer la plage de pages à afficher
+    let startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+    // Ajuster la plage si nécessaire
+    if (endPage - startPage + 1 < maxPagesToShow) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+
+    // Générer les boutons de pagination
+    for (let i = startPage; i <= endPage; i++) {
+      items.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`flex items-center justify-center px-3 h-8 leading-tight ${
+            page === i
+              ? 'text-blue-600 bg-blue-50 border border-blue-300 hover:bg-blue-100 hover:text-blue-700'
+              : 'text-gray-500 bg-white border border-gray-300 hover:bg-blue-50 hover:text-blue-700'
+          }`}
+          aria-current={page === i ? 'page' : undefined}
+        >
+          {i}
+        </button>,
+      );
+    }
+
+    // Afficher l'ellipse finale si nécessaire
+    if (page < totalPages - 2) {
+      items.push(
+        <span
+          key="ellipsis-end"
+          className="hidden sm:flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300"
+        >
+          ...
+        </span>,
+      );
+    }
+
+    // Toujours afficher la dernière page
+    if (page < totalPages - 1 && totalPages > 1) {
+      items.push(
+        <button
+          key="last"
+          onClick={() => handlePageChange(totalPages)}
+          className="hidden sm:flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-blue-50 hover:text-blue-700"
+        >
+          {totalPages}
+        </button>,
+      );
+    }
+
+    return items;
+  };
+
   return (
     <div className="flex mt-8 justify-center">
       {isChangingPage ? (
@@ -87,17 +173,74 @@ const CustomPagination = memo(({ totalPages }) => {
           <span>Chargement de la page {page}...</span>
         </div>
       ) : (
-        <ResponsivePaginationComponent
-          current={page}
-          total={totalPages}
-          onPageChange={handlePageChange}
-          maxWidth={300}
-          className="responsive-pagination"
-          ariaPreviousLabel="Page précédente"
-          ariaNextLabel="Page suivante"
-          previousLabel="«"
-          nextLabel="»"
-        />
+        <nav aria-label="Pagination" className="flex items-center">
+          <ul className="inline-flex -space-x-px text-sm">
+            {/* Bouton page précédente */}
+            <li>
+              <button
+                onClick={() => page > 1 && handlePageChange(page - 1)}
+                disabled={page <= 1}
+                className={`flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-md ${
+                  page <= 1
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:bg-blue-50 hover:text-blue-700'
+                }`}
+                aria-label="Page précédente"
+              >
+                <span className="sr-only">Page précédente</span>
+                <svg
+                  className="w-2.5 h-2.5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 1 1 5l4 4"
+                  />
+                </svg>
+              </button>
+            </li>
+
+            {/* Pages numérotées */}
+            {getPaginationItems()}
+
+            {/* Bouton page suivante */}
+            <li>
+              <button
+                onClick={() => page < totalPages && handlePageChange(page + 1)}
+                disabled={page >= totalPages}
+                className={`flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-md ${
+                  page >= totalPages
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:bg-blue-50 hover:text-blue-700'
+                }`}
+                aria-label="Page suivante"
+              >
+                <span className="sr-only">Page suivante</span>
+                <svg
+                  className="w-2.5 h-2.5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 6 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m1 9 4-4-4-4"
+                  />
+                </svg>
+              </button>
+            </li>
+          </ul>
+        </nav>
       )}
     </div>
   );

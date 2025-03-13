@@ -146,8 +146,8 @@ console.log('Nous commençons la consommation des middlewares');
 router
   // .use(logRequests)
   .use(connectDB)
-  .use(securityMiddleware)
-  .use(cacheControl)
+  // .use(securityMiddleware)
+  // .use(cacheControl)
   .use(isAuthenticatedUser);
 
 // Définir les handlers pour chaque méthode

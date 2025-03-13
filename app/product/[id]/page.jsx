@@ -31,26 +31,31 @@ export async function generateMetadata({ params }) {
     // Catégorie pour le breadcrumb structuré
     const category = product.category?.categoryName || 'Produit';
 
+    // Vérifier si l'image existe et récupérer son URL de manière sécurisée
+    const imageUrl =
+      product.images &&
+      Array.isArray(product.images) &&
+      product.images.length > 0 &&
+      product.images[0]?.url
+        ? product.images[0].url
+        : '/images/default_product.png';
+
     return {
       title: `${product.name} | Buy It Now`,
       description: product.description.substring(0, 160),
       openGraph: {
         title: product.name,
         description: product.description.substring(0, 160),
-        type: 'product',
+        // Corriger le type OpenGraph - 'product' n'est pas valide, utiliser 'website' à la place
+        type: 'website',
         images: [
           {
-            url: product.images?.[0]?.url || '/images/default_product.png',
+            url: imageUrl,
             width: 800,
             height: 600,
             alt: product.name,
           },
         ],
-        availability: product.stock > 0 ? 'in stock' : 'out of stock',
-        price: {
-          currency: 'EUR',
-          amount: product.price,
-        },
       },
       // Ajouter des données structurées pour les moteurs de recherche
       other: {
@@ -64,23 +69,6 @@ export async function generateMetadata({ params }) {
       title: 'Produit | Buy It Now',
       description: 'Détails du produit',
     };
-  }
-}
-
-// Générer des paramètres statiques pour les produits les plus populaires
-// Cela optimisera les performances en pré-rendant ces pages
-export async function generateStaticParams() {
-  try {
-    // Cette fonction serait implémentée pour récupérer les IDs des produits populaires
-    // Mais comme elle n'existe pas encore, on retourne un tableau vide
-    return [];
-
-    // Idéalement, on ferait quelque chose comme:
-    // const popularProducts = await getPopularProductIds();
-    // return popularProducts.map(id => ({ id: id.toString() }));
-  } catch (error) {
-    console.error('Error generating static params:', error);
-    return [];
   }
 }
 

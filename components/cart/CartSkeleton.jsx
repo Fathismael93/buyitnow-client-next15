@@ -1,5 +1,3 @@
-import React from 'react';
-
 // Skeleton pour le chargement du panier complet
 export const CartPageSkeleton = () => {
   return (

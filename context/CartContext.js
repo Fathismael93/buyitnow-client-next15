@@ -52,6 +52,7 @@ export const CartProvider = ({ children }) => {
   }, [localCart.count, cart.length]);
 
   // Fonction utilitaire pour les requêtes API avec retry
+  // Dans CartContext.js
   const fetchWithRetry = useCallback(
     async (url, options, attemptNumber = 0) => {
       const requestId = `${options.method || 'GET'}-${url}-${Date.now()}`;
@@ -84,6 +85,7 @@ export const CartProvider = ({ children }) => {
         const duration = Date.now() - startTime;
         recordMetric(`cart.api.${options.method || 'GET'}.duration`, duration);
 
+        // Vérifier explicitement si la réponse est OK avant de traiter
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(errorData.message || `Erreur ${response.status}`);
@@ -115,6 +117,9 @@ export const CartProvider = ({ children }) => {
   );
 
   const setCartToState = useCallback(async () => {
+    // Éviter les appels multiples si déjà en cours de chargement
+    if (loading) return;
+
     try {
       setLoading(true);
       setError(null);
@@ -174,7 +179,7 @@ export const CartProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [fetchWithRetry, localCart.items, localCart.count, setLocalCart]);
+  }, [fetchWithRetry, localCart.items, localCart.count, setLocalCart, loading]);
 
   const addItemToCart = useCallback(
     async ({ product, quantity = 1 }) => {

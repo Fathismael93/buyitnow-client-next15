@@ -1,12 +1,6 @@
 'use client';
 
-import React, {
-  useContext,
-  useEffect,
-  useState,
-  memo,
-  useCallback,
-} from 'react';
+import { useContext, useEffect, useState, memo, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -166,6 +160,7 @@ const Cart = () => {
   const router = useRouter();
 
   // Précharger la page de livraison
+  // Modifier le `useEffect` pour le chargement initial
   useEffect(() => {
     router.prefetch('/shipping-choice');
 
@@ -184,8 +179,10 @@ const Cart = () => {
       }
     };
 
-    loadCart();
-  }, [router, setCartToState]);
+    if (!initialLoadComplete) {
+      loadCart();
+    }
+  }, [router, setCartToState, initialLoadComplete]);
 
   // Fonction optimisée pour augmenter la quantité
   const increaseQty = useCallback(
@@ -255,7 +252,7 @@ const Cart = () => {
   }, [cartTotal, saveOnCheckout, router]);
 
   // Afficher un écran de chargement pendant le chargement initial
-  if (loading && !initialLoadComplete) {
+  if (!initialLoadComplete) {
     return <Loading />;
   }
 
@@ -282,7 +279,7 @@ const Cart = () => {
             <div className="flex flex-col md:flex-row gap-6">
               <main className="md:w-3/4">
                 <div className="bg-white shadow rounded-lg mb-5 p-4 lg:p-6 transition-all duration-300 ease-in-out transform translate-y-0 opacity-100">
-                  {loading && initialLoadComplete ? (
+                  {loading ? (
                     <>
                       {[...Array(3)].map((_, index) => (
                         <CartItemSkeleton key={index} />

@@ -259,9 +259,6 @@ const Cart = () => {
     return <Loading />;
   }
 
-  console.log('cart in Cart.jsx');
-  console.log(cart);
-
   return (
     <>
       <section className="py-5 sm:py-7 bg-gradient-to-r from-blue-50 to-indigo-50">
@@ -298,6 +295,8 @@ const Cart = () => {
                           key={cartItem._id}
                           className={`transition-all duration-300 ease-in-out transform ${itemBeingRemoved === cartItem._id ? 'opacity-0 -translate-x-3 h-0 overflow-hidden' : 'opacity-100 translate-x-0'}`}
                         >
+                          {console.log('cartItem passed to ItemCart.jsx')}
+                          {console.log(cartItem)}
                           <ItemCart
                             cartItem={cartItem}
                             deleteItemFromCart={handleDeleteItem}

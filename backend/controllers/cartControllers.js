@@ -11,7 +11,6 @@ import { captureException } from '@/monitoring/sentry';
  * @route POST /api/cart
  */
 export const newCart = async (req, res, next) => {
-  console.log('Nous sommes dans le ADD CART controller');
   try {
     // Vérifier que l'utilisateur existe
     const user = await User.findOne({ email: req.user.email }).select('_id');
@@ -19,10 +18,6 @@ export const newCart = async (req, res, next) => {
     if (!user) {
       return next(new ErrorHandler('Utilisateur non trouvé', 404));
     }
-
-    console.log('utilisateur trouvé');
-    console.log('Checking req.body');
-    console.log(req.body);
 
     // Valider et parser le corps de la requête
     let cartData;
@@ -32,14 +27,10 @@ export const newCart = async (req, res, next) => {
       return next(new ErrorHandler('Format JSON invalide', 400));
     }
 
-    console.log('Donnée de la nouvelle CART recuperer du req.body');
-
     // Vérifier que le productId est présent
     if (!cartData.productId) {
       return next(new ErrorHandler('ID de produit requis', 400));
     }
-
-    console.log('ID du produit présent');
 
     // Vérifier que le produit existe
     const product = await Product.findById(cartData.productId);
@@ -48,8 +39,6 @@ export const newCart = async (req, res, next) => {
       return next(new ErrorHandler('Produit non trouvé', 404));
     }
 
-    console.log('produit trouvé');
-
     // Vérifier si le produit est déjà dans le panier
     const existingCartItem = await Cart.findOne({
       user: user._id,
@@ -57,7 +46,6 @@ export const newCart = async (req, res, next) => {
     });
 
     if (existingCartItem) {
-      console.log('produit déjà existant dans le panier');
       // Si le produit est déjà dans le panier, augmenter la quantité
       const newQuantity = existingCartItem.quantity + cartData.quantity;
 
@@ -69,16 +57,12 @@ export const newCart = async (req, res, next) => {
       existingCartItem.quantity = newQuantity;
       await existingCartItem.save();
 
-      console.log('Envoie du response pour le produit déjà existant');
-
       return res.status(200).json({
         success: true,
         cartAdded: existingCartItem,
         message: 'Quantité augmentée dans le panier',
       });
     }
-
-    console.log('Nouveau produit');
 
     // Définir la quantité par défaut à 1
     const quantity = cartData.quantity;
@@ -88,8 +72,6 @@ export const newCart = async (req, res, next) => {
       return next(new ErrorHandler('Produit non disponible en stock', 400));
     }
 
-    console.log('Stock suffisant');
-
     // Créer l'élément de panier
     const cart = {
       product: product._id,
@@ -98,8 +80,6 @@ export const newCart = async (req, res, next) => {
     };
 
     const cartAdded = await Cart.create(cart);
-
-    console.log('Ajout au panier pour ce produit et envoie de la response');
 
     return res.status(201).json({
       success: true,
@@ -120,7 +100,6 @@ export const newCart = async (req, res, next) => {
  * @route GET /api/cart
  */
 export const getCart = async (req, res, next) => {
-  console.log('Nous sommes dans le GET CART controller');
   try {
     // Vérifier que l'utilisateur existe
     const user = await User.findOne({ email: req.user.email }).select('_id');
@@ -129,15 +108,11 @@ export const getCart = async (req, res, next) => {
       return next(new ErrorHandler('Utilisateur non trouvé', 404));
     }
 
-    console.log('Utilisateur existant');
-
     // Récupérer les articles du panier
     let cartItems = await Cart.find({ user: user._id }).populate({
       path: 'product',
       select: 'name price images stock category',
     });
-
-    console.log('Panier récuperer');
 
     // Vérifier si des produits du panier dépassent le stock disponible
     // et ajuster les quantités en conséquence
@@ -168,14 +143,6 @@ export const getCart = async (req, res, next) => {
         return total + item.product.price * item.quantity;
       }, 0)
       .toFixed(2);
-
-    console.log("Entrain d'envoyer le response pour le panier");
-    console.log('cartCount: ');
-    console.log(cartCount);
-    console.log('updatedCartItems: ');
-    console.log(updatedCartItems);
-    console.log('cartTotal: ');
-    console.log(cartTotal);
 
     return res.status(200).json({
       success: true,
@@ -208,7 +175,7 @@ export const updateCart = async (req, res, next) => {
     // Valider et parser le corps de la requête
     let updateData;
     try {
-      updateData = JSON.parse(req.body);
+      updateData = req.body;
     } catch (err) {
       return next(new ErrorHandler('Format JSON invalide', 400));
     }

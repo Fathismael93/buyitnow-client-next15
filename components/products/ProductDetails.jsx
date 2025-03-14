@@ -1,13 +1,7 @@
 /* eslint-disable react/prop-types */
 'use client';
 
-import React, {
-  useContext,
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-} from 'react';
+import { useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { toast } from 'react-toastify';
 import AuthContext from '@/context/AuthContext';

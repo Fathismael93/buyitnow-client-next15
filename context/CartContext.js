@@ -1,7 +1,7 @@
 'use client';
 
 import { DECREASE, INCREASE } from '@/helpers/constants';
-import React, {
+import {
   createContext,
   useState,
   useCallback,

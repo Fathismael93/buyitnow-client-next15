@@ -5,8 +5,6 @@ import onError from '@/backend/middlewares/errors';
 
 const router = createRouter();
 
-console.log('WE ARE IN THE GET PRODUCTS API');
-
 await dbConnect();
 
 router.get(getProducts);

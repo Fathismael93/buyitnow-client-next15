@@ -259,6 +259,9 @@ const Cart = () => {
     return <Loading />;
   }
 
+  console.log('cart in Cart.jsx');
+  console.log(cart);
+
   return (
     <>
       <section className="py-5 sm:py-7 bg-gradient-to-r from-blue-50 to-indigo-50">

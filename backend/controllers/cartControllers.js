@@ -163,9 +163,11 @@ export const getCart = async (req, res, next) => {
     const cartCount = updatedCartItems.length;
 
     // Calculer le total du panier
-    const cartTotal = updatedCartItems.reduce((total, item) => {
-      return total + item.product.price * item.quantity;
-    }, 0);
+    const cartTotal = updatedCartItems
+      .reduce((total, item) => {
+        return total + item.product.price * item.quantity;
+      }, 0)
+      .toFixed(2);
 
     console.log("Entrain d'envoyer le response pour le panier");
     console.log('cartCount: ');

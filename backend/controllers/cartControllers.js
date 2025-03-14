@@ -22,12 +22,12 @@ export const newCart = async (req, res, next) => {
 
     console.log('utilisateur trouvé');
     console.log('Checking req.body');
-    console.log(JSON.parse(req.body));
+    console.log(req.body);
 
     // Valider et parser le corps de la requête
     let cartData;
     try {
-      cartData = JSON.parse(req.body);
+      cartData = req.body;
     } catch (err) {
       return next(new ErrorHandler('Format JSON invalide', 400));
     }

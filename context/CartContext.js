@@ -120,22 +120,15 @@ export const CartProvider = ({ children }) => {
       setError(null);
 
       const startTime = Date.now();
-      await fetchWithRetry(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`, {
-        method: 'GET',
-        headers: {
-          'Cache-Control': 'no-cache',
+      const response = await fetchWithRetry(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/cart`,
+        {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
         },
-      })
-        .then((result) => {
-          console.log('Result in setCartToState');
-          console.log(result);
-        })
-        .catch((error) => {
-          console.log('Error in setCartToState');
-          console.log(error);
-        });
-
-      const response = false;
+      );
 
       if (response) {
         // Normaliser les données du panier

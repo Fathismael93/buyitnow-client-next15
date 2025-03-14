@@ -6,7 +6,6 @@ import {
   getCart,
   newCart,
   updateCart,
-  clearCart,
 } from '@/backend/controllers/cartControllers';
 
 // Configuration simplifiée pour next-connect
@@ -21,7 +20,6 @@ dbConnect().catch((err) => {
 router.use(isAuthenticatedUser).get(getCart);
 router.use(isAuthenticatedUser).post(newCart);
 router.use(isAuthenticatedUser).put(updateCart);
-router.use(isAuthenticatedUser).delete(clearCart);
 
 // Exporter le handler avec gestion d'erreurs
 export default router.handler({ onError });

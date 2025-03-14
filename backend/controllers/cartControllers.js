@@ -59,7 +59,7 @@ export const newCart = async (req, res, next) => {
     if (existingCartItem) {
       console.log('produit déjà existant dans le panier');
       // Si le produit est déjà dans le panier, augmenter la quantité
-      const newQuantity = existingCartItem.quantity + 1;
+      const newQuantity = existingCartItem.quantity + cartData.quantity;
 
       // Vérifier si la quantité demandée est disponible
       if (newQuantity > product.stock) {
@@ -81,7 +81,7 @@ export const newCart = async (req, res, next) => {
     console.log('Nouveau produit');
 
     // Définir la quantité par défaut à 1
-    const quantity = 1;
+    const quantity = cartData.quantity;
 
     // Vérifier si la quantité demandée est disponible
     if (quantity > product.stock) {

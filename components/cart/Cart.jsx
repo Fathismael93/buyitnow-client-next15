@@ -167,7 +167,6 @@ const Cart = () => {
 
   // Précharger la page de livraison
   useEffect(() => {
-    router.prefetch('/shipping');
     router.prefetch('/shipping-choice');
 
     // Chargement initial du panier

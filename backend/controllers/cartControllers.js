@@ -148,6 +148,12 @@ export const getCart = async (req, res, next) => {
     }, 0);
 
     console.log("Entrain d'envoyer le response pour le panier");
+    console.log('cartCount: ');
+    console.log(cartCount);
+    console.log('updatedCartItems: ');
+    console.log(updatedCartItems);
+    console.log('cartTotal: ');
+    console.log(cartTotal);
 
     return res.status(200).json({
       success: true,

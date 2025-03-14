@@ -89,16 +89,7 @@ export const CartProvider = ({ children }) => {
           throw new Error(errorData.message || `Erreur ${response.status}`);
         }
 
-        return await response
-          .json()
-          .then((result) => {
-            console.log('result in setCarttoState');
-            console.log(result);
-          })
-          .catch((error) => {
-            console.log('error in setCarttoState');
-            console.log(error);
-          });
+        return await response.json();
       } catch (error) {
         // Gérer les timeouts et les erreurs réseau avec retry
         if (

@@ -182,7 +182,7 @@ router.delete(async (req, res, next) => {
 });
 
 // Préchargement de la connexion DB
-dbConnect().catch((err) => {
+await dbConnect().catch((err) => {
   console.error('Erreur initiale de connexion à la base de données:', err);
   captureException(err, {
     tags: {

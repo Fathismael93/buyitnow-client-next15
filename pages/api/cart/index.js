@@ -155,7 +155,7 @@ router.post(newCart);
 router.put(updateCart);
 
 // Optimisation: précharger la connexion à la DB mais ne pas bloquer le démarrage de l'API
-dbConnect().catch((err) => {
+await dbConnect().catch((err) => {
   console.error('Erreur initiale de connexion à la base de données:', err);
   captureException(err, {
     tags: { component: 'API', route: '/api/cart', action: 'initialConnect' },

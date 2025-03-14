@@ -69,26 +69,16 @@ export const CartProvider = ({ children }) => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
 
-        await fetch(url, {
+        const response = await fetch(url, {
           ...options,
           signal: controller.signal,
           headers: {
             'Content-Type': 'application/json',
             ...options.headers,
           },
-        })
-          .then((result) => {
-            console.log('result in setCarttoState');
-            console.log(result);
-          })
-          .catch((error) => {
-            console.log('error in setCarttoState');
-            console.log(error);
-          });
+        });
 
         clearTimeout(timeoutId);
-
-        const response = {};
 
         // Mesurer la performance de la requête
         const duration = Date.now() - startTime;
@@ -99,7 +89,16 @@ export const CartProvider = ({ children }) => {
           throw new Error(errorData.message || `Erreur ${response.status}`);
         }
 
-        return await response.json();
+        return await response
+          .json()
+          .then((result) => {
+            console.log('result in setCarttoState');
+            console.log(result);
+          })
+          .catch((error) => {
+            console.log('error in setCarttoState');
+            console.log(error);
+          });
       } catch (error) {
         // Gérer les timeouts et les erreurs réseau avec retry
         if (

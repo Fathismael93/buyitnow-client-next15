@@ -33,18 +33,18 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
 };
 
 export function GlobalProvider({ children }) {
-  const { data: session, status } = useSession();
-  const { clearUser, setUser } = useContext(AuthContext);
-  const { clearCart } = useContext(CartContext);
+  // const { data: session, status } = useSession();
+  // const { clearUser, setUser } = useContext(AuthContext);
+  // const { clearCart } = useContext(CartContext);
 
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user) {
-      setUser(session.user);
-    } else if (status === 'unauthenticated') {
-      clearUser();
-      clearCart();
-    }
-  }, [status, session]);
+  // useEffect(() => {
+  //   if (status === 'authenticated' && session?.user) {
+  //     setUser(session.user);
+  //   } else if (status === 'unauthenticated') {
+  //     clearUser();
+  //     clearCart();
+  //   }
+  // }, [status, session]);
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>

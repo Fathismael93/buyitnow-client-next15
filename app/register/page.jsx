@@ -1,10 +1,8 @@
-import dynamic from 'next/dynamic';
+import { Suspense, lazy } from 'react';
 import Loading from '@/app/loading';
 
-// Utilisation de l'import dynamique pour le composant
-const Register = dynamic(() => import('@/components/auth/Register'), {
-  loading: () => <Loading />,
-});
+// Utilisation de React.lazy au lieu de next/dynamic
+const Register = lazy(() => import('@/components/auth/Register'));
 
 // Métadonnées optimisées pour SEO
 export const metadata = {
@@ -23,14 +21,16 @@ export const metadata = {
   },
 };
 
-// Configuration du comportement dynamique de la page
+// Garder la directive force-dynamic
 export const dynamic = 'force-dynamic';
 
 const RegisterPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mx-auto max-w-md">
-        <Register />
+        <Suspense fallback={<Loading />}>
+          <Register />
+        </Suspense>
       </div>
     </div>
   );

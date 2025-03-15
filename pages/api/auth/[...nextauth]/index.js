@@ -93,9 +93,6 @@ export default async function auth(req, res) {
     });
 
     const nextAuthOptions = {
-      adapter: MongoDBAdapter({
-        db: await dbConnect(),
-      }),
       providers: [
         CredentialsProvider({
           id: 'credentials',

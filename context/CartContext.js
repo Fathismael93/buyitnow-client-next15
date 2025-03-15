@@ -17,7 +17,6 @@ import { recordMetric } from '@/monitoring/sentry';
 const CartContext = createContext();
 
 // Constantes pour optimiser les performances
-const CART_UPDATE_DEBOUNCE = 500; // ms
 const API_TIMEOUT = 10000; // ms
 const RETRY_ATTEMPTS = 2;
 const RETRY_DELAY = 1000; // ms
@@ -457,6 +456,16 @@ export const CartProvider = ({ children }) => {
     setError(null);
   }, []);
 
+  const clearCartOnLogout = useCallback(() => {
+    setCart([]);
+    setLoading(false);
+    setCartCount(0);
+    // Supprimer le panier du localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('buyitnow_cart');
+    }
+  }, []);
+
   // Vider le panier (utile après un achat réussi)
   const clearCart = useCallback(async () => {
     try {
@@ -515,6 +524,7 @@ export const CartProvider = ({ children }) => {
       saveOnCheckout,
       deleteItemFromCart,
       clearError,
+      clearCartOnLogout,
       clearCart,
     }),
     [
@@ -533,6 +543,7 @@ export const CartProvider = ({ children }) => {
       saveOnCheckout,
       deleteItemFromCart,
       clearError,
+      clearCartOnLogout,
       clearCart,
     ],
   );

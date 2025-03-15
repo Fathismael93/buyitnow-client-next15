@@ -1,11 +1,11 @@
 /* eslint-disable react/prop-types */
 'use client';
 
-import React from 'react';
-import { AuthProvider } from '@/context/AuthContext';
-import { CartProvider } from '@/context/CartContext';
+import { useContext, useEffect } from 'react';
+import AuthContext, { AuthProvider } from '@/context/AuthContext';
+import CartContext, { CartProvider } from '@/context/CartContext';
 import { OrderProvider } from '@/context/OrderContext';
-import { SessionProvider } from 'next-auth/react';
+import { SessionProvider, useSession } from 'next-auth/react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -33,6 +33,19 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
 };
 
 export function GlobalProvider({ children }) {
+  const { data: session, status } = useSession();
+  const { clearUser, setUser } = useContext(AuthContext);
+  const { clearCart } = useContext(CartContext);
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user) {
+      setUser(session.user);
+    } else if (status === 'unauthenticated') {
+      clearUser();
+      clearCart();
+    }
+  }, [status, session]);
+
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <ToastContainer

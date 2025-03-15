@@ -115,8 +115,14 @@ const UserDropdown = memo(({ user }) => {
 UserDropdown.displayName = 'UserDropdown';
 
 const Header = () => {
-  const { user, setLoading: setAuthLoading, setUser } = useContext(AuthContext);
-  const { setCartToState, cartCount } = useContext(CartContext);
+  const {
+    user,
+    setLoading: setAuthLoading,
+    setUser,
+    clearUser,
+  } = useContext(AuthContext);
+  const { setCartToState, cartCount, clearCartOnLogout } =
+    useContext(CartContext);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoadingCart, setIsLoadingCart] = useState(false);
   const { data } = useSession();
@@ -183,6 +189,25 @@ const Header = () => {
       document.removeEventListener('keydown', handleEscape);
     };
   }, [mobileMenuOpen]);
+
+  const handleSignOut = async () => {
+    try {
+      // Réinitialiser les contextes
+      clearUser();
+      clearCartOnLogout();
+
+      // Déconnexion Next-Auth
+      await signOut({ callbackUrl: '/login' });
+
+      // Force une navigation hard après une courte pause
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 100);
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+      window.location.href = '/login';
+    }
+  };
 
   return (
     <header className="bg-white py-2 border-b sticky top-0 z-50 shadow-sm">

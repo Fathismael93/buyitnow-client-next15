@@ -647,6 +647,12 @@ export const AuthProvider = ({ children }) => {
     [router],
   );
 
+  const clearUser = useCallback(() => {
+    setUser(null);
+    setError(null);
+    setUpdated(false);
+  }, []);
+
   const clearErrors = useCallback(() => {
     setError(null);
   }, []);
@@ -668,6 +674,7 @@ export const AuthProvider = ({ children }) => {
       updateAddress,
       deleteAddress,
       sendEmail,
+      clearUser,
       clearErrors,
     }),
     [
@@ -685,6 +692,7 @@ export const AuthProvider = ({ children }) => {
       updateAddress,
       deleteAddress,
       sendEmail,
+      clearUser,
       clearErrors,
     ],
   );

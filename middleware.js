@@ -144,6 +144,7 @@ export default withAuth(
       // Get the pathname from the URL
       const url = req.nextUrl.pathname;
       const user = req?.nextauth?.token?.user;
+      const session = req?.nextauth?.token;
       const ip = req.headers.get('x-forwarded-for') || req.ip || 'unknown';
 
       // Détection de comportements suspects
@@ -183,6 +184,11 @@ export default withAuth(
           );
           return addSecurityHeaders(response);
         }
+      }
+
+      // Si pas de session, rediriger vers login
+      if (!session) {
+        return NextResponse.redirect(new URL('/login', req.url));
       }
 
       // For API routes, add CORS headers but be more specific for security

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -104,6 +104,8 @@ const Login = () => {
           // Reset des tentatives après une connexion réussie
           setLoginAttempts(0);
           toast.success('Connexion réussie');
+          console.log('DATA URL');
+          console.log(data.url);
           router.push('/');
         }
       }
@@ -211,7 +213,7 @@ const Login = () => {
         <button
           type="submit"
           data-testid="login-submit-button"
-          className={`my-2 px-4 py-2 text-center w-full inline-block text-white ${
+          className={`my-2 px-4 py-2 cursor-pointer text-center w-full inline-block text-white ${
             isSubmitting || loginAttempts >= MAX_LOGIN_ATTEMPTS
               ? 'bg-blue-400 cursor-not-allowed'
               : 'bg-blue-600 hover:bg-blue-700'

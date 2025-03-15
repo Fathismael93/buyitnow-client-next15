@@ -1,12 +1,6 @@
 'use client';
 
-import React, {
-  useState,
-  useContext,
-  useEffect,
-  useCallback,
-  memo,
-} from 'react';
+import { useState, useContext, useEffect, useCallback, memo } from 'react';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { debounce } from '@/utils/performance';
@@ -324,7 +318,7 @@ const Register = () => {
         <button
           type="submit"
           disabled={isSubmitting || loading}
-          className={`my-4 px-4 py-2 text-center w-full inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${isSubmitting || loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+          className={`my-4 px-4 py-2 cursor-pointer text-center w-full inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${isSubmitting || loading ? 'opacity-70 cursor-not-allowed' : ''}`}
         >
           {isSubmitting || loading ? (
             <span className="flex items-center justify-center">

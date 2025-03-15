@@ -1,6 +1,5 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import User from '@/backend/models/user';
 import bcrypt from 'bcryptjs';
 import dbConnect from '@/backend/config/dbConnect';

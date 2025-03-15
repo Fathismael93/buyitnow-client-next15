@@ -13,7 +13,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import * as Sentry from '@sentry/nextjs';
 import CartContext from '@/context/CartContext';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import AuthContext from '@/context/AuthContext';
 import { startTimer } from '@/monitoring/sentry';
 
@@ -50,11 +50,6 @@ const UserDropdown = memo(({ user }) => {
     () => [
       { href: '/me', label: 'Mon profil' },
       { href: '/me/orders', label: 'Mes commandes' },
-      {
-        href: '/api/auth/signout',
-        label: 'Déconnexion',
-        className: 'text-red-600 hover:bg-red-50',
-      },
     ],
     [],
   );
@@ -104,6 +99,13 @@ const UserDropdown = memo(({ user }) => {
               {item.label}
             </Link>
           ))}
+          <button
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="block cursor-pointer w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+            role="menuitem"
+          >
+            Déconnexion
+          </button>
         </div>
       </div>
     </div>
@@ -297,12 +299,12 @@ const Header = () => {
                 >
                   Mes commandes
                 </Link>
-                <Link
-                  href="/api/auth/signout"
-                  className="block px-2 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
+                <button
+                  onClick={() => signOut({ callbackUrl: '/login' })}
+                  className="block cursor-pointer w-full text-left px-2 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
                 >
                   Déconnexion
-                </Link>
+                </button>
               </div>
             ) : (
               <Link

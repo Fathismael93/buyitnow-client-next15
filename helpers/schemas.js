@@ -2,69 +2,159 @@ import * as yup from 'yup';
 import { LIMITS } from './constants';
 
 /**
- * Schéma de validation pour la connexion
+ * Schéma de validation pour la connexion avec amélioration de sécurité et performance
  */
-export const loginSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email('Veuillez entrer une adresse email valide')
-    .required("L'email est requis")
-    .trim(),
-  password: yup
-    .string()
-    .required('Le mot de passe est requis')
-    .min(
-      LIMITS.MIN_PASSWORD_LENGTH,
-      `Le mot de passe doit contenir au moins ${LIMITS.MIN_PASSWORD_LENGTH} caractères`,
-    ),
-});
+export const loginSchema = yup
+  .object({
+    email: yup
+      .string()
+      .transform((value) => value?.trim().toLowerCase()) // Normalisation: trim + lowercase
+      .required("L'email est requis")
+      .email('Veuillez entrer une adresse email valide')
+      .max(254, "L'email ne doit pas dépasser 254 caractères") // Standard RFC 5321
+      .matches(
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        "Format d'email invalide",
+      )
+      .test(
+        'no-xss',
+        'Caractères non autorisés détectés',
+        (value) => !value || !/[<>'"()]/.test(value), // Prévention XSS basique
+      ),
+    password: yup
+      .string()
+      .required('Le mot de passe est requis')
+      .min(
+        LIMITS.MIN_PASSWORD_LENGTH,
+        `Le mot de passe doit contenir au moins ${LIMITS.MIN_PASSWORD_LENGTH} caractères`,
+      )
+      .max(128, 'Le mot de passe est trop long')
+      .test(
+        'no-spaces',
+        "Le mot de passe ne doit pas contenir d'espaces au début ou à la fin",
+        (value) => value === value?.trim(),
+      ),
+  })
+  .noUnknown(true, 'Propriétés non autorisées détectées');
 
 /**
- * Schéma de validation pour l'inscription
+ * Schéma de validation pour l'inscription - optimisé pour production
  */
-export const registerSchema = yup.object().shape({
-  name: yup
-    .string()
-    .required('Le nom est requis')
-    .min(3, 'Le nom doit contenir au moins 3 caractères')
-    .max(50, 'Le nom ne doit pas dépasser 50 caractères')
-    .matches(
-      /^[a-zA-ZÀ-ÿ\s'-]+$/,
-      'Le nom ne peut contenir que des lettres, espaces, apostrophes et tirets',
-    )
-    .trim(),
-  phone: yup
-    .string()
-    .required('Le numéro de téléphone est requis')
-    .matches(
-      /^\+?[0-9]{10,15}$/,
-      'Le numéro de téléphone doit être au format valide (ex: +33612345678)',
-    )
-    .trim(),
-  email: yup
-    .string()
-    .email('Veuillez entrer une adresse email valide')
-    .required("L'email est requis")
-    .trim(),
-  password: yup
-    .string()
-    .required('Le mot de passe est requis')
-    .min(
-      LIMITS.MIN_PASSWORD_LENGTH,
-      `Le mot de passe doit contenir au moins ${LIMITS.MIN_PASSWORD_LENGTH} caractères`,
-    )
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{6,}$/,
-      'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule et un chiffre',
-    ),
-  confirmPassword: yup
-    .string()
-    .oneOf(
-      [yup.ref('password'), null],
-      'Les mots de passe doivent correspondre',
-    )
-    .required('La confirmation du mot de passe est requise'),
-});
+export const registerSchema = yup
+  .object({
+    name: yup
+      .string()
+      .transform((value) => value?.trim()) // Normaliser les espaces
+      .required('Le nom est requis')
+      .min(3, 'Le nom doit contenir au moins 3 caractères')
+      .max(50, 'Le nom ne doit pas dépasser 50 caractères')
+      .matches(
+        /^[a-zA-ZÀ-ÿ\s'-]+$/,
+        'Le nom ne peut contenir que des lettres, espaces, apostrophes et tirets',
+      )
+      .test(
+        'no-consecutive-spaces',
+        'Le nom ne peut pas contenir des espaces consécutifs',
+        (value) => !value || !/\s{2,}/.test(value),
+      )
+      .test(
+        'no-xss',
+        'Caractères non autorisés détectés',
+        (value) => !value || !/[<>]/.test(value),
+      ), // Validation XSS basique
+
+    phone: yup
+      .string()
+      .transform((value) => value?.trim().replace(/\s/g, '')) // Supprimer tous les espaces
+      .required('Le numéro de téléphone est requis')
+      .matches(
+        /^\+?[0-9]{10,15}$/,
+        'Le numéro de téléphone doit être au format valide (ex: +33612345678)',
+      )
+      .test(
+        'valid-phone-format',
+        'Format de téléphone non valide',
+        function (value) {
+          if (!value) return true;
+          // Vérification plus stricte basée sur la longueur avec ou sans préfixe international
+          if (value.startsWith('+')) {
+            return value.length >= 12 && value.length <= 16;
+          }
+          return value.length >= 10 && value.length <= 15;
+        },
+      ),
+
+    email: yup
+      .string()
+      .transform((value) => value?.trim().toLowerCase()) // Normalisation: trim + lowercase
+      .required("L'email est requis")
+      .email('Veuillez entrer une adresse email valide')
+      .max(254, "L'email ne doit pas dépasser 254 caractères") // Standard RFC 5321
+      .matches(
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        "Format d'email invalide",
+      )
+      .test(
+        'no-temporary-domain',
+        "Les domaines d'email temporaires ne sont pas autorisés",
+        (value) => {
+          if (!value) return true;
+          const tempDomains = [
+            'yopmail.com',
+            'mailinator.com',
+            'tempmail.com',
+            'temp-mail.org',
+            'guerrillamail.com',
+          ];
+          const domain = value.split('@')[1]?.toLowerCase();
+          return !tempDomains.includes(domain);
+        },
+      )
+      .test(
+        'no-xss',
+        'Caractères non autorisés détectés',
+        (value) => !value || !/[<>'"()]/.test(value),
+      ),
+
+    password: yup
+      .string()
+      .required('Le mot de passe est requis')
+      .min(
+        LIMITS.MIN_PASSWORD_LENGTH,
+        `Le mot de passe doit contenir au moins ${LIMITS.MIN_PASSWORD_LENGTH} caractères`,
+      )
+      .max(128, 'Le mot de passe ne doit pas dépasser 128 caractères') // Limite raisonnable
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{6,}$/,
+        'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule et un chiffre',
+      )
+      .test(
+        'no-common-passwords',
+        'Ce mot de passe est trop courant et facile à deviner',
+        function (value) {
+          if (!value) return true;
+          const commonPasswords = [
+            'Password123',
+            'Azerty123',
+            'Qwerty123',
+            '123456Aa',
+            'Admin123',
+          ];
+          return !commonPasswords.includes(value);
+        },
+      )
+      .test(
+        'no-spaces',
+        "Le mot de passe ne doit pas contenir d'espaces au début ou à la fin",
+        (value) => !value || value === value.trim(),
+      ),
+
+    confirmPassword: yup
+      .string()
+      .required('La confirmation du mot de passe est requise')
+      .oneOf([yup.ref('password')], 'Les mots de passe doivent correspondre'),
+  })
+  .noUnknown(true, 'Champs non autorisés détectés');
 
 /**
  * Schéma de validation pour la recherche

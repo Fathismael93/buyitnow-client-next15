@@ -35,89 +35,275 @@ try {
 }
 
 /**
- * Valide les données d'inscription d'un nouvel utilisateur
+ * Valide les données d'inscription d'un nouvel utilisateur de manière exhaustive
  * @param {Object} userData - Données utilisateur à valider
- * @returns {Object} - Objet contenant les erreurs de validation, s'il y en a
+ * @returns {Object} - Objet contenant le résultat de validation et les erreurs éventuelles
  */
 const validateUserData = (userData) => {
   const errors = {};
 
+  // Valider et sanitiser la présence des champs obligatoires
+  if (!userData) {
+    return {
+      isValid: false,
+      errors: { global: 'Aucune donnée fournie' },
+    };
+  }
+
+  const { name, email, phone, password } = userData;
+
   // Validation du nom
-  if (!userData.name || userData.name.trim().length < 2) {
+  if (!name || typeof name !== 'string') {
+    errors.name = 'Le nom est requis';
+  } else if (name.trim().length < 2) {
     errors.name = 'Le nom doit contenir au moins 2 caractères';
+  } else if (name.trim().length > 100) {
+    errors.name = 'Le nom ne doit pas dépasser 100 caractères';
+  } else if (!/^[a-zA-ZÀ-ÿ\s'-]+$/.test(name.trim())) {
+    errors.name = 'Le nom contient des caractères non autorisés';
+  } else if (/\s{2,}/.test(name)) {
+    errors.name = 'Le nom ne peut pas contenir des espaces consécutifs';
   }
 
   // Validation de l'email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!userData.email || !emailRegex.test(userData.email)) {
-    errors.email = 'Email invalide';
+  if (!email || typeof email !== 'string') {
+    errors.email = "L'email est requis";
+  } else {
+    // Trim et normalisation pour la validation
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Validation RFC-compliant pour email
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(normalizedEmail)) {
+      errors.email = "Format d'email invalide";
+    } else if (normalizedEmail.length > 254) {
+      // RFC 5321 SMTP limit
+      errors.email = "L'email ne doit pas dépasser 254 caractères";
+    } else {
+      // Vérification des domaines d'email temporaires
+      const tempEmailDomains = [
+        'yopmail.com',
+        'mailinator.com',
+        'tempmail.com',
+        'temp-mail.org',
+        'guerrillamail.com',
+        'throwawaymail.com',
+        '10minutemail.com',
+        'mailnesia.com',
+        'trashmail.com',
+        'sharklasers.com',
+      ];
+
+      const emailDomain = normalizedEmail.split('@')[1];
+      if (tempEmailDomains.includes(emailDomain)) {
+        errors.email = 'Les adresses email temporaires ne sont pas autorisées';
+      }
+    }
   }
 
   // Validation du téléphone
-  const phoneRegex = /^\+?[0-9]{10,15}$/;
-  if (!userData.phone || !phoneRegex.test(userData.phone)) {
-    errors.phone = 'Numéro de téléphone invalide';
+  if (!phone || typeof phone !== 'string') {
+    errors.phone = 'Le numéro de téléphone est requis';
+  } else {
+    // Supprimer les espaces pour la validation
+    const normalizedPhone = phone.trim().replace(/\s/g, '');
+
+    // Validation internationale des numéros de téléphone
+    const phoneRegex = /^\+?[0-9]{10,15}$/;
+    if (!phoneRegex.test(normalizedPhone)) {
+      errors.phone = 'Format de téléphone invalide (ex: +33612345678)';
+    } else if (normalizedPhone.length > 20) {
+      errors.phone = 'Le numéro de téléphone est trop long';
+    }
   }
 
   // Validation du mot de passe
-  if (!userData.password || userData.password.length < 6) {
+  if (!password) {
+    errors.password = 'Le mot de passe est requis';
+  } else if (typeof password !== 'string') {
+    errors.password = 'Format de mot de passe invalide';
+  } else if (password.length < 6) {
     errors.password = 'Le mot de passe doit contenir au moins 6 caractères';
+  } else if (password.length > 128) {
+    errors.password = 'Le mot de passe ne doit pas dépasser 128 caractères';
+  } else {
+    // Vérification de la force du mot de passe
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+
+    if (!(hasUpperCase && hasLowerCase && hasNumbers)) {
+      errors.password =
+        'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule et un chiffre';
+    }
+
+    // Vérification des espaces au début ou à la fin
+    if (password !== password.trim()) {
+      errors.password =
+        "Le mot de passe ne doit pas contenir d'espaces au début ou à la fin";
+    }
+
+    // Vérification des mots de passe courants
+    const commonPasswords = [
+      'Password123',
+      'Azerty123',
+      'Qwerty123',
+      '123456Aa',
+      'Admin123',
+    ];
+    if (commonPasswords.includes(password)) {
+      errors.password = 'Ce mot de passe est trop courant et facile à deviner';
+    }
   }
 
   return {
     isValid: Object.keys(errors).length === 0,
     errors,
+    // Retourner les données sanitisées si valides
+    sanitizedData:
+      Object.keys(errors).length === 0
+        ? {
+            name: name?.trim(),
+            email: email?.trim().toLowerCase(),
+            phone: phone?.trim().replace(/\s/g, ''),
+            password,
+          }
+        : null,
   };
 };
 
 /**
- * Enregistre un nouvel utilisateur
+ * Enregistre un nouvel utilisateur avec validation robuste et gestion d'erreurs avancée
  * @route POST /api/auth/register
+ * @param {Object} req - Requête Express
+ * @param {Object} res - Réponse Express
+ * @param {Function} next - Middleware suivant
+ * @returns {Promise<Object>} - Réponse avec l'utilisateur créé ou message d'erreur
  */
 export const registerUser = async (req, res, next) => {
+  // Mesurer les performances
+  const startTime = Date.now();
+  let sanitizedEmail = null;
+
   try {
-    // Valider et parser le corps de la requête
+    // Extraire les données du corps de la requête
     let userData;
     try {
-      userData = JSON.parse(req.body);
+      // Vérifier si le corps est déjà un objet ou une chaîne à parser
+      userData = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     } catch (err) {
-      return next(new ErrorHandler('Format JSON invalide', 400));
+      return next(new ErrorHandler('Format de données invalide', 400));
     }
 
-    // Valider les données utilisateur
+    // Utiliser la fonction validateUserData pour valider toutes les données
     const validation = validateUserData(userData);
+
+    // Si la validation échoue, retourner les erreurs
     if (!validation.isValid) {
       return next(
         new ErrorHandler('Validation échouée', 400, validation.errors),
       );
     }
 
-    // Vérifier si l'email existe déjà
-    const existingUser = await User.findOne({ email: userData.email });
+    // Récupérer les données sanitisées
+    const { name, email, phone, password } = validation.sanitizedData;
+
+    // Conserver une version anonymisée de l'email pour la journalisation sécurisée
+    sanitizedEmail = email
+      ? `${email.substring(0, 3)}...${email.includes('@') ? `@${email.split('@')[1]}` : ''}`
+      : 'non fourni';
+
+    // Vérifier si l'email existe déjà avec une gestion d'erreur robuste
+    const existingUser = await User.findOne({ email }).lean().maxTimeMS(5000); // Ajouter un timeout et optimiser avec lean()
+
     if (existingUser) {
-      return next(new ErrorHandler('Cet email est déjà utilisé', 400));
+      return next(new ErrorHandler('Cet email est déjà utilisé', 409)); // Code 409 Conflict pour email existant
     }
 
-    // Créer l'utilisateur
-    const { name, phone, email, password } = userData;
-    const user = await User.create({
+    // Créer l'utilisateur avec données sanitisées
+    const newUser = await User.create({
       name,
-      phone,
       email,
+      phone,
       password,
+      role: 'user', // Définir explicitement le rôle pour éviter les escalades de privilèges
     });
 
-    // Retirer le mot de passe de la réponse
-    user.password = undefined;
+    // Vérifier que l'utilisateur a bien été créé
+    if (!newUser) {
+      throw new Error("Échec de création de l'utilisateur");
+    }
 
+    // Mesurer le temps de création
+    const duration = Date.now() - startTime;
+
+    // Tenter d'enregistrer les performances pour le monitoring (sans bloquer la réponse)
+    try {
+      if (process.env.NODE_ENV === 'production') {
+        const { recordMetric } = require('@/monitoring/sentry');
+        recordMetric('auth.register.duration', duration, {
+          tags: { success: true },
+        });
+      }
+    } catch (metricError) {
+      // Ne pas bloquer la réponse si la métrique échoue
+      console.warn(
+        "Échec d'enregistrement des métriques:",
+        metricError.message,
+      );
+    }
+
+    // Retirer le mot de passe et les champs sensibles de la réponse
+    const userResponse = {
+      _id: newUser._id,
+      name: newUser.name,
+      email: newUser.email,
+      phone: newUser.phone,
+      role: newUser.role,
+      createdAt: newUser.createdAt,
+    };
+
+    // Retourner la réponse de succès
     return res.status(201).json({
       success: true,
-      user,
+      message: 'Compte créé avec succès',
+      user: userResponse,
     });
   } catch (error) {
+    // Capturer l'exception avec des informations de contexte sécurisées
     captureException(error, {
-      tags: { action: 'register_user' },
+      tags: {
+        action: 'register_user',
+        errorType: error.name || 'unknown',
+      },
+      extra: {
+        sanitizedEmail, // Utiliser l'email anonymisé pour la sécurité
+        duration: Date.now() - startTime,
+      },
     });
+
+    // Vérifier les erreurs spécifiques MongoDB
+    if (error.code === 11000) {
+      // Erreur de clé dupliquée (généralement email)
+      return next(
+        new ErrorHandler(
+          'Un utilisateur avec ces informations existe déjà',
+          409,
+        ),
+      );
+    }
+
+    // Journaliser l'erreur mais ne pas exposer les détails techniques à l'utilisateur
+    console.error("Erreur d'inscription:", error.message);
+
+    // En production, retourner un message générique
+    if (process.env.NODE_ENV === 'production') {
+      return next(
+        new ErrorHandler("Une erreur est survenue lors de l'inscription", 500),
+      );
+    }
+
+    // En développement, retourner les détails pour le débogage
     return next(new ErrorHandler(error.message, 500));
   }
 };

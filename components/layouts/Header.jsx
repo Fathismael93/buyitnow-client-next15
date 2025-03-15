@@ -325,7 +325,7 @@ const Header = () => {
                   Mes commandes
                 </Link>
                 <button
-                  onClick={() => signOut({ callbackUrl: '/login' })}
+                  onClick={handleSignOut}
                   className="block cursor-pointer w-full text-left px-2 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
                 >
                   Déconnexion

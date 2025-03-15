@@ -104,9 +104,7 @@ const Login = () => {
           // Reset des tentatives après une connexion réussie
           setLoginAttempts(0);
           toast.success('Connexion réussie');
-          console.log('DATA URL');
-          console.log(data.url);
-          router.push('/');
+          router.push(data.url || '/');
         }
       }
     } catch (error) {

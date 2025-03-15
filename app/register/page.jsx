@@ -4,7 +4,6 @@ import Loading from '@/app/loading';
 // Utilisation de l'import dynamique pour le composant
 const Register = dynamic(() => import('@/components/auth/Register'), {
   loading: () => <Loading />,
-  ssr: false, // Désactiver SSR pour ce composant client-side uniquement
 });
 
 // Métadonnées optimisées pour SEO
